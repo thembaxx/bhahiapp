@@ -40,6 +40,22 @@ export function BarcodeScannerModal({
   const [newQty, setNewQty] = useState('12');
   const [newCategory, setNewCategory] = useState<ProductItem['category']>('Staples');
 
+  const handleDetectedBarcode = (code: string) => {
+    const clean = code.trim();
+    if (!clean) return;
+    const found = items.find((i) => i.barcode === clean);
+    if (found) {
+      if (found.qty <= 0) {
+        setStatusMessage(`${found.name}: ${tt('Out of stock. Restock first', appLang)}`);
+        return;
+      }
+      onSellItem(found.id);
+      setStatusMessage(`${tt('Sold', appLang)}: ${found.name} (${formatRand0(found.price)})`);
+    } else {
+      setUnknownBarcode(clean);
+    }
+  };
+
   useEffect(() => {
     if (!isOpen) return;
     setUnknownBarcode(null);
@@ -106,22 +122,6 @@ export function BarcodeScannerModal({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
-
-  const handleDetectedBarcode = (code: string) => {
-    const clean = code.trim();
-    if (!clean) return;
-    const found = items.find((i) => i.barcode === clean);
-    if (found) {
-      if (found.qty <= 0) {
-        setStatusMessage(`${found.name}: ${tt('Out of stock. Restock first', appLang)}`);
-        return;
-      }
-      onSellItem(found.id);
-      setStatusMessage(`${tt('Sold', appLang)}: ${found.name} (${formatRand0(found.price)})`);
-    } else {
-      setUnknownBarcode(clean);
-    }
-  };
 
   const handleCreateItem = (e: React.FormEvent) => {
     e.preventDefault();

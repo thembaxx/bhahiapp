@@ -1,6 +1,5 @@
 import { ImageResponse } from 'next/og';
 
-export const runtime = 'edge';
 export const alt = 'BahiApp – Offline Spaza Shop Book, CRM & Multi-Language SMS Ledger';
 export const size = {
   width: 1200,
