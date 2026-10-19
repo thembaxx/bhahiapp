@@ -1,24 +1,98 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <defs>
-    <linearGradient id="bahiCoinSpectrum" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#DDF24E"/>
-      <stop offset="36%" stop-color="#74C2F6"/>
-      <stop offset="70%" stop-color="#F5B83D"/>
-      <stop offset="100%" stop-color="#E8453C"/>
+    <!-- Tilted translucent back page gradient (inspired by Calendar/Slides in IMG_5832) -->
+    <linearGradient id="bahiBackPage" x1="16" y1="6" x2="54" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#74C2F6" />
+      <stop offset="100%" stop-color="#2CE59B" />
     </linearGradient>
-    <linearGradient id="bahiAwning" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#74C2F6"/>
-      <stop offset="50%" stop-color="#DDF24E"/>
-      <stop offset="100%" stop-color="#EF5B45"/>
+
+    <!-- Main spectrum mesh gradient (inspired by G/M multi-hue smooth blend in IMG_5832) -->
+    <linearGradient id="bahiMainBody" x1="12" y1="12" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2997FF" />
+      <stop offset="28%" stop-color="#28E08C" />
+      <stop offset="56%" stop-color="#DDF24E" />
+      <stop offset="80%" stop-color="#FFB024" />
+      <stop offset="100%" stop-color="#FF4B4B" />
+    </linearGradient>
+
+    <!-- Soft warm radial glow in bottom-right corner -->
+    <radialGradient id="bahiCornerGlow" cx="0.82" cy="0.82" r="0.65">
+      <stop offset="0%" stop-color="#FF4B4B" stop-opacity="0.85" />
+      <stop offset="55%" stop-color="#FFB024" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#2997FF" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Frosted translucent left spine (inspired by Wallet/Docs fold in IMG_5832) -->
+    <linearGradient id="bahiSpineGlass" x1="15" y1="8" x2="15" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="55%" stop-color="#DDF0FF" />
+      <stop offset="100%" stop-color="#7CC4FF" />
+    </linearGradient>
+
+    <!-- Top inner specular highlight -->
+    <linearGradient id="bahiSpecular" x1="32" y1="12" x2="32" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.42" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="18" fill="#0B0B0C"/>
-  <!-- Subtle shop awning scallop bar at top -->
-  <path d="M14 11 H50 A3 3 0 0 1 53 14 V15.5 A4.5 4.5 0 0 1 44 15.5 A4.5 4.5 0 0 1 35 15.5 A4.5 4.5 0 0 1 26 15.5 A4.5 4.5 0 0 1 17 15.5 H11 V14 A3 3 0 0 1 14 11 Z" fill="url(#bahiAwning)" opacity="0.92"/>
-  <!-- Book spine stem of lowercase 'b' -->
-  <rect x="16" y="15" width="11" height="38" rx="5.5" fill="#FFFFFF"/>
-  <!-- Spectrum coin bowl of lowercase 'b' -->
-  <circle cx="37.5" cy="39" r="10.5" fill="none" stroke="url(#bahiCoinSpectrum)" stroke-width="9.5"/>
-  <!-- Inner coin glint -->
-  <circle cx="37.5" cy="39" r="3.2" fill="#DDF24E"/>
+
+  <!-- Tilted back ledger sheet -->
+  <rect
+    x="18"
+    y="7"
+    width="37"
+    height="39"
+    rx="12"
+    transform="rotate(-8 36 26)"
+    fill="url(#bahiBackPage)"
+    opacity="0.82"
+  />
+
+  <!-- Main spectrum rounded ledger card -->
+  <rect
+    x="12"
+    y="13"
+    width="43"
+    height="43"
+    rx="14"
+    fill="url(#bahiMainBody)"
+  />
+  <rect
+    x="12"
+    y="13"
+    width="43"
+    height="43"
+    rx="14"
+    fill="url(#bahiCornerGlow)"
+  />
+  <rect
+    x="12"
+    y="13"
+    width="43"
+    height="22"
+    rx="14"
+    fill="url(#bahiSpecular)"
+  />
+
+  <!-- Lowercase 'b' frosted-glass spine on left -->
+  <rect
+    x="9"
+    y="8"
+    width="13.5"
+    height="48"
+    rx="6.75"
+    fill="url(#bahiSpineGlass)"
+  />
+
+  <!-- Crisp white 'b' coin bowl & ledger lines inside card -->
+  <circle
+    cx="35.5"
+    cy="35.5"
+    r="9.5"
+    stroke="#FFFFFF"
+    stroke-width="4.4"
+  />
+
+  <!-- Luminous status coin pip in bottom-right (like Wallet/Meet dot in IMG_5832) -->
+  <circle cx="48" cy="48" r="2.7" fill="#FFFFFF" />
 </svg>

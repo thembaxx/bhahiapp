@@ -37,6 +37,7 @@ import {
 } from '@/lib/bahi-data';
 import {
   BahiBrandLogo,
+  BahiIconSuiteShowcase,
   CreditHalfGauge,
   DecorativeShapes,
   DotMatrixCounter,
@@ -48,6 +49,7 @@ import {
 } from '@/components/VisualCharts';
 import { CRMCustomerModal } from '@/components/CRMCustomerModal';
 import { CustomerProfileScreen } from '@/components/CustomerProfileScreen';
+import { SwipeableCustomerRow } from '@/components/SwipeableCustomerRow';
 import { BarcodeScannerModal } from '@/components/BarcodeScannerModal';
 import { OnboardingModal } from '@/components/OnboardingModal';
 import { ReportsDashboard } from '@/components/ReportsDashboard';
@@ -94,7 +96,10 @@ export default function BahiAppPage() {
   const [profileCustomerId, setProfileCustomerId] = useState<number | null>(
     null
   );
+  const [profileInitialEdit, setProfileInitialEdit] = useState(false);
   const [creatingCustomer, setCreatingCustomer] = useState(false);
+  const [lastDeletedCustomer, setLastDeletedCustomer] =
+    useState<Customer | null>(null);
 
   // Bulk SMS Assistant language & tone state
   const [assistantSmsLang, setAssistantSmsLang] = useState<LanguageCode>('en');
@@ -181,11 +186,41 @@ export default function BahiAppPage() {
     }
   };
 
-  const openCustomerProfile = (customerId: number) => {
+  const openCustomerProfile = (
+    customerId: number,
+    startInEditMode = false
+  ) => {
     vibrate();
+    setProfileInitialEdit(startInEditMode);
     setProfileCustomerId(customerId);
     setActiveTab('credit');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteCustomer = (customer: Customer) => {
+    vibrate();
+    setLastDeletedCustomer(customer);
+    setState((prev) => ({
+      ...prev,
+      syncQueue: prev.online ? prev.syncQueue : prev.syncQueue + 1,
+      customers: prev.customers.filter((c) => c.id !== customer.id),
+    }));
+    if (profileCustomerId === customer.id) {
+      setProfileCustomerId(null);
+    }
+    setToastMsg(`Deleted ${customer.name}`);
+  };
+
+  const handleUndoDeleteCustomer = () => {
+    if (!lastDeletedCustomer) return;
+    vibrate();
+    const restored = lastDeletedCustomer;
+    setLastDeletedCustomer(null);
+    setState((prev) => ({
+      ...prev,
+      customers: [restored, ...prev.customers],
+    }));
+    setToastMsg(`Restored ${restored.name}`);
   };
 
   // Toggle Online / Offline simulation
@@ -715,10 +750,10 @@ export default function BahiAppPage() {
                 setProfileCustomerId(null);
                 setActiveTab('home');
               }}
-              className="w-12 h-12 rounded-[18px] bg-[#0B0B0C] grid place-items-center shadow-[0_0_0_3px_#DDF24E,0_10px_24px_-8px_rgba(0,0,0,0.45)] shrink-0 overflow-hidden"
+              className="w-12 h-12 rounded-[18px] bg-[#050709] grid place-items-center shadow-[0_10px_24px_-8px_rgba(0,0,0,0.45)] border border-white/10 shrink-0 overflow-hidden"
               aria-label="BahiApp Home"
             >
-              <BahiBrandLogo size={42} />
+              <BahiBrandLogo size={40} />
             </motion.button>
             <div className="min-w-0">
               <h1 className="font-fraunces text-2xl sm:text-3xl font-medium tracking-tight text-[#13222B] truncate">
@@ -1372,7 +1407,11 @@ export default function BahiAppPage() {
                 customer={activeProfileCustomer}
                 shopName={state.shopName}
                 appLang={state.lang}
-                onBack={() => setProfileCustomerId(null)}
+                initialEditing={profileInitialEdit}
+                onBack={() => {
+                  setProfileInitialEdit(false);
+                  setProfileCustomerId(null);
+                }}
                 onRecordTransaction={handleRecordCustomerTx}
                 onSendSMS={handleSendCustomerSMS}
                 onUpdateCustomer={(data) => handleSaveCustomer(data)}
@@ -1588,12 +1627,17 @@ export default function BahiAppPage() {
                           </button>
                         ))}
                       </div>
-                      <span className="text-xs font-mono tabular-nums text-[#78808A]">
-                        {filteredCustomers.length} shown
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-[#78808A] bg-[#F4F2EC] px-2.5 py-1 rounded-full">
+                          ↔ Swipe row to edit or delete
+                        </span>
+                        <span className="text-xs font-mono tabular-nums text-[#78808A]">
+                          {filteredCustomers.length} shown
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Customer Rows */}
+                    {/* Swipeable Customer Rows (Swipe Right = Quick Edit, Swipe Left = Edit / Delete) */}
                     <div className="space-y-2.5 mt-5">
                       {filteredCustomers.length === 0 ? (
                         <div className="text-center py-8 space-y-2">
@@ -1603,92 +1647,23 @@ export default function BahiAppPage() {
                           </p>
                         </div>
                       ) : (
-                        filteredCustomers.map((c) => {
-                          const p = Math.min(100, (c.daysOverdue / 14) * 100);
-                          const ringColor =
-                            c.daysOverdue >= 7
-                              ? '#E8453C'
-                              : c.daysOverdue >= 3
-                              ? '#F4C84E'
-                              : '#74C2F6';
-
-                          return (
-                            <motion.div
+                        <AnimatePresence initial={false}>
+                          {filteredCustomers.map((c) => (
+                            <SwipeableCustomerRow
                               key={c.id}
-                              layout
-                              whileHover={{ y: -1 }}
-                              whileTap={{ scale: 0.98 }}
-                              onClick={() => openCustomerProfile(c.id)}
-                              role="button"
-                              tabIndex={0}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter')
-                                  openCustomerProfile(c.id);
+                              customer={c}
+                              appLang={state.lang}
+                              onOpenProfile={(id) =>
+                                openCustomerProfile(id, false)
+                              }
+                              onSwipeEdit={(cust) => {
+                                showToast(`Editing ${cust.name}`);
+                                openCustomerProfile(cust.id, true);
                               }}
-                              className="flex items-center justify-between gap-3 bg-[#F4F2EC] hover:bg-[#ECE8DE] rounded-[28px] p-3.5 cursor-pointer transition-colors group"
-                            >
-                              <div className="flex items-center gap-3 min-w-0">
-                                <StatusRing
-                                  percent={c.owed > 0 ? p : 0}
-                                  color={ringColor}
-                                  label={c.owed > 0 ? `${c.daysOverdue}d` : '✓'}
-                                />
-                                <div className="min-w-0">
-                                  <div className="flex items-center gap-1.5 flex-wrap">
-                                    <b className="text-base font-medium text-[#13222B] truncate">
-                                      {c.name}
-                                    </b>
-                                    {c.tags &&
-                                      c.tags.slice(0, 2).map((tag) => (
-                                        <span
-                                          key={tag.id}
-                                          style={{ backgroundColor: tag.color }}
-                                          className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold text-[#13222B]"
-                                        >
-                                          {tag.label}
-                                        </span>
-                                      ))}
-                                  </div>
-                                  <small className="text-xs text-[#78808A] block truncate">
-                                    {c.owed > 0
-                                      ? c.daysOverdue >= 7
-                                        ? tt(
-                                            `Late · ${c.daysOverdue} days`,
-                                            state.lang
-                                          )
-                                        : tt(
-                                            `Owing · ${c.daysOverdue} days`,
-                                            state.lang
-                                          )
-                                      : tt('Settled', state.lang)}{' '}
-                                    ·{' '}
-                                    <span className="capitalize">
-                                      {c.category}
-                                    </span>{' '}
-                                    ·{' '}
-                                    <span className="font-mono tabular-nums">
-                                      {c.phone}
-                                    </span>
-                                  </small>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2 shrink-0">
-                                <div className="text-right">
-                                  <b className="font-mono font-extrabold tabular-nums text-lg text-[#13222B] block">
-                                    {formatRand0(c.owed)}
-                                  </b>
-                                  <small className="text-[11px] text-[#78808A]">
-                                    Total:{' '}
-                                    <span className="font-mono tabular-nums">
-                                      {formatRand0(c.totalCreditExtended)}
-                                    </span>
-                                  </small>
-                                </div>
-                                <ChevronRight className="w-4 h-4 text-[#78808A] group-hover:text-[#13222B] group-hover:translate-x-0.5 transition-all" />
-                              </div>
-                            </motion.div>
-                          );
-                        })
+                              onSwipeDelete={handleDeleteCustomer}
+                            />
+                          ))}
+                        </AnimatePresence>
                       )}
                     </div>
                   </motion.div>
@@ -1732,7 +1707,9 @@ export default function BahiAppPage() {
                 className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
               >
                 <div className="flex items-center gap-4">
-                  <BahiBrandLogo size={64} className="rounded-[20px] shadow-md" />
+                  <div className="w-16 h-16 rounded-[22px] bg-[#050709] grid place-items-center shadow-md shrink-0 border border-white/10">
+                    <BahiBrandLogo size={54} />
+                  </div>
                   <div>
                     <b className="font-fraunces text-3xl sm:text-4xl font-medium tracking-tight text-[#13222B] block">
                       BahiApp
@@ -1745,10 +1722,14 @@ export default function BahiAppPage() {
                 <p className="text-sm text-[#78808A] mt-4 leading-relaxed">
                   Bahi is the traditional shopkeeper’s ledger (bahi-khata), the
                   book credit has always lived in. BahiApp puts that book on
-                  every spaza and duka phone, offline. The mark combines a spaza
-                  shop awning with a lowercase b: a book spine and a spectrum
-                  coin bowl glowing from stocked blue to overdue coral.
+                  every spaza and duka phone, offline. The reworked mark uses
+                  layered translucent glass pages, a frosted-glass spine, and a
+                  smooth multi-stop spectrum mesh gradient glowing from stocked
+                  sky blue through lime to overdue coral.
                 </p>
+                <div className="mt-4">
+                  <BahiIconSuiteShowcase />
+                </div>
                 <motion.button
                   type="button"
                   whileTap={{ scale: 0.95 }}
@@ -1983,7 +1964,7 @@ export default function BahiAppPage() {
         ))}
       </AnimatePresence>
 
-      {/* Spring Toast Notification */}
+      {/* Spring Toast Notification (with Undo button when a customer is deleted) */}
       <AnimatePresence>
         {toastMsg && (
           <motion.div
@@ -1991,9 +1972,18 @@ export default function BahiAppPage() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 360, damping: 25 }}
-            className="fixed left-1/2 -translate-x-1/2 bottom-[88px] z-40 bg-[#0B0B0C] text-white border border-white/15 px-4 py-2.5 rounded-full text-xs font-medium shadow-xl whitespace-nowrap"
+            className="fixed left-1/2 -translate-x-1/2 bottom-[88px] z-40 bg-[#0B0B0C] text-white border border-white/15 px-4 py-2.5 rounded-full text-xs font-medium shadow-xl flex items-center gap-3 whitespace-nowrap"
           >
-            {toastMsg}
+            <span>{toastMsg}</span>
+            {lastDeletedCustomer && toastMsg.startsWith('Deleted ') && (
+              <button
+                type="button"
+                onClick={handleUndoDeleteCustomer}
+                className="px-2.5 py-0.5 rounded-full bg-[#DDF24E] text-[#07191C] font-semibold text-[11px]"
+              >
+                Undo
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

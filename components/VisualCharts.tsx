@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { motion } from 'motion/react';
 import { formatRand0 } from '@/lib/bahi-data';
 
-// Signature BahiApp Brand Logo (Lowercase 'b' Ledger Spine + Spectrum Coin + Spaza Awning)
+// Reworked BahiApp Brand Logo (Inspired directly by IMG_5832: layered translucent glass pages, frosted spine & smooth multi-stop spectrum mesh gradient)
 export function BahiBrandLogo({
   size = 44,
   className = '',
@@ -12,46 +12,146 @@ export function BahiBrandLogo({
   size?: number;
   className?: string;
 }) {
+  const uid = useId().replace(/:/g, '');
+  const backId = `bahiBack_${uid}`;
+  const mainId = `bahiMain_${uid}`;
+  const glowId = `bahiGlow_${uid}`;
+  const spineId = `bahiSpine_${uid}`;
+  const specId = `bahiSpec_${uid}`;
+
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 64 64"
+      fill="none"
       className={`shrink-0 select-none ${className}`}
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id="bahiLogoSpectrum" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#DDF24E" />
-          <stop offset="35%" stopColor="#74C2F6" />
-          <stop offset="70%" stopColor="#F5B83D" />
-          <stop offset="100%" stopColor="#E8453C" />
-        </linearGradient>
-        <linearGradient id="bahiLogoAwning" x1="0" y1="0" x2="1" y2="0">
+        {/* Tilted translucent back page (inspired by Calendar/Slides in IMG_5832) */}
+        <linearGradient
+          id={backId}
+          x1="16"
+          y1="6"
+          x2="54"
+          y2="44"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop offset="0%" stopColor="#74C2F6" />
-          <stop offset="50%" stopColor="#DDF24E" />
-          <stop offset="100%" stopColor="#EF5B45" />
+          <stop offset="100%" stopColor="#2CE59B" />
+        </linearGradient>
+
+        {/* Main spectrum mesh gradient (inspired by G/M smooth multi-hue transition in IMG_5832) */}
+        <linearGradient
+          id={mainId}
+          x1="12"
+          y1="12"
+          x2="56"
+          y2="56"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#2997FF" />
+          <stop offset="28%" stopColor="#28E08C" />
+          <stop offset="56%" stopColor="#DDF24E" />
+          <stop offset="80%" stopColor="#FFB024" />
+          <stop offset="100%" stopColor="#FF4B4B" />
+        </linearGradient>
+
+        {/* Soft warm radial glow in bottom-right corner */}
+        <radialGradient id={glowId} cx="0.82" cy="0.82" r="0.65">
+          <stop offset="0%" stopColor="#FF4B4B" stopOpacity="0.85" />
+          <stop offset="55%" stopColor="#FFB024" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#2997FF" stopOpacity="0" />
+        </radialGradient>
+
+        {/* Frosted translucent left spine (inspired by Wallet/Docs fold in IMG_5832) */}
+        <linearGradient
+          id={spineId}
+          x1="15"
+          y1="8"
+          x2="15"
+          y2="56"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="55%" stopColor="#DDF0FF" />
+          <stop offset="100%" stopColor="#7CC4FF" />
+        </linearGradient>
+
+        {/* Top inner specular highlight */}
+        <linearGradient
+          id={specId}
+          x1="32"
+          y1="12"
+          x2="32"
+          y2="34"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.42" />
+          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <rect width="64" height="64" rx="18" fill="#0B0B0C" />
-      {/* Spaza Shop Awning Scallops */}
-      <path
-        d="M14 10.5 H50 A3 3 0 0 1 53 13.5 V15 A4.5 4.5 0 0 1 44 15 A4.5 4.5 0 0 1 35 15 A4.5 4.5 0 0 1 26 15 A4.5 4.5 0 0 1 17 15 H11 V13.5 A3 3 0 0 1 14 10.5 Z"
-        fill="url(#bahiLogoAwning)"
+
+      {/* Tilted back ledger sheet */}
+      <rect
+        x="18"
+        y="7"
+        width="37"
+        height="39"
+        rx="12"
+        transform="rotate(-8 36 26)"
+        fill={`url(#${backId})`}
+        opacity="0.82"
       />
-      {/* Book Spine Stem */}
-      <rect x="16" y="15" width="11" height="38" rx="5.5" fill="#FFFFFF" />
-      {/* Spectrum Coin Bowl */}
+
+      {/* Main spectrum rounded ledger card */}
+      <rect
+        x="12"
+        y="13"
+        width="43"
+        height="43"
+        rx="14"
+        fill={`url(#${mainId})`}
+      />
+      <rect
+        x="12"
+        y="13"
+        width="43"
+        height="43"
+        rx="14"
+        fill={`url(#${glowId})`}
+      />
+      <rect
+        x="12"
+        y="13"
+        width="43"
+        height="22"
+        rx="14"
+        fill={`url(#${specId})`}
+      />
+
+      {/* Lowercase 'b' frosted-glass spine on left */}
+      <rect
+        x="9"
+        y="8"
+        width="13.5"
+        height="48"
+        rx="6.75"
+        fill={`url(#${spineId})`}
+      />
+
+      {/* Crisp white 'b' coin bowl inside card */}
       <circle
-        cx="37.5"
-        cy="39"
-        r="10.5"
-        fill="none"
-        stroke="url(#bahiLogoSpectrum)"
-        strokeWidth="9.5"
+        cx="35.5"
+        cy="35.5"
+        r="9.5"
+        stroke="#FFFFFF"
+        strokeWidth="4.4"
       />
-      {/* Center Coin Pip */}
-      <circle cx="37.5" cy="39" r="3.2" fill="#DDF24E" />
+
+      {/* Luminous status coin pip in bottom-right (like Wallet/Meet dot in IMG_5832) */}
+      <circle cx="48" cy="48" r="2.7" fill="#FFFFFF" />
     </svg>
   );
 }
@@ -501,3 +601,149 @@ export function DecorativeShapes({ className = '' }: { className?: string }) {
     </div>
   );
 }
+
+// Luminous Layered-Gradient Icon Suite Showcase (Direct inspiration from IMG_5832)
+export function BahiIconSuiteShowcase() {
+  return (
+    <div className="bg-[#050709] rounded-[28px] p-4 sm:p-5 border border-white/10 shadow-inner">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-[11px] font-medium text-white/70">
+          Luminous Glass Icon System
+        </span>
+        <span className="text-[11px] font-mono tabular-nums text-[#DDF24E]">
+          5 Core Modules
+        </span>
+      </div>
+      <div className="grid grid-cols-5 gap-2 sm:gap-3 place-items-center py-2">
+        {/* 1. Bahi Ledger Mark */}
+        <motion.div
+          whileHover={{ scale: 1.1, y: -3 }}
+          whileTap={{ scale: 0.94 }}
+          className="flex flex-col items-center gap-1.5"
+        >
+          <BahiBrandLogo size={46} />
+          <span className="text-[10px] text-white/70 font-medium">Bahi</span>
+        </motion.div>
+
+        {/* 2. 31-Day Credit Calendar (Inspired by 31 Calendar in IMG_5832) */}
+        <motion.div
+          whileHover={{ scale: 1.1, y: -3 }}
+          whileTap={{ scale: 0.94 }}
+          className="flex flex-col items-center gap-1.5"
+        >
+          <svg width="46" height="46" viewBox="0 0 64 64" fill="none">
+            <defs>
+              <linearGradient id="calBack" x1="16" y1="8" x2="48" y2="28" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#93C5FD" />
+                <stop offset="100%" stopColor="#3B82F6" />
+              </linearGradient>
+              <linearGradient id="calFront" x1="12" y1="16" x2="52" y2="56" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#60A5FA" />
+                <stop offset="50%" stopColor="#3B82F6" />
+                <stop offset="100%" stopColor="#1D4ED8" />
+              </linearGradient>
+            </defs>
+            <rect x="16" y="8" width="32" height="24" rx="10" fill="url(#calBack)" opacity="0.85" />
+            <rect x="11" y="15" width="42" height="40" rx="13" fill="url(#calFront)" />
+            <text
+              x="32"
+              y="42"
+              textAnchor="middle"
+              fill="#FFFFFF"
+              fontSize="21"
+              fontWeight="700"
+              fontFamily="JetBrains Mono, monospace"
+            >
+              30
+            </text>
+          </svg>
+          <span className="text-[10px] text-white/70 font-medium">Terms</span>
+        </motion.div>
+
+        {/* 3. Multi-Language SMS Bubble (Inspired by Green Chat Bubble in IMG_5832) */}
+        <motion.div
+          whileHover={{ scale: 1.1, y: -3 }}
+          whileTap={{ scale: 0.94 }}
+          className="flex flex-col items-center gap-1.5"
+        >
+          <svg width="46" height="46" viewBox="0 0 64 64" fill="none">
+            <defs>
+              <linearGradient id="smsBack" x1="14" y1="10" x2="50" y2="34" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#6EE7B7" />
+                <stop offset="100%" stopColor="#10B981" />
+              </linearGradient>
+              <linearGradient id="smsFront" x1="10" y1="18" x2="54" y2="52" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#34D399" />
+                <stop offset="100%" stopColor="#059669" />
+              </linearGradient>
+            </defs>
+            <rect x="14" y="11" width="36" height="26" rx="13" fill="url(#smsBack)" opacity="0.8" />
+            <path
+              d="M10 31C10 22.7157 16.7157 16 25 16H39C47.2843 16 54 22.7157 54 31C54 39.2843 47.2843 46 39 46H26L17 53V45.5C12.8 43.2 10 37.5 10 31Z"
+              fill="url(#smsFront)"
+            />
+            <path
+              d="M23 31.5C25.8 35.5 38.2 35.5 41 31.5"
+              stroke="#FFFFFF"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
+          </svg>
+          <span className="text-[10px] text-white/70 font-medium">SMS</span>
+        </motion.div>
+
+        {/* 4. Spaza Till Wallet (Inspired by Blue Wallet with Spine & Dot in IMG_5832) */}
+        <motion.div
+          whileHover={{ scale: 1.1, y: -3 }}
+          whileTap={{ scale: 0.94 }}
+          className="flex flex-col items-center gap-1.5"
+        >
+          <svg width="46" height="46" viewBox="0 0 64 64" fill="none">
+            <defs>
+              <linearGradient id="walBody" x1="10" y1="14" x2="54" y2="50" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#60A5FA" />
+                <stop offset="100%" stopColor="#2563EB" />
+              </linearGradient>
+              <linearGradient id="walFold" x1="10" y1="14" x2="26" y2="50" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#E0F2FE" />
+                <stop offset="100%" stopColor="#7DD3FC" />
+              </linearGradient>
+            </defs>
+            <rect x="10" y="14" width="44" height="36" rx="11" fill="url(#walBody)" />
+            <rect x="10" y="14" width="14" height="36" rx="7" fill="url(#walFold)" opacity="0.9" />
+            <circle cx="44" cy="40" r="3.5" fill="#FFFFFF" />
+          </svg>
+          <span className="text-[10px] text-white/70 font-medium">Till</span>
+        </motion.div>
+
+        {/* 5. Settled Check Badge (Inspired by Layered Check Circle in IMG_5832) */}
+        <motion.div
+          whileHover={{ scale: 1.1, y: -3 }}
+          whileTap={{ scale: 0.94 }}
+          className="flex flex-col items-center gap-1.5"
+        >
+          <svg width="46" height="46" viewBox="0 0 64 64" fill="none">
+            <defs>
+              <linearGradient id="chkTop" x1="12" y1="10" x2="52" y2="50" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#38BDF8" />
+                <stop offset="60%" stopColor="#3B82F6" />
+                <stop offset="100%" stopColor="#A5B4FC" />
+              </linearGradient>
+            </defs>
+            <circle cx="32" cy="36" r="19" fill="#93C5FD" opacity="0.65" />
+            <circle cx="32" cy="30" r="20" fill="url(#chkTop)" />
+            <path
+              d="M23.5 30.5L29.2 36L41 24.5"
+              stroke="#FFFFFF"
+              strokeWidth="4.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span className="text-[10px] text-white/70 font-medium">Settled</span>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowLeft,
@@ -41,6 +41,7 @@ interface CustomerProfileScreenProps {
   customer: Customer;
   shopName: string;
   appLang: LanguageCode;
+  initialEditing?: boolean;
   onBack: () => void;
   onRecordTransaction: (
     customerId: number,
@@ -69,6 +70,7 @@ export function CustomerProfileScreen({
   customer,
   shopName,
   appLang,
+  initialEditing = false,
   onBack,
   onRecordTransaction,
   onSendSMS,
@@ -84,8 +86,10 @@ export function CustomerProfileScreen({
   >('all');
 
   // Edit Details & Custom Tags State
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(initialEditing);
   const [showTagDrawer, setShowTagDrawer] = useState(false);
+  const editCardRef = useRef<HTMLDivElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const [editName, setEditName] = useState(customer.name);
   const [editPhone, setEditPhone] = useState(customer.phone);
   const [editCategory, setEditCategory] = useState<CustomerCategory>(
@@ -121,6 +125,20 @@ export function CustomerProfileScreen({
     setSmsLang(customer.preferredLang || appLang);
     setSmsTone(customer.daysOverdue >= 7 ? 'urgent' : 'standard');
   }, [customer, appLang]);
+
+  useEffect(() => {
+    if (initialEditing) {
+      setIsEditing(true);
+      const timer = setTimeout(() => {
+        editCardRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+        nameInputRef.current?.focus();
+      }, 180);
+      return () => clearTimeout(timer);
+    }
+  }, [initialEditing, customer.id]);
 
   const repaymentRate = Math.min(
     100,
@@ -275,7 +293,21 @@ export function CustomerProfileScreen({
             <motion.button
               type="button"
               whileTap={{ scale: 0.94 }}
-              onClick={() => setIsEditing((prev) => !prev)}
+              onClick={() => {
+                setIsEditing((prev) => {
+                  const next = !prev;
+                  if (next) {
+                    setTimeout(() => {
+                      editCardRef.current?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                      });
+                      nameInputRef.current?.focus();
+                    }, 80);
+                  }
+                  return next;
+                });
+              }}
               className={`min-h-[42px] px-4 rounded-full text-xs font-medium flex items-center gap-2 transition-colors ${
                 isEditing
                   ? 'bg-[#DDF24E] text-[#13222B] font-semibold'
@@ -564,10 +596,15 @@ export function CustomerProfileScreen({
 
           {/* Edit Details & Custom Color-Coded Tags Form Card */}
           <motion.div
+            ref={editCardRef}
             initial={{ opacity: 0, y: 22 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+            className={`bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border transition-all ${
+              isEditing
+                ? 'border-[#2997FF] ring-2 ring-[#2997FF]/35'
+                : 'border-white'
+            }`}
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
@@ -589,6 +626,7 @@ export function CustomerProfileScreen({
                   Customer Full Name
                 </label>
                 <input
+                  ref={nameInputRef}
                   type="text"
                   required
                   value={editName}
