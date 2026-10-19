@@ -24,6 +24,7 @@ import {
   BahiState,
   Customer,
   CustomerCategory,
+  CustomerTag,
   INITIAL_STATE,
   LanguageCode,
   LANGUAGE_NAMES,
@@ -111,7 +112,13 @@ export default function BahiAppPage() {
           onboarded: true,
           items: parsed.items?.length ? parsed.items : prev.items,
           customers: parsed.customers?.length
-            ? parsed.customers
+            ? parsed.customers.map((c: Customer) => {
+                const fallback = prev.customers.find((pc) => pc.id === c.id);
+                return {
+                  ...c,
+                  tags: c.tags !== undefined ? c.tags : fallback?.tags || [],
+                };
+              })
             : prev.customers,
           transactions: parsed.transactions?.length
             ? parsed.transactions
@@ -491,7 +498,7 @@ export default function BahiAppPage() {
     );
   };
 
-  // Save edited or new customer profile
+  // Save edited or new customer profile (including custom color-coded tags)
   const handleSaveCustomer = (
     data: {
       id?: number;
@@ -500,6 +507,7 @@ export default function BahiAppPage() {
       category: CustomerCategory;
       preferredLang: LanguageCode;
       notes: string;
+      tags?: CustomerTag[];
     },
     initialCredit = 0
   ) => {
@@ -526,6 +534,7 @@ export default function BahiAppPage() {
                 category: data.category,
                 preferredLang: data.preferredLang,
                 notes: data.notes,
+                tags: data.tags !== undefined ? data.tags : c.tags,
               }
             : c
         ),
@@ -563,6 +572,9 @@ export default function BahiAppPage() {
           preferredLang: data.preferredLang,
           lastPurchaseDate: initialCredit > 0 ? 'Today' : 'New account',
           notes: data.notes,
+          tags: data.tags || [
+            { id: `tag-new-${Date.now()}`, label: 'New', color: '#74C2F6' },
+          ],
           history: initHistory,
         };
         return {
@@ -628,7 +640,8 @@ export default function BahiAppPage() {
       c.name.toLowerCase().includes(q) ||
       c.phone.toLowerCase().includes(q) ||
       c.category.toLowerCase().includes(q) ||
-      (c.notes && c.notes.toLowerCase().includes(q));
+      (c.notes && c.notes.toLowerCase().includes(q)) ||
+      (c.tags && c.tags.some((t) => t.label.toLowerCase().includes(q)));
     if (!matchesSearch) return false;
     if (crmCategoryFilter === 'all') return true;
     if (crmCategoryFilter === 'late') return c.owed > 0 && c.daysOverdue >= 7;
@@ -1621,9 +1634,21 @@ export default function BahiAppPage() {
                                   label={c.owed > 0 ? `${c.daysOverdue}d` : '✓'}
                                 />
                                 <div className="min-w-0">
-                                  <b className="text-base font-medium text-[#13222B] block truncate">
-                                    {c.name}
-                                  </b>
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <b className="text-base font-medium text-[#13222B] truncate">
+                                      {c.name}
+                                    </b>
+                                    {c.tags &&
+                                      c.tags.slice(0, 2).map((tag) => (
+                                        <span
+                                          key={tag.id}
+                                          style={{ backgroundColor: tag.color }}
+                                          className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold text-[#13222B]"
+                                        >
+                                          {tag.label}
+                                        </span>
+                                      ))}
+                                  </div>
                                   <small className="text-xs text-[#78808A] block truncate">
                                     {c.owed > 0
                                       ? c.daysOverdue >= 7

@@ -32,6 +32,30 @@ export interface ProductItem {
   soldMonthly: number;
 }
 
+export interface CustomerTag {
+  id: string;
+  label: string;
+  color: string;
+}
+
+export const TAG_COLOR_SWATCHES: Array<{ name: string; hex: string }> = [
+  { name: 'Lime', hex: '#DDF24E' },
+  { name: 'Sky', hex: '#74C2F6' },
+  { name: 'Mint', hex: '#BDEBE3' },
+  { name: 'Amber', hex: '#F5B83D' },
+  { name: 'Coral', hex: '#F6C4C0' },
+  { name: 'Lavender', hex: '#D0E2FF' },
+];
+
+export const PRESET_CUSTOMER_TAGS: Array<{ label: string; color: string }> = [
+  { label: 'Trusted', color: '#DDF24E' },
+  { label: 'New', color: '#74C2F6' },
+  { label: 'Needs Follow-up', color: '#F6C4C0' },
+  { label: 'Pension Day', color: '#BDEBE3' },
+  { label: 'Friday Payer', color: '#F5B83D' },
+  { label: 'Family Account', color: '#D0E2FF' },
+];
+
 export interface Customer {
   id: number;
   name: string;
@@ -46,6 +70,7 @@ export interface Customer {
   preferredLang: LanguageCode;
   lastPurchaseDate: string;
   notes: string;
+  tags?: CustomerTag[];
   history: TransactionRecord[];
 }
 
@@ -213,6 +238,10 @@ export const INITIAL_STATE: BahiState = {
       preferredLang: 'zu',
       lastPurchaseDate: '2 days ago',
       notes: 'Pensions payout every 1st Tuesday of the month. Very reliable.',
+      tags: [
+        { id: 'tag-trusted', label: 'Trusted', color: '#DDF24E' },
+        { id: 'tag-pension', label: 'Pension Day', color: '#BDEBE3' },
+      ],
       history: [
         {
           id: 'tx-101',
@@ -263,6 +292,10 @@ export const INITIAL_STATE: BahiState = {
       preferredLang: 'st',
       lastPurchaseDate: 'Yesterday',
       notes: 'Runs local taxi route; pays every Friday afternoon.',
+      tags: [
+        { id: 'tag-trusted', label: 'Trusted', color: '#DDF24E' },
+        { id: 'tag-friday', label: 'Friday Payer', color: '#F5B83D' },
+      ],
       history: [
         {
           id: 'tx-201',
@@ -304,6 +337,9 @@ export const INITIAL_STATE: BahiState = {
       preferredLang: 'en',
       lastPurchaseDate: '5 days ago',
       notes: 'Builder contractor; waiting for fortnightly site wage.',
+      tags: [
+        { id: 'tag-followup', label: 'Needs Follow-up', color: '#F6C4C0' },
+      ],
       history: [
         {
           id: 'tx-301',
@@ -344,6 +380,10 @@ export const INITIAL_STATE: BahiState = {
       preferredLang: 'zu',
       lastPurchaseDate: 'Today',
       notes: 'Buys bread and milk daily for crèche children.',
+      tags: [
+        { id: 'tag-trusted', label: 'Trusted', color: '#DDF24E' },
+        { id: 'tag-family', label: 'Family Account', color: '#D0E2FF' },
+      ],
       history: [
         {
           id: 'tx-401',
@@ -377,6 +417,10 @@ export const INITIAL_STATE: BahiState = {
       preferredLang: 'st',
       lastPurchaseDate: '1 week ago',
       notes: 'Moved into 42 Vilakazi Street last month.',
+      tags: [
+        { id: 'tag-new', label: 'New', color: '#74C2F6' },
+        { id: 'tag-followup', label: 'Needs Follow-up', color: '#F6C4C0' },
+      ],
       history: [
         {
           id: 'tx-501',
@@ -410,6 +454,9 @@ export const INITIAL_STATE: BahiState = {
       preferredLang: 'zu',
       lastPurchaseDate: '3 days ago',
       notes: 'Always settles early.',
+      tags: [
+        { id: 'tag-trusted', label: 'Trusted', color: '#DDF24E' },
+      ],
       history: [
         {
           id: 'tx-601',

@@ -18,13 +18,19 @@ import {
   Sparkles,
   UserCheck,
   FileText,
+  Tag,
+  Plus,
+  X,
 } from 'lucide-react';
 import {
   Customer,
   CustomerCategory,
+  CustomerTag,
   LanguageCode,
   LANGUAGE_NAMES,
+  PRESET_CUSTOMER_TAGS,
   SMSTone,
+  TAG_COLOR_SWATCHES,
   formatRand0,
   generateSMSText,
   tt,
@@ -55,6 +61,7 @@ interface CustomerProfileScreenProps {
     category: CustomerCategory;
     preferredLang: LanguageCode;
     notes: string;
+    tags?: CustomerTag[];
   }) => void;
 }
 
@@ -76,8 +83,9 @@ export function CustomerProfileScreen({
     'all' | 'credit_sale' | 'payment' | 'sms_reminder'
   >('all');
 
-  // Edit Details Form State
+  // Edit Details & Custom Tags State
   const [isEditing, setIsEditing] = useState(false);
+  const [showTagDrawer, setShowTagDrawer] = useState(false);
   const [editName, setEditName] = useState(customer.name);
   const [editPhone, setEditPhone] = useState(customer.phone);
   const [editCategory, setEditCategory] = useState<CustomerCategory>(
@@ -87,6 +95,11 @@ export function CustomerProfileScreen({
     customer.preferredLang || appLang
   );
   const [editNotes, setEditNotes] = useState(customer.notes || '');
+  const [editTags, setEditTags] = useState<CustomerTag[]>(customer.tags || []);
+  const [customTagLabel, setCustomTagLabel] = useState('');
+  const [customTagColor, setCustomTagColor] = useState<string>(
+    TAG_COLOR_SWATCHES[0].hex
+  );
   const [savedBanner, setSavedBanner] = useState(false);
 
   // SMS Composer State
@@ -104,6 +117,7 @@ export function CustomerProfileScreen({
     setEditCategory(customer.category);
     setEditPreferredLang(customer.preferredLang || appLang);
     setEditNotes(customer.notes || '');
+    setEditTags(customer.tags || []);
     setSmsLang(customer.preferredLang || appLang);
     setSmsTone(customer.daysOverdue >= 7 ? 'urgent' : 'standard');
   }, [customer, appLang]);
@@ -137,6 +151,63 @@ export function CustomerProfileScreen({
     return tx.type === historyFilter;
   });
 
+  // Immediately persist updated tags to the customer record
+  const syncCustomerTags = (nextTags: CustomerTag[]) => {
+    setEditTags(nextTags);
+    onUpdateCustomer({
+      id: customer.id,
+      name: editName.trim() || customer.name,
+      phone: editPhone.trim() || customer.phone,
+      category: editCategory,
+      preferredLang: editPreferredLang,
+      notes: editNotes.trim(),
+      tags: nextTags,
+    });
+  };
+
+  const handleTogglePresetTag = (preset: { label: string; color: string }) => {
+    const exists = editTags.some(
+      (t) => t.label.toLowerCase() === preset.label.toLowerCase()
+    );
+    const nextTags = exists
+      ? editTags.filter(
+          (t) => t.label.toLowerCase() !== preset.label.toLowerCase()
+        )
+      : [
+          ...editTags,
+          {
+            id: `tag-${preset.label.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
+            label: preset.label,
+            color: preset.color,
+          },
+        ];
+    syncCustomerTags(nextTags);
+  };
+
+  const handleAddCustomTag = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const clean = customTagLabel.trim();
+    if (!clean) return;
+    const duplicate = editTags.some(
+      (t) => t.label.toLowerCase() === clean.toLowerCase()
+    );
+    if (duplicate) {
+      setCustomTagLabel('');
+      return;
+    }
+    const newTag: CustomerTag = {
+      id: `tag-custom-${Date.now()}`,
+      label: clean,
+      color: customTagColor,
+    };
+    syncCustomerTags([...editTags, newTag]);
+    setCustomTagLabel('');
+  };
+
+  const handleRemoveTag = (tagId: string) => {
+    syncCustomerTags(editTags.filter((t) => t.id !== tagId));
+  };
+
   const handleSaveDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editName.trim()) return;
@@ -147,6 +218,7 @@ export function CustomerProfileScreen({
       category: editCategory,
       preferredLang: editPreferredLang,
       notes: editNotes.trim(),
+      tags: editTags,
     });
     setSavedBanner(true);
     setTimeout(() => setSavedBanner(false), 2200);
@@ -167,7 +239,7 @@ export function CustomerProfileScreen({
       transition={{ type: 'spring', stiffness: 280, damping: 26 }}
       className="space-y-4"
     >
-      {/* Top Profile Navigation & Identity Card */}
+      {/* Top Profile Navigation, Identity & Color-Coded Tags Card */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -185,19 +257,35 @@ export function CustomerProfileScreen({
             <span>Back to {tt('Customers', appLang)}</span>
           </motion.button>
 
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.94 }}
-            onClick={() => setIsEditing((prev) => !prev)}
-            className={`min-h-[42px] px-4 rounded-full text-xs font-medium flex items-center gap-2 transition-colors ${
-              isEditing
-                ? 'bg-[#DDF24E] text-[#13222B] font-semibold'
-                : 'bg-[#13222B] text-white'
-            }`}
-          >
-            <Edit3 className="w-3.5 h-3.5" />
-            <span>{tt('Edit details', appLang)}</span>
-          </motion.button>
+          <div className="flex items-center gap-2">
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.94 }}
+              onClick={() => setShowTagDrawer((prev) => !prev)}
+              className={`min-h-[42px] px-4 rounded-full text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                showTagDrawer
+                  ? 'bg-[#DDF24E] text-[#13222B] font-semibold'
+                  : 'bg-[#F4F2EC] hover:bg-[#ECE8DE] text-[#13222B]'
+              }`}
+            >
+              <Tag className="w-3.5 h-3.5 text-[#1F5F63]" />
+              <span>Tags ({editTags.length})</span>
+            </motion.button>
+
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.94 }}
+              onClick={() => setIsEditing((prev) => !prev)}
+              className={`min-h-[42px] px-4 rounded-full text-xs font-medium flex items-center gap-2 transition-colors ${
+                isEditing
+                  ? 'bg-[#DDF24E] text-[#13222B] font-semibold'
+                  : 'bg-[#13222B] text-white'
+              }`}
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>{tt('Edit details', appLang)}</span>
+            </motion.button>
+          </div>
         </div>
 
         {/* Customer Identity Header */}
@@ -243,6 +331,154 @@ export function CustomerProfileScreen({
             label={customer.owed > 0 ? `${customer.daysOverdue}d` : '✓'}
           />
         </div>
+
+        {/* Active Color-Coded Customer Tags Row */}
+        <div className="mt-4 pt-3.5 border-t border-[#ECE8DE] flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-[#78808A] flex items-center gap-1 mr-1">
+            <Tag className="w-3.5 h-3.5 text-[#1F5F63]" />
+            <span>Tags:</span>
+          </span>
+          <AnimatePresence initial={false}>
+            {editTags.map((tag) => (
+              <motion.span
+                key={tag.id}
+                layout
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.75, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 24 }}
+                style={{ backgroundColor: tag.color }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-[#13222B] shadow-2xs"
+              >
+                <span>{tag.label}</span>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveTag(tag.id)}
+                  className="w-4 h-4 rounded-full bg-black/10 hover:bg-black/20 grid place-items-center transition-colors"
+                  aria-label={`Remove ${tag.label} tag`}
+                >
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              </motion.span>
+            ))}
+          </AnimatePresence>
+
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.94 }}
+            onClick={() => setShowTagDrawer((prev) => !prev)}
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#F4F2EC] hover:bg-[#ECE8DE] text-xs font-medium text-[#13222B] transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5 text-[#1F5F63]" />
+            <span>{showTagDrawer ? 'Done' : 'Add tag'}</span>
+          </motion.button>
+        </div>
+
+        {/* Expandable Quick Color-Coded Tag Builder Drawer */}
+        <AnimatePresence>
+          {showTagDrawer && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-3.5 bg-[#F4F2EC] rounded-[28px] p-4 space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-[#13222B]">
+                    Quick Preset Tags (Tap to toggle)
+                  </span>
+                  <span className="text-[11px] text-[#78808A]">
+                    Saved automatically
+                  </span>
+                </div>
+
+                {/* Preset Color-Coded Tag Pills */}
+                <div className="flex flex-wrap gap-2">
+                  {PRESET_CUSTOMER_TAGS.map((preset) => {
+                    const isApplied = editTags.some(
+                      (t) =>
+                        t.label.toLowerCase() === preset.label.toLowerCase()
+                    );
+                    return (
+                      <motion.button
+                        key={preset.label}
+                        type="button"
+                        whileTap={{ scale: 0.94 }}
+                        onClick={() => handleTogglePresetTag(preset)}
+                        style={{
+                          backgroundColor: isApplied ? preset.color : undefined,
+                        }}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all ${
+                          isApplied
+                            ? 'text-[#13222B] font-semibold ring-2 ring-[#13222B]/30 shadow-xs'
+                            : 'bg-white text-[#13222B] hover:bg-[#ECE8DE]'
+                        }`}
+                      >
+                        <span
+                          className="w-2.5 h-2.5 rounded-full shrink-0 border border-black/15"
+                          style={{ backgroundColor: preset.color }}
+                        />
+                        <span>{preset.label}</span>
+                        {isApplied && <Check className="w-3 h-3" />}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+
+                {/* Custom Tag Name + Color Swatch Picker */}
+                <form
+                  onSubmit={handleAddCustomTag}
+                  className="pt-2 border-t border-[#ECE8DE] space-y-2.5"
+                >
+                  <label className="block text-xs font-medium text-[#13222B]">
+                    Create Custom Color-Coded Tag
+                  </label>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                    <input
+                      type="text"
+                      value={customTagLabel}
+                      onChange={(e) => setCustomTagLabel(e.target.value)}
+                      placeholder="Custom tag (e.g. Trusted, Month-End, VIP)..."
+                      className="flex-1 bg-white rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm text-[#13222B] focus:outline-2 focus:outline-[#74C2F6]"
+                    />
+                    <div className="flex items-center justify-between sm:justify-start gap-2">
+                      <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-2xl">
+                        {TAG_COLOR_SWATCHES.map((swatch) => {
+                          const selected = customTagColor === swatch.hex;
+                          return (
+                            <button
+                              key={swatch.hex}
+                              type="button"
+                              onClick={() => setCustomTagColor(swatch.hex)}
+                              aria-label={`Select ${swatch.name} tag color`}
+                              title={swatch.name}
+                              style={{ backgroundColor: swatch.hex }}
+                              className={`w-6 h-6 rounded-full transition-transform ${
+                                selected
+                                  ? 'scale-115 ring-2 ring-[#13222B]'
+                                  : 'opacity-80 hover:opacity-100'
+                              }`}
+                            />
+                          );
+                        })}
+                      </div>
+                      <motion.button
+                        type="submit"
+                        whileTap={{ scale: 0.94 }}
+                        className="min-h-[38px] px-4 rounded-2xl bg-[#13222B] text-white text-xs font-medium flex items-center gap-1.5 shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5 text-[#DDF24E]" />
+                        <span>Add Tag</span>
+                      </motion.button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
 
       {/* Main 2-Column Layout for Customer Profile */}
@@ -326,7 +562,7 @@ export function CustomerProfileScreen({
             </div>
           </motion.div>
 
-          {/* Edit Details Form Card (Spacious Mobile-First Layout) */}
+          {/* Edit Details & Custom Color-Coded Tags Form Card */}
           <motion.div
             initial={{ opacity: 0, y: 22 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -427,6 +663,101 @@ export function CustomerProfileScreen({
                         {l}
                       </button>
                     ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Custom Color-Coded Tags Section inside Edit Details Form */}
+              <div className="bg-[#F4F2EC] rounded-2xl p-3.5 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-[#13222B] flex items-center gap-1.5">
+                    <Tag className="w-3.5 h-3.5 text-[#1F5F63]" />
+                    <span>Color-Coded Customer Tags</span>
+                  </label>
+                  <span className="text-[11px] font-mono tabular-nums text-[#78808A]">
+                    {editTags.length} active
+                  </span>
+                </div>
+
+                {/* Preset Tags */}
+                <div className="flex flex-wrap gap-1.5">
+                  {PRESET_CUSTOMER_TAGS.map((preset) => {
+                    const isApplied = editTags.some(
+                      (t) =>
+                        t.label.toLowerCase() === preset.label.toLowerCase()
+                    );
+                    return (
+                      <button
+                        key={preset.label}
+                        type="button"
+                        onClick={() => handleTogglePresetTag(preset)}
+                        style={{
+                          backgroundColor: isApplied ? preset.color : undefined,
+                        }}
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-medium flex items-center gap-1 transition-all ${
+                          isApplied
+                            ? 'text-[#13222B] font-semibold ring-1 ring-[#13222B]/30'
+                            : 'bg-white text-[#78808A] hover:text-[#13222B]'
+                        }`}
+                      >
+                        <span
+                          className="w-2 h-2 rounded-full shrink-0"
+                          style={{ backgroundColor: preset.color }}
+                        />
+                        <span>{preset.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Custom Tag Input + Swatches */}
+                <div className="space-y-2 pt-1">
+                  <div className="flex gap-1.5">
+                    <input
+                      type="text"
+                      value={customTagLabel}
+                      onChange={(e) => setCustomTagLabel(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddCustomTag();
+                        }
+                      }}
+                      placeholder="Add custom tag (e.g. Trusted)..."
+                      className="flex-1 bg-white rounded-xl px-3 py-2 text-xs text-[#13222B] focus:outline-2 focus:outline-[#74C2F6] min-w-0"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAddCustomTag()}
+                      className="px-3 py-2 rounded-xl bg-[#13222B] text-white text-xs font-medium shrink-0 flex items-center gap-1"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-[#DDF24E]" />
+                      <span>Add</span>
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] text-[#78808A]">
+                      Tag color:
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {TAG_COLOR_SWATCHES.map((swatch) => {
+                        const selected = customTagColor === swatch.hex;
+                        return (
+                          <button
+                            key={swatch.hex}
+                            type="button"
+                            onClick={() => setCustomTagColor(swatch.hex)}
+                            aria-label={`Color ${swatch.name}`}
+                            style={{ backgroundColor: swatch.hex }}
+                            className={`w-5 h-5 rounded-full transition-transform ${
+                              selected
+                                ? 'scale-115 ring-2 ring-[#13222B]'
+                                : 'opacity-75 hover:opacity-100'
+                            }`}
+                          />
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
