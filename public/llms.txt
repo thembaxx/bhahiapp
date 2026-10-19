@@ -1,0 +1,66 @@
+# BahiApp
+
+> Every sale, in the book. BahiApp is an offline-first Micro-ERP, digital credit ledger (bahi-khata), Customer Relationship Management (CRM) platform, barcode inventory tracker, and multi-language SMS payment reminder web application built for informal retailers, spaza shops, and dukas.
+
+## Overview & Problem Solved
+
+Small and informal retailers (1–5 person spaza shops, tuck shops, and dukas across South Africa and emerging markets) traditionally record inventory and "buy-now-pay-later" customer credit in paper notebooks (*ibhuku* / *bahi-khata*). Western ERPs are too complex, expensive, and dependent on continuous connectivity.
+
+BahiApp digitizes the shopkeeper's credit book with an offline-first Progressive Web App (PWA) that works without mobile data, queues transactions and SMS reminders locally, and syncs automatically when connectivity returns.
+
+## Core Modules & Capabilities
+
+- **Home & Daily Till Summary**:
+  - Real-time tracking of Today's Takings (Cash sales, Credit extended, Estimated profit at 21% margin).
+  - Interactive weekly revenue trajectory wave chart and pixel-block spectrum bar visualization.
+  - Monthly credit collection rate spectrum bar (`Collected %` vs `Outstanding`).
+  - One-tap **Reminder Assistant** for accounts overdue by 7+ days.
+  - Quick-access **Regulars** pill grid and **Next Stock Order** countdown.
+
+- **Customer Relationship Management (CRM) & Credit Book**:
+  - Half-circle credit collection gauge with animated pointer.
+  - **Top Customers Leaderboard**: Toggle between highest lifetime credit extended (`By credit`) and highest visit count (`By frequency`).
+  - **Customer Directory & Search**: Instant search by customer name, phone number, category (`regular`, `vip`, `new`), or shopkeeper trust notes; filter by `All`, `Regular`, `VIP`, `New`, or `Late (7d+)`.
+  - **Detailed Customer Profile Screen**:
+    - Displays current balance owed, lifetime credit extended, total paid back, visit count, and repayment rate spectrum bar.
+    - Complete, filterable **Purchase & Payment History** (`All`, `Credit`, `Payments`, `SMS`).
+    - Quick credit sale and payment recording with one-tap Rand preset chips (`+R20`, `+R50`, `+R100`, `+R200`, `Settle Full`).
+    - **Edit Details Form**: Update customer full name, phone number, category (`regular` | `new` | `vip`), preferred SMS language (`en` | `zu` | `st`), and shopkeeper trust notes.
+
+- **Multi-Language SMS Payment Reminders**:
+  - Supports **English (`EN`)**, **isiZulu (`ZU`)**, and **Sesotho (`ST`)**.
+  - Three culturally calibrated tones per language:
+    - `Warm & Polite` (Friendly)
+    - `Standard` (Concise account statement)
+    - `Firm / Overdue` (7+ days late)
+  - Supports individual customer reminders, clipboard copy, and bulk overdue reminder queuing.
+
+- **Stock & Camera Barcode Scanner**:
+  - Inventory tracking with circular stock health rings (`Stocked` #74C2F6, `Due soon / Low` #F5B83D, `Overdue / Critical` #E8453C).
+  - Category filtering (`All`, `Staples`, `Pantry`, `Fresh`, `Household`) and instant item search.
+  - Camera-based barcode scanner (`BarcodeDetector` API) with manual code entry, `Try demo code` simulation, and inline new product registration for unknown barcodes.
+
+- **Reporting & Analytics Dashboard**:
+  - User-selectable reporting periods: **Daily**, **Weekly**, and **Monthly**.
+  - Key financial KPIs: **Total Sales**, **Credit Extended**, **Payments Received**, and **Outstanding Credit**.
+  - **Top 5 Selling Products Report** ranked by either **Revenue Generated** or **Quantity Sold**, including unit profit calculation and quick `+Sell` actions.
+  - Chronological shop ledger activity log.
+
+- **Brand System, 3D Onboarding & Printable A4 Window Poster**:
+  - Interactive Three.js 3D scene featuring the BahiApp 'b' coin emblem, 5-part ledger book, 520-dot instanced community globe, and sun icosahedron.
+  - Printable A4 Shop Window Poster (`Buy now, pay later` / `Thenga manje, khokha kamuva` / `Reka hona joale, lefa hamorao`) dynamically localized to the shop's name and selected language.
+
+## Technical Stack & Offline Architecture
+
+- **Framework**: Next.js 15 (App Router), React 19, TypeScript
+- **Styling & Typography**: Tailwind CSS v4, `Fraunces` (editorial display), `Lexend` (high-legibility body), `Doto` (dot-matrix till numerals)
+- **3D & Physics Motion**: Three.js (`WebGLRenderer`, `RoomEnvironment`, `InstancedMesh`, exponential damping) & Framer Motion (`motion/react` spring physics and `layoutId` transitions)
+- **PWA & Offline Persistence**: Web App Manifest (`/manifest.webmanifest`), Service Worker (`/sw.js`) with runtime font & shell caching, local storage ledger persistence, and offline sync queue.
+
+## Key URLs
+
+- Application Entry: `/`
+- Web App Manifest: `/manifest.webmanifest`
+- Service Worker: `/sw.js`
+- LLM Documentation: `/llm.txt` and `/llms.txt`
+- Robots & Sitemap: `/robots.txt` and `/sitemap.xml`

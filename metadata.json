@@ -1,0 +1,6 @@
+{
+  "name": "BahiApp",
+  "description": "Offline-first micro-ERP, digital credit book (bahi-khata), CRM, inventory scanner, and multi-language SMS reminder platform for spaza shops and informal retailers.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

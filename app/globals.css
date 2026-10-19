@@ -1,0 +1,224 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  --bg: #FBF8F3;
+  --card: #FFFFFF;
+  --in: #F4F2EC;
+  --ink: #13222B;
+  --mut: #68737D;
+  --ln: #ECE8DE;
+  --lime: #DDF24E;
+  --teal: #1F5F63;
+  --ao: 0.55;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #07191C;
+  --card: #0F2C31;
+  --in: #173D44;
+  --ink: #F2FAF6;
+  --mut: #9CC0BE;
+  --ln: #23535C;
+  --lime: #DDF24E;
+  --teal: #5CD6D0;
+  --ao: 0.22;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    background-color: var(--bg);
+    color: var(--ink);
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: 'Lexend', system-ui, -apple-system, sans-serif;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+}
+
+/* High-contrast Dark Mode surface & typography adaptations */
+html[data-theme="dark"] .bg-\[\#FBF8F3\] {
+  background-color: var(--bg) !important;
+}
+
+html[data-theme="dark"] .bg-white\/85,
+html[data-theme="dark"] .bg-white {
+  background-color: var(--card) !important;
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .bg-\[\#F4F2EC\] {
+  background-color: var(--in) !important;
+}
+
+html[data-theme="dark"] .hover\:bg-\[\#ECE8DE\]:hover {
+  background-color: #21515A !important;
+}
+
+html[data-theme="dark"] .border-white,
+html[data-theme="dark"] .border-\[\#ECE8DE\] {
+  border-color: var(--ln) !important;
+}
+
+html[data-theme="dark"] .text-\[\#13222B\] {
+  color: var(--ink) !important;
+}
+
+html[data-theme="dark"] .text-\[\#78808A\] {
+  color: var(--mut) !important;
+}
+
+html[data-theme="dark"] .text-\[\#1F5F63\] {
+  color: #6CE5DF !important;
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: #82ACA9 !important;
+}
+
+/* Keep dark ink on high-luminance lime buttons, pastel badges, avatars, and active nav pills */
+html[data-theme="dark"] .bg-\[\#DDF24E\],
+html[data-theme="dark"] .bg-\[\#DDF24E\] *,
+html[data-theme="dark"] .bg-\[\#BDEBE3\],
+html[data-theme="dark"] .bg-\[\#BDEBE3\] *,
+html[data-theme="dark"] .bg-\[\#F6C4C0\],
+html[data-theme="dark"] .bg-\[\#F6C4C0\] *,
+html[data-theme="dark"] .bg-\[\#74C2F6\],
+html[data-theme="dark"] .bg-\[\#74C2F6\] *,
+html[data-theme="dark"] .bg-\[\#F5B83D\],
+html[data-theme="dark"] .bg-\[\#F5B83D\] *,
+html[data-theme="dark"] .bg-\[\#F4C84E\]\/30,
+html[data-theme="dark"] [style*="background-color"].text-\[\#13222B\],
+html[data-theme="dark"] [data-active-nav="true"],
+html[data-theme="dark"] [data-active-nav="true"] * {
+  color: #0B191E !important;
+}
+
+/* Ensure primary action buttons & active filter pills in dark mode have high-contrast surfaces */
+html[data-theme="dark"] button.bg-\[\#13222B\],
+html[data-theme="dark"] button.bg-\[\#0B0B0C\] {
+  background-color: #21565E !important;
+  color: #FFFFFF !important;
+  border: 1px solid #357E89;
+}
+
+html[data-theme="dark"] i.bg-\[\#13222B\] {
+  background-color: var(--lime) !important;
+  border-color: var(--lime) !important;
+}
+
+/* Keep printable A4 poster crisp paper white even when previewed in dark mode */
+html[data-theme="dark"] #pz {
+  background-color: #FFFFFF !important;
+  color: #0B0B0C !important;
+  border-color: #23535C !important;
+}
+
+html[data-theme="dark"] #pz h3,
+html[data-theme="dark"] #pz p {
+  color: #13222B !important;
+}
+
+html[data-theme="dark"] #pz h4 {
+  color: #1F5F63 !important;
+}
+
+.font-doto {
+  font-family: 'Doto', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.font-fraunces {
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+.font-lexend {
+  font-family: 'Lexend', system-ui, sans-serif;
+}
+
+@keyframes driftAurora {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(6vmax, 5vmax) scale(1.14);
+  }
+}
+
+@keyframes floatSlow {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-14px) rotate(6deg);
+  }
+}
+
+.animate-aurora-1 {
+  animation: driftAurora 18s ease-in-out infinite alternate;
+  opacity: var(--ao);
+}
+
+.animate-aurora-2 {
+  animation: driftAurora 22s ease-in-out infinite alternate-reverse;
+  opacity: var(--ao);
+}
+
+.animate-aurora-3 {
+  animation: driftAurora 20s ease-in-out infinite alternate;
+  opacity: var(--ao);
+}
+
+.animate-float-slow {
+  animation: floatSlow 8s ease-in-out infinite alternate;
+}
+
+.animate-float-delayed {
+  animation: floatSlow 10s ease-in-out infinite alternate-reverse;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  body * {
+    visibility: hidden;
+  }
+  #pz,
+  #pz * {
+    visibility: visible;
+  }
+  #pz {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    border: 0;
+    border-radius: 0;
+    margin: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
