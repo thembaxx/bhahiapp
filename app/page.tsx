@@ -23,6 +23,7 @@ import {
   Scale,
   Lock,
   Download,
+  Volume2,
 } from 'lucide-react';
 import {
   BahiState,
@@ -60,6 +61,11 @@ import { ReportsDashboard } from '@/components/ReportsDashboard';
 import { SettingsModal } from '@/components/SettingsModal';
 import { LegalPrivacyModal } from '@/components/LegalPrivacyModal';
 import { ThreeOnboardingScene } from '@/components/ThreeOnboardingScene';
+import {
+  CueMetadata,
+  HapticAudioCueType,
+  triggerHapticAudio,
+} from '@/lib/haptic-audio';
 
 const STORAGE_KEY = 'bahiapp.v3.state';
 
@@ -70,6 +76,7 @@ interface FlyingChip {
   x: number;
   y: number;
   text: string;
+  cueTag?: string;
 }
 
 export default function BahiAppPage() {
@@ -77,6 +84,9 @@ export default function BahiAppPage() {
   const [hydrated, setHydrated] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('home');
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [activeAudioCue, setActiveAudioCue] = useState<CueMetadata | null>(
+    null
+  );
   const [flyingChips, setFlyingChips] = useState<FlyingChip[]>([]);
 
   // Header Settings, Legal/Privacy & Onboarding tour state
@@ -171,28 +181,51 @@ export default function BahiAppPage() {
     }
   }, [state.theme]);
 
-  const showToast = (msg: string) => {
+  const playCue = (cue: HapticAudioCueType): CueMetadata => {
+    const meta = triggerHapticAudio(cue, {
+      soundEnabled: state.soundEnabled !== false,
+      hapticsEnabled: state.hapticsEnabled !== false,
+    });
+    if (cue !== 'tap') {
+      setActiveAudioCue(meta);
+    }
+    return meta;
+  };
+
+  const showToast = (msg: string, cue?: HapticAudioCueType) => {
+    if (cue) {
+      playCue(cue);
+    }
     setToastMsg(tt(msg, state.lang));
   };
 
   useEffect(() => {
     if (!toastMsg) return;
-    const t = setTimeout(() => setToastMsg(null), 2600);
+    const t = setTimeout(() => {
+      setToastMsg(null);
+      setActiveAudioCue(null);
+    }, 2600);
     return () => clearTimeout(t);
   }, [toastMsg]);
 
-  const spawnFlyingChip = (x: number, y: number, text: string) => {
+  const spawnFlyingChip = (
+    x: number,
+    y: number,
+    text: string,
+    cueTag?: string
+  ) => {
     const id = Date.now() + Math.random();
-    setFlyingChips((prev) => [...prev, { id, x, y, text }]);
+    setFlyingChips((prev) => [...prev, { id, x, y, text, cueTag }]);
     setTimeout(() => {
       setFlyingChips((prev) => prev.filter((c) => c.id !== id));
     }, 950);
   };
 
   const vibrate = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) {
-      navigator.vibrate(10);
-    }
+    triggerHapticAudio('tap', {
+      soundEnabled: false,
+      hapticsEnabled: state.hapticsEnabled !== false,
+    });
   };
 
   const openCustomerProfile = (
@@ -262,24 +295,71 @@ export default function BahiAppPage() {
     );
   };
 
-  // Sell 1 item from stock
+  // Toggle Audio Chimes in Settings
+  const handleToggleSound = () => {
+    const nextSound = state.soundEnabled === false;
+    setState((prev) => ({ ...prev, soundEnabled: nextSound }));
+    if (nextSound) {
+      const meta = triggerHapticAudio('cha_ching', {
+        soundEnabled: true,
+        hapticsEnabled: state.hapticsEnabled !== false,
+      });
+      setActiveAudioCue(meta);
+    } else {
+      setActiveAudioCue(null);
+    }
+    setToastMsg(
+      nextSound
+        ? 'Till audio chimes enabled (Cha-Ching)'
+        : 'Till audio chimes muted'
+    );
+  };
+
+  // Toggle Haptic Vibration in Settings
+  const handleToggleHaptics = () => {
+    const nextHaptics = state.hapticsEnabled === false;
+    setState((prev) => ({ ...prev, hapticsEnabled: nextHaptics }));
+    if (nextHaptics) {
+      triggerHapticAudio('tap', {
+        soundEnabled: false,
+        hapticsEnabled: true,
+      });
+    }
+    setToastMsg(
+      nextHaptics ? 'Tactile haptic pulses enabled' : 'Tactile haptics off'
+    );
+  };
+
+  // Preview any Haptic-Audio cue from Settings
+  const handlePreviewCue = (cue: HapticAudioCueType) => {
+    const meta = triggerHapticAudio(cue, {
+      soundEnabled: true,
+      hapticsEnabled: state.hapticsEnabled !== false,
+    });
+    setActiveAudioCue(meta);
+    setToastMsg(`Previewing ${meta.label}`);
+  };
+
+  // Sell 1 item from stock (triggers Cha-Ching audio & synced haptic pulse)
   const handleSellItem = (
     itemId: number,
     e?: React.MouseEvent<HTMLButtonElement>
   ) => {
-    vibrate();
     const targetItem = state.items.find((i) => i.id === itemId);
     if (!targetItem) return;
     if (targetItem.qty <= 0) {
-      showToast('Out of stock. Restock first');
+      showToast('Out of stock. Restock first', 'warning');
       return;
     }
+
+    const cueMeta = playCue('cha_ching');
 
     if (e) {
       spawnFlyingChip(
         e.clientX,
         e.clientY - 20,
-        `+${formatRand0(targetItem.price)}`
+        `+${formatRand0(targetItem.price)}`,
+        state.soundEnabled !== false ? cueMeta.shortTag : undefined
       );
     }
 
@@ -319,7 +399,7 @@ export default function BahiAppPage() {
 
   // Restock item
   const handleRestockItem = (itemId: number) => {
-    vibrate();
+    playCue('restock');
     setState((prev) => ({
       ...prev,
       syncQueue: prev.online ? prev.syncQueue : prev.syncQueue + 1,
@@ -371,14 +451,32 @@ export default function BahiAppPage() {
     showToast('Added');
   };
 
-  // Record credit sale or payment for a customer
+  // Record credit sale or payment for a customer (triggers Credit Stamp or Coin/Settled Chime)
   const handleRecordCustomerTx = (
     customerId: number,
     type: 'credit_sale' | 'payment',
     amount: number,
     productNote: string
   ) => {
-    vibrate();
+    const existingCust = state.customers.find((c) => c.id === customerId);
+    const actualAmt =
+      type === 'payment' && existingCust
+        ? Math.min(amount, existingCust.owed)
+        : amount;
+    const settlesInFull =
+      type === 'payment' &&
+      existingCust !== undefined &&
+      existingCust.owed > 0 &&
+      existingCust.owed - actualAmt <= 0;
+
+    playCue(
+      type === 'credit_sale'
+        ? 'credit_logged'
+        : settlesInFull
+        ? 'account_settled'
+        : 'payment_received'
+    );
+
     const nowStr = 'Just now';
     const txId = `tx-${Date.now()}`;
 
@@ -468,11 +566,17 @@ export default function BahiAppPage() {
     if (!targetCust || targetCust.owed <= 0) return;
 
     const actualPaid = Math.min(amount, targetCust.owed);
+    const remaining = Math.max(0, targetCust.owed - actualPaid);
     if (e) {
       spawnFlyingChip(
         e.clientX,
         e.clientY - 22,
-        `Paid ${formatRand0(actualPaid)}`
+        `Paid ${formatRand0(actualPaid)}`,
+        state.soundEnabled !== false
+          ? remaining === 0
+            ? 'SETTLED CHIME ♪'
+            : 'COIN CHIME ♪'
+          : undefined
       );
     }
 
@@ -484,7 +588,6 @@ export default function BahiAppPage() {
     );
 
     const firstName = targetCust.name.split(' ')[0] || targetCust.name;
-    const remaining = Math.max(0, targetCust.owed - actualPaid);
     setToastMsg(
       remaining === 0
         ? `${firstName} paid ${formatRand0(actualPaid)} · Account settled!`
@@ -499,7 +602,7 @@ export default function BahiAppPage() {
     tone: SMSTone,
     message: string
   ) => {
-    vibrate();
+    playCue('sms_sent');
     const tx: TransactionRecord = {
       id: `sms-${Date.now()}`,
       customerId: customer.id,
@@ -535,14 +638,15 @@ export default function BahiAppPage() {
 
   // Send bulk SMS reminders to all overdue accounts
   const handleSendBulkLateSMS = () => {
-    vibrate();
     const lateCustomers = state.customers.filter(
       (c) => c.owed > 0 && c.daysOverdue >= 7
     );
     if (lateCustomers.length === 0) {
-      showToast('No late accounts');
+      showToast('No late accounts', 'warning');
       return;
     }
+
+    playCue('sms_sent');
 
     const nowTs = Date.now();
     const newTxList: TransactionRecord[] = lateCustomers.map((c, idx) => ({
@@ -589,7 +693,11 @@ export default function BahiAppPage() {
     },
     initialCredit = 0
   ) => {
-    vibrate();
+    if (data.id === undefined && initialCredit > 0) {
+      playCue('credit_logged');
+    } else {
+      vibrate();
+    }
     const avatarColors = [
       '#DDF24E',
       '#F2B8B5',
@@ -2157,24 +2265,31 @@ export default function BahiAppPage() {
         })}
       </nav>
 
-      {/* Flying "+R62" Sale Feedback Chips */}
+      {/* Flying "+R62" Sale & Quick Pay Feedback Chips with Acoustic Cue Tag */}
       <AnimatePresence>
         {flyingChips.map((chip) => (
           <motion.div
             key={chip.id}
             initial={{ opacity: 1, y: 0, scale: 0.85 }}
-            animate={{ opacity: 0, y: -70, scale: 1.2 }}
+            animate={{ opacity: 0, y: -74, scale: 1.18 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
+            transition={{ duration: 0.92, ease: 'easeOut' }}
             style={{ left: chip.x, top: chip.y }}
-            className="fixed z-50 pointer-events-none -translate-x-1/2 -translate-y-1/2 font-mono font-extrabold tabular-nums text-xl text-[#13222B] bg-[#DDF24E] px-3 py-0.5 rounded-full shadow-md"
+            className="fixed z-50 pointer-events-none -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-0.5"
           >
-            {chip.text}
+            <span className="font-mono font-extrabold tabular-nums text-xl text-[#13222B] bg-[#DDF24E] px-3 py-0.5 rounded-full shadow-md">
+              {chip.text}
+            </span>
+            {chip.cueTag && (
+              <span className="font-mono text-[10px] font-bold tracking-wider uppercase bg-[#13222B] text-[#DDF24E] px-2 py-0.5 rounded-full shadow-sm">
+                {chip.cueTag}
+              </span>
+            )}
           </motion.div>
         ))}
       </AnimatePresence>
 
-      {/* Spring Toast Notification (with Undo button when a customer is deleted) */}
+      {/* Spring Toast Notification (with Haptic-Audio Equalizer Badge & Undo Button) */}
       <AnimatePresence>
         {toastMsg && (
           <motion.div
@@ -2182,14 +2297,23 @@ export default function BahiAppPage() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 360, damping: 25 }}
-            className="fixed left-1/2 -translate-x-1/2 bottom-[88px] z-40 bg-[#0B0B0C] text-white border border-white/15 px-4 py-2.5 rounded-full text-xs font-medium shadow-xl flex items-center gap-3 whitespace-nowrap"
+            className="fixed left-1/2 -translate-x-1/2 bottom-[88px] z-40 bg-[#0B0B0C] text-white border border-white/15 px-4 py-2.5 rounded-full text-xs font-medium shadow-xl flex items-center gap-2.5 whitespace-nowrap max-w-[calc(100vw-24px)]"
           >
-            <span>{toastMsg}</span>
+            {activeAudioCue && state.soundEnabled !== false && (
+              <span
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#DDF24E] text-[#13222B] font-mono text-[10px] font-bold tracking-tight shrink-0"
+                title={activeAudioCue.label}
+              >
+                <Volume2 className="w-3 h-3 shrink-0" />
+                <span>{activeAudioCue.shortTag}</span>
+              </span>
+            )}
+            <span className="truncate">{toastMsg}</span>
             {lastDeletedCustomer && toastMsg.startsWith('Deleted ') && (
               <button
                 type="button"
                 onClick={handleUndoDeleteCustomer}
-                className="px-2.5 py-0.5 rounded-full bg-[#DDF24E] text-[#07191C] font-semibold text-[11px]"
+                className="px-2.5 py-0.5 rounded-full bg-[#DDF24E] text-[#07191C] font-semibold text-[11px] shrink-0"
               >
                 Undo
               </button>
@@ -2211,6 +2335,9 @@ export default function BahiAppPage() {
           setState((prev) => ({ ...prev, lang }));
         }}
         onToggleTheme={handleToggleTheme}
+        onToggleSound={handleToggleSound}
+        onToggleHaptics={handleToggleHaptics}
+        onPreviewCue={handlePreviewCue}
         onToggleSync={handleToggleSync}
         onLaunchOnboarding={() => setShowOnboarding(true)}
         onOpenBrandPoster={() => setActiveTab('brand')}

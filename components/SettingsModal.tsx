@@ -15,6 +15,9 @@ import {
   Sun,
   Moon,
   ShieldCheck,
+  Volume2,
+  VolumeX,
+  Smartphone,
 } from 'lucide-react';
 import {
   BahiState,
@@ -22,6 +25,7 @@ import {
   LANGUAGE_NAMES,
   tt,
 } from '@/lib/bahi-data';
+import { HapticAudioCueType } from '@/lib/haptic-audio';
 import { PWAInstallBanner } from './PWAInstallBanner';
 
 interface SettingsModalProps {
@@ -31,6 +35,9 @@ interface SettingsModalProps {
   onUpdateShopDetails: (ownerName: string, shopName: string) => void;
   onSelectLanguage: (lang: LanguageCode) => void;
   onToggleTheme: (theme: 'light' | 'dark') => void;
+  onToggleSound: () => void;
+  onToggleHaptics: () => void;
+  onPreviewCue: (cue: HapticAudioCueType) => void;
   onToggleSync: () => void;
   onLaunchOnboarding: () => void;
   onOpenBrandPoster: () => void;
@@ -45,6 +52,9 @@ export function SettingsModal({
   onUpdateShopDetails,
   onSelectLanguage,
   onToggleTheme,
+  onToggleSound,
+  onToggleHaptics,
+  onPreviewCue,
   onToggleSync,
   onLaunchOnboarding,
   onOpenBrandPoster,
@@ -63,6 +73,8 @@ export function SettingsModal({
   if (!isOpen) return null;
 
   const currentTheme = state.theme || 'light';
+  const soundOn = state.soundEnabled !== false;
+  const hapticsOn = state.hapticsEnabled !== false;
 
   const handleSaveShop = (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +114,7 @@ export function SettingsModal({
                   Shop Settings
                 </h2>
                 <p className="text-xs text-[#78808A]">
-                  Theme, language, shop identity & offline sync
+                  Theme, haptic audio cues, language & offline sync
                 </p>
               </div>
               <motion.button
@@ -158,6 +170,118 @@ export function SettingsModal({
                   <Moon className="w-4 h-4" />
                   <span>High-Contrast Dark</span>
                 </motion.button>
+              </div>
+            </div>
+
+            {/* 1B. Haptic-Synced Audio Cues (Busy Shop Till Feedback) */}
+            <div className="bg-[#F4F2EC] rounded-[28px] p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-[#13222B] flex items-center gap-1.5">
+                  {soundOn ? (
+                    <Volume2 className="w-4 h-4 text-[#1F5F63]" />
+                  ) : (
+                    <VolumeX className="w-4 h-4 text-[#78808A]" />
+                  )}
+                  Haptic-Synced Till Audio Cues
+                </span>
+                <span className="text-[11px] font-mono text-[#78808A]">
+                  Cha-Ching & Ledger Stamp
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.96 }}
+                  onClick={onToggleSound}
+                  className={`min-h-[44px] rounded-2xl px-3.5 py-2 flex items-center justify-between gap-2 text-xs font-semibold transition-all ${
+                    soundOn
+                      ? 'bg-[#13222B] text-white shadow-sm'
+                      : 'bg-white text-[#78808A] hover:bg-[#ECE8DE]'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    {soundOn ? (
+                      <Volume2 className="w-4 h-4 text-[#DDF24E]" />
+                    ) : (
+                      <VolumeX className="w-4 h-4" />
+                    )}
+                    <span>Audio Chimes</span>
+                  </span>
+                  <span
+                    className={`font-mono text-[10px] px-1.5 py-0.5 rounded-full ${
+                      soundOn
+                        ? 'bg-[#DDF24E] text-[#13222B]'
+                        : 'bg-[#F4F2EC] text-[#78808A]'
+                    }`}
+                  >
+                    {soundOn ? 'ON' : 'OFF'}
+                  </span>
+                </motion.button>
+
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.96 }}
+                  onClick={onToggleHaptics}
+                  className={`min-h-[44px] rounded-2xl px-3.5 py-2 flex items-center justify-between gap-2 text-xs font-semibold transition-all ${
+                    hapticsOn
+                      ? 'bg-[#13222B] text-white shadow-sm'
+                      : 'bg-white text-[#78808A] hover:bg-[#ECE8DE]'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Smartphone
+                      className={`w-4 h-4 ${
+                        hapticsOn ? 'text-[#DDF24E]' : ''
+                      }`}
+                    />
+                    <span>Haptic Pulse</span>
+                  </span>
+                  <span
+                    className={`font-mono text-[10px] px-1.5 py-0.5 rounded-full ${
+                      hapticsOn
+                        ? 'bg-[#DDF24E] text-[#13222B]'
+                        : 'bg-[#F4F2EC] text-[#78808A]'
+                    }`}
+                  >
+                    {hapticsOn ? 'ON' : 'OFF'}
+                  </span>
+                </motion.button>
+              </div>
+
+              <div className="pt-1">
+                <div className="text-[11px] text-[#78808A] mb-1.5">
+                  Tap to test busy-hour acoustic & tactile cues:
+                </div>
+                <div className="grid grid-cols-3 gap-1.5">
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.93 }}
+                    onClick={() => onPreviewCue('cha_ching')}
+                    className="min-h-[38px] rounded-xl bg-white hover:bg-[#ECE8DE] text-[#13222B] text-[11px] font-semibold px-2 py-1.5 flex items-center justify-center gap-1 shadow-2xs"
+                  >
+                    <span className="text-[#1F5F63] font-mono">♪</span>
+                    <span>Sale Cha-Ching</span>
+                  </motion.button>
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.93 }}
+                    onClick={() => onPreviewCue('credit_logged')}
+                    className="min-h-[38px] rounded-xl bg-white hover:bg-[#ECE8DE] text-[#13222B] text-[11px] font-semibold px-2 py-1.5 flex items-center justify-center gap-1 shadow-2xs"
+                  >
+                    <span className="text-[#F5B83D] font-mono">♪</span>
+                    <span>Credit Stamp</span>
+                  </motion.button>
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.93 }}
+                    onClick={() => onPreviewCue('account_settled')}
+                    className="min-h-[38px] rounded-xl bg-white hover:bg-[#ECE8DE] text-[#13222B] text-[11px] font-semibold px-2 py-1.5 flex items-center justify-center gap-1 shadow-2xs"
+                  >
+                    <span className="text-[#4CB944] font-mono">♪</span>
+                    <span>Settled Chime</span>
+                  </motion.button>
+                </div>
               </div>
             </div>
 

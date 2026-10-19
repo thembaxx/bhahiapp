@@ -81,6 +81,8 @@ export interface BahiState {
   syncQueue: number;
   lang: LanguageCode;
   theme?: 'light' | 'dark';
+  soundEnabled?: boolean;
+  hapticsEnabled?: boolean;
   ownerName: string;
   shopName: string;
   legalAcceptedAt?: string;
@@ -109,6 +111,8 @@ export const INITIAL_STATE: BahiState = {
   syncQueue: 0,
   lang: 'en',
   theme: 'light',
+  soundEnabled: true,
+  hapticsEnabled: true,
   ownerName: 'Thandi',
   shopName: 'Thandi’s Spaza',
   legalAcceptedAt: '2026-10-19 · v1.4 (POPIA & NCA Compliant)',
