@@ -622,6 +622,8 @@ const DICT: Record<string, [string, string]> = {
   'Edit details': ['Hlela imininingwane', 'Lokisa lintlha'],
   'By credit': ['Ngesikweletu', 'Ka mokoloto'],
   'By frequency': ['Ngokuthenga', 'Ka makhetlo'],
+  'Quick Pay': ['Khokha masinya', 'Lefa kapele'],
+  'Settle all': ['Khokha konke', 'Lefa tsohle'],
 };
 
 export function tt(str: string, lang: LanguageCode): string {

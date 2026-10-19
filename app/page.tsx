@@ -458,6 +458,40 @@ export default function BahiAppPage() {
     showToast(type === 'credit_sale' ? 'Credit added' : 'Payment recorded');
   };
 
+  // One-tap Quick Pay shortcut from Credit Book customer row
+  const handleQuickPayCustomer = (
+    customerId: number,
+    amount: number,
+    e?: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const targetCust = state.customers.find((c) => c.id === customerId);
+    if (!targetCust || targetCust.owed <= 0) return;
+
+    const actualPaid = Math.min(amount, targetCust.owed);
+    if (e) {
+      spawnFlyingChip(
+        e.clientX,
+        e.clientY - 22,
+        `Paid ${formatRand0(actualPaid)}`
+      );
+    }
+
+    handleRecordCustomerTx(
+      customerId,
+      'payment',
+      actualPaid,
+      `Quick Pay (${formatRand0(actualPaid)})`
+    );
+
+    const firstName = targetCust.name.split(' ')[0] || targetCust.name;
+    const remaining = Math.max(0, targetCust.owed - actualPaid);
+    setToastMsg(
+      remaining === 0
+        ? `${firstName} paid ${formatRand0(actualPaid)} · Account settled!`
+        : `${firstName} paid ${formatRand0(actualPaid)} · ${formatRand0(remaining)} left`
+    );
+  };
+
   // Send single SMS reminder
   const handleSendCustomerSMS = (
     customer: Customer,
@@ -1723,6 +1757,7 @@ export default function BahiAppPage() {
                                 openCustomerProfile(cust.id, true);
                               }}
                               onSwipeDelete={handleDeleteCustomer}
+                              onQuickPay={handleQuickPayCustomer}
                             />
                           ))}
                         </AnimatePresence>
