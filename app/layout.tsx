@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 
 const appUrl = process.env.APP_URL || 'https://bahiapp.local';
@@ -144,6 +145,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body suppressHydrationWarning className="bg-[#FBF8F3] text-[#13222B] antialiased">
         {children}
+        <Analytics />
       </body>
     </html>
   );
