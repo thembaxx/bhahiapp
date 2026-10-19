@@ -35,7 +35,9 @@ export function ReportsDashboard({
   onQuickSell,
 }: ReportsDashboardProps) {
   const [period, setPeriod] = useState<ReportPeriod>('weekly');
-  const [productSort, setProductSort] = useState<'quantity' | 'revenue'>('revenue');
+  const [productSort, setProductSort] = useState<'quantity' | 'revenue'>(
+    'revenue'
+  );
 
   const todayTotal = state.today.cash + state.today.credit;
   const outstandingTotal = Math.max(
@@ -53,7 +55,15 @@ export function ReportsDashboard({
         outstanding: outstandingTotal,
         growthLabel: 'R410 more than yesterday',
         waveValues: [310, 480, 620, 510, 790, 940, todayTotal],
-        waveLabels: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', 'Now'],
+        waveLabels: [
+          '08:00',
+          '10:00',
+          '12:00',
+          '14:00',
+          '16:00',
+          '18:00',
+          'Now',
+        ],
       };
     }
     if (period === 'weekly') {
@@ -126,21 +136,21 @@ export function ReportsDashboard({
 
   return (
     <div className="space-y-4">
-      {/* Period Selector Pill Bar */}
+      {/* Period Selector Pill Bar (Stacked cleanly on mobile, side-by-side on sm+) */}
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/85 rounded-[36px] p-4 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white flex flex-wrap items-center justify-between gap-3"
+        className="bg-white/85 rounded-[36px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white flex flex-col sm:flex-row sm:items-center justify-between gap-3.5"
       >
         <div>
-          <h2 className="font-fraunces text-xl font-medium text-[#13222B]">
+          <h2 className="font-fraunces text-2xl font-medium text-[#13222B]">
             {tt('Reports', appLang)} & Analytics
           </h2>
           <p className="text-xs text-[#78808A]">
-            Sales, credit recovery, and top moving spaza stock
+            Sales velocity, credit recovery, and top moving spaza stock
           </p>
         </div>
-        <div className="flex items-center gap-1 bg-[#F4F2EC] p-1.5 rounded-full">
+        <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-[#F4F2EC] p-1.5 rounded-full w-full sm:w-auto">
           {(['daily', 'weekly', 'monthly'] as ReportPeriod[]).map((p) => {
             const label =
               p === 'daily'
@@ -155,12 +165,19 @@ export function ReportsDashboard({
                 type="button"
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setPeriod(p)}
-                className={`px-4 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
+                className={`relative px-4 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap text-center z-10 ${
                   active
-                    ? 'bg-[#13222B] text-white shadow-sm'
+                    ? 'text-white font-semibold'
                     : 'text-[#78808A] hover:text-[#13222B]'
                 }`}
               >
+                {active && (
+                  <motion.span
+                    layoutId="reportPeriodPill"
+                    transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                    className="absolute inset-0 rounded-full bg-[#13222B] -z-10 shadow-sm"
+                  />
+                )}
                 {label}
               </motion.button>
             );
@@ -175,9 +192,10 @@ export function ReportsDashboard({
           {/* Primary Sales + 4-Metric Breakdown Card */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-            className="bg-white/85 rounded-[42px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+            className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
           >
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
@@ -201,12 +219,12 @@ export function ReportsDashboard({
             </div>
 
             {/* 4 Key Metrics Grid: Total Sales, Credit Extended, Payments Received, Outstanding Credit */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-[#ECE8DE]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mt-6 pt-5 border-t border-[#ECE8DE]">
               <div className="bg-[#F4F2EC] rounded-3xl p-3.5">
                 <small className="text-xs text-[#78808A] block">
                   {tt('Total sales', appLang)}
                 </small>
-                <div className="font-doto font-bold text-xl text-[#13222B] mt-1">
+                <div className="font-mono font-bold tabular-nums text-lg sm:text-xl text-[#13222B] mt-1">
                   {formatRand0(periodMetrics.totalSales)}
                 </div>
               </div>
@@ -214,7 +232,7 @@ export function ReportsDashboard({
                 <small className="text-xs text-[#78808A] block">
                   {tt('Credit extended', appLang)}
                 </small>
-                <div className="font-doto font-bold text-xl text-[#13222B] mt-1">
+                <div className="font-mono font-bold tabular-nums text-lg sm:text-xl text-[#13222B] mt-1">
                   {formatRand0(periodMetrics.creditExtended)}
                 </div>
               </div>
@@ -222,7 +240,7 @@ export function ReportsDashboard({
                 <small className="text-xs text-[#78808A] block">
                   {tt('Payments received', appLang)}
                 </small>
-                <div className="font-doto font-bold text-xl text-[#1F5F63] mt-1">
+                <div className="font-mono font-bold tabular-nums text-lg sm:text-xl text-[#1F5F63] mt-1">
                   {formatRand0(periodMetrics.paymentsReceived)}
                 </div>
               </div>
@@ -230,7 +248,7 @@ export function ReportsDashboard({
                 <small className="text-xs text-[#78808A] block">
                   {tt('Outstanding credit', appLang)}
                 </small>
-                <div className="font-doto font-bold text-xl text-[#E8453C] mt-1">
+                <div className="font-mono font-bold tabular-nums text-lg sm:text-xl text-[#E8453C] mt-1">
                   {formatRand0(periodMetrics.outstanding)}
                 </div>
               </div>
@@ -253,7 +271,7 @@ export function ReportsDashboard({
                   initial={{ left: '0%' }}
                   animate={{ left: `${collectionRate}%` }}
                   transition={{ type: 'spring', stiffness: 140, damping: 20 }}
-                  className="absolute -top-8 -translate-x-1/2 bg-[#13222B] text-white rounded-full px-3 py-0.5 text-xs font-semibold whitespace-nowrap"
+                  className="absolute -top-8 -translate-x-1/2 bg-[#0B0B0C] text-white rounded-full px-3 py-0.5 text-xs font-mono tabular-nums font-semibold whitespace-nowrap"
                 >
                   {tt(`Collected ${collectionRate}%`, appLang)}
                 </motion.span>
@@ -266,7 +284,7 @@ export function ReportsDashboard({
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-white/85 rounded-[42px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+            className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -292,22 +310,28 @@ export function ReportsDashboard({
         <div className="lg:col-span-5 space-y-4">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08, type: 'spring', stiffness: 260, damping: 24 }}
-            className="bg-white/85 rounded-[42px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{
+              delay: 0.06,
+              type: 'spring',
+              stiffness: 260,
+              damping: 24,
+            }}
+            className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
           >
-            <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Award className="w-5 h-5 text-[#1F5F63]" />
                 <h3 className="font-fraunces text-xl font-medium text-[#13222B]">
                   {tt('Top 5 selling products', appLang)}
                 </h3>
               </div>
-              <div className="flex items-center gap-1 bg-[#F4F2EC] p-1 rounded-full">
+              <div className="grid grid-cols-2 sm:flex items-center gap-1 bg-[#F4F2EC] p-1 rounded-full w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => setProductSort('revenue')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap text-center ${
                     productSort === 'revenue'
                       ? 'bg-[#13222B] text-white'
                       : 'text-[#78808A] hover:text-[#13222B]'
@@ -318,7 +342,7 @@ export function ReportsDashboard({
                 <button
                   type="button"
                   onClick={() => setProductSort('quantity')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap text-center ${
                     productSort === 'quantity'
                       ? 'bg-[#13222B] text-white'
                       : 'text-[#78808A] hover:text-[#13222B]'
@@ -338,46 +362,34 @@ export function ReportsDashboard({
                   <motion.div
                     key={prod.id}
                     layout
-                    className="bg-[#F4F2EC] rounded-[26px] p-3.5 space-y-2"
+                    whileHover={{ y: -1 }}
+                    className="bg-[#F4F2EC] rounded-[26px] p-4 space-y-2.5"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3 min-w-0">
-                        <span className="w-9 h-9 rounded-full bg-white font-doto font-bold text-xs text-[#13222B] grid place-items-center shrink-0">
+                        <span className="w-9 h-9 rounded-full bg-white font-mono font-bold tabular-nums text-xs text-[#13222B] grid place-items-center shrink-0">
                           0{idx + 1}
                         </span>
-                        <div className="min-w-0">
-                          <b className="text-sm font-medium text-[#13222B] block truncate">
-                            {prod.name}
-                          </b>
-                          <small className="text-xs text-[#78808A]">
-                            {prod.unitsSold} sold · {formatRand0(prod.revenue)} rev ·{' '}
-                            {formatRand0(prod.profit)} profit
-                          </small>
-                        </div>
+                        <b className="text-sm sm:text-base font-medium text-[#13222B] leading-snug">
+                          {prod.name}
+                        </b>
                       </div>
-                      <div className="text-right shrink-0 flex items-center gap-2">
-                        <div>
-                          <div className="font-doto font-extrabold text-base text-[#13222B]">
-                            {productSort === 'quantity'
-                              ? `${prod.unitsSold}u`
-                              : formatRand0(prod.revenue)}
-                          </div>
-                        </div>
-                        <motion.button
-                          type="button"
-                          whileTap={{ scale: 0.92 }}
-                          onClick={(e) => onQuickSell(prod.id, e)}
-                          className="min-h-[38px] px-3 rounded-full bg-[#13222B] text-white text-xs font-medium"
-                        >
-                          +Sell
-                        </motion.button>
+                      <div className="font-mono font-extrabold tabular-nums text-base sm:text-lg text-[#13222B] shrink-0">
+                        {productSort === 'quantity'
+                          ? `${prod.unitsSold}u`
+                          : formatRand0(prod.revenue)}
                       </div>
                     </div>
+
                     <div className="h-2 rounded-full bg-white overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${pct}%` }}
-                        transition={{ type: 'spring', stiffness: 160, damping: 22 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 160,
+                          damping: 22,
+                        }}
                         className="h-full rounded-full"
                         style={{
                           background:
@@ -388,6 +400,31 @@ export function ReportsDashboard({
                               : '#F5B83D',
                         }}
                       />
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2 pt-0.5">
+                      <small className="text-xs text-[#78808A]">
+                        <span className="font-mono tabular-nums font-semibold">
+                          {prod.unitsSold}
+                        </span>{' '}
+                        sold ·{' '}
+                        <span className="font-mono tabular-nums font-semibold">
+                          {formatRand0(prod.revenue)}
+                        </span>{' '}
+                        rev ·{' '}
+                        <span className="font-mono tabular-nums font-semibold text-[#1F5F63]">
+                          {formatRand0(prod.profit)}
+                        </span>{' '}
+                        profit
+                      </small>
+                      <motion.button
+                        type="button"
+                        whileTap={{ scale: 0.92 }}
+                        onClick={(e) => onQuickSell(prod.id, e)}
+                        className="min-h-[34px] px-3.5 rounded-full bg-[#13222B] text-white text-xs font-medium shrink-0"
+                      >
+                        +Sell
+                      </motion.button>
                     </div>
                   </motion.div>
                 );
@@ -400,7 +437,7 @@ export function ReportsDashboard({
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-white/85 rounded-[42px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+            className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
           >
             <h3 className="font-fraunces text-xl font-medium text-[#13222B] mb-3">
               Recent ledger entries
@@ -413,7 +450,7 @@ export function ReportsDashboard({
                 return (
                   <div
                     key={tx.id}
-                    className="bg-[#F4F2EC] rounded-2xl p-3 flex items-center justify-between gap-3"
+                    className="bg-[#F4F2EC] rounded-2xl p-3.5 flex items-center justify-between gap-3"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div
@@ -436,7 +473,7 @@ export function ReportsDashboard({
                         )}
                       </div>
                       <div className="min-w-0">
-                        <b className="text-xs font-medium text-[#13222B] block truncate">
+                        <b className="text-xs sm:text-sm font-medium text-[#13222B] block truncate">
                           {tx.customerName
                             ? `${tx.customerName} · ${
                                 isPayment
@@ -453,7 +490,7 @@ export function ReportsDashboard({
                       </div>
                     </div>
                     {tx.amount > 0 && (
-                      <span className="font-doto font-bold text-sm text-[#13222B] shrink-0">
+                      <span className="font-mono font-bold tabular-nums text-sm text-[#13222B] shrink-0">
                         {formatRand0(tx.amount)}
                       </span>
                     )}

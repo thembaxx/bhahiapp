@@ -220,7 +220,7 @@ export function OnboardingModal({
                       <DotMatrixCounter value={3120} />
                     </div>
                   </div>
-                  <span className="text-xs font-medium text-[#1F5F63]">
+                  <span className="text-xs font-mono tabular-nums font-semibold text-[#1F5F63]">
                     65% recovery rate
                   </span>
                 </div>

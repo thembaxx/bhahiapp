@@ -4,7 +4,59 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { formatRand0 } from '@/lib/bahi-data';
 
-// Animated Dot-Matrix Number Counter
+// Signature BahiApp Brand Logo (Lowercase 'b' Ledger Spine + Spectrum Coin + Spaza Awning)
+export function BahiBrandLogo({
+  size = 44,
+  className = '',
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      className={`shrink-0 select-none ${className}`}
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="bahiLogoSpectrum" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#DDF24E" />
+          <stop offset="35%" stopColor="#74C2F6" />
+          <stop offset="70%" stopColor="#F5B83D" />
+          <stop offset="100%" stopColor="#E8453C" />
+        </linearGradient>
+        <linearGradient id="bahiLogoAwning" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#74C2F6" />
+          <stop offset="50%" stopColor="#DDF24E" />
+          <stop offset="100%" stopColor="#EF5B45" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="18" fill="#0B0B0C" />
+      {/* Spaza Shop Awning Scallops */}
+      <path
+        d="M14 10.5 H50 A3 3 0 0 1 53 13.5 V15 A4.5 4.5 0 0 1 44 15 A4.5 4.5 0 0 1 35 15 A4.5 4.5 0 0 1 26 15 A4.5 4.5 0 0 1 17 15 H11 V13.5 A3 3 0 0 1 14 10.5 Z"
+        fill="url(#bahiLogoAwning)"
+      />
+      {/* Book Spine Stem */}
+      <rect x="16" y="15" width="11" height="38" rx="5.5" fill="#FFFFFF" />
+      {/* Spectrum Coin Bowl */}
+      <circle
+        cx="37.5"
+        cy="39"
+        r="10.5"
+        fill="none"
+        stroke="url(#bahiLogoSpectrum)"
+        strokeWidth="9.5"
+      />
+      {/* Center Coin Pip */}
+      <circle cx="37.5" cy="39" r="3.2" fill="#DDF24E" />
+    </svg>
+  );
+}
+
+// Animated Monospace Number Counter with Signature Grey Cents (from inspiration photos)
 export function DotMatrixCounter({
   value,
   prefix = 'R',
@@ -26,7 +78,7 @@ export function DotMatrixCounter({
       setDisplayVal(value);
       return;
     }
-    const duration = 650;
+    const duration = 680;
     const startTime = performance.now();
 
     const step = (now: number) => {
@@ -46,43 +98,63 @@ export function DotMatrixCounter({
   if (decimals > 0) {
     const [whole, cents] = displayVal.toFixed(decimals).split('.');
     return (
-      <span className={`font-doto font-extrabold tracking-tight tabular-nums ${className}`}>
-        {prefix}
-        {Number(whole).toLocaleString('en-US')}
-        <span className="opacity-50">.{cents}</span>
+      <span
+        className={`font-mono font-extrabold tracking-tight tabular-nums inline-flex items-baseline ${className}`}
+      >
+        <span>
+          {prefix}
+          {Number(whole).toLocaleString('en-US')}
+        </span>
+        <span className="text-[0.62em] font-semibold text-[#78808A] ml-0.5">
+          .{cents}
+        </span>
       </span>
     );
   }
 
   return (
-    <span className={`font-doto font-extrabold tracking-tight tabular-nums ${className}`}>
+    <span
+      className={`font-mono font-extrabold tracking-tight tabular-nums ${className}`}
+    >
       {prefix}
       {Math.round(displayVal).toLocaleString('en-US')}
     </span>
   );
 }
 
-// Pixel-block spectrum mini chart from the inspiration photos
+// Interactive Pixel-Block Spectrum Chart from the inspiration photos
 export function PixelBlockChart() {
-  const heights = [2, 3, 2, 4, 3, 5, 3];
-  const colors = ['#74C2F6', '#74C2F6', '#F4C84E', '#74C2F6', '#8FA9F2', '#F07CA0', '#E8453C'];
+  const heights = [2, 3, 2, 4, 3, 5, 4];
+  const colors = [
+    '#74C2F6',
+    '#74C2F6',
+    '#F4C84E',
+    '#74C2F6',
+    '#8FA9F2',
+    '#F07CA0',
+    '#E8453C',
+  ];
 
   return (
-    <div className="flex items-end gap-1 h-16 shrink-0" aria-hidden="true">
+    <div
+      className="flex items-end gap-1.5 h-16 shrink-0 bg-[#F4F2EC] px-3 py-2.5 rounded-2xl"
+      aria-hidden="true"
+    >
       {heights.map((h, colIdx) => (
         <div key={colIdx} className="flex flex-col-reverse gap-1">
           {Array.from({ length: h }).map((_, rowIdx) => (
             <motion.i
               key={rowIdx}
               initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 - rowIdx * 0.18 }}
+              animate={{ scale: 1, opacity: 1 - rowIdx * 0.14 }}
+              whileHover={{ scale: 1.2 }}
               transition={{
                 type: 'spring',
-                stiffness: 360,
-                damping: 22,
+                stiffness: 380,
+                damping: 20,
                 delay: colIdx * 0.04 + rowIdx * 0.03,
               }}
-              className="block w-3 h-3 rounded-[3px]"
+              className="block w-3 h-2.5 rounded-[3px]"
               style={{ backgroundColor: colors[colIdx] }}
             />
           ))}
@@ -92,7 +164,7 @@ export function PixelBlockChart() {
   );
 }
 
-// Smooth cubic-bezier sales wave chart with interactive points (Theme-Aware)
+// Smooth cubic-bezier sales wave chart with interactive spring points (Theme-Aware)
 export function SalesWaveChart({
   values,
   labels,
@@ -119,34 +191,43 @@ export function SalesWaveChart({
   const areaD = `${pathD} L ${points[points.length - 1][0]} 82 L ${points[0][0]} 82 Z`;
 
   return (
-    <div className="mt-3 select-none">
+    <div className="mt-4 select-none">
       <div className="relative">
-        <svg className="w-full h-auto overflow-visible block" viewBox="0 0 316 90">
+        <svg
+          className="w-full h-auto overflow-visible block"
+          viewBox="0 0 316 90"
+        >
           <defs>
             <linearGradient id="waveAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#DDF24E" stopOpacity="0.42" />
+              <stop offset="0%" stopColor="#DDF24E" stopOpacity="0.48" />
+              <stop offset="65%" stopColor="#74C2F6" stopOpacity="0.16" />
               <stop offset="100%" stopColor="#DDF24E" stopOpacity="0.0" />
             </linearGradient>
           </defs>
-          <line
-            x1="4"
-            x2="312"
-            y1="80"
-            y2="80"
-            stroke="var(--mut)"
-            strokeOpacity="0.55"
-            strokeDasharray="1 6"
-            strokeLinecap="round"
-          />
+          {/* Subtle reference grid lines */}
+          {[26, 53, 80].map((yLine) => (
+            <line
+              key={yLine}
+              x1="4"
+              x2="312"
+              y1={yLine}
+              y2={yLine}
+              stroke="var(--mut)"
+              strokeOpacity={yLine === 80 ? '0.55' : '0.18'}
+              strokeDasharray={yLine === 80 ? '1 6' : '2 6'}
+              strokeLinecap="round"
+            />
+          ))}
           <path d={areaD} fill="url(#waveAreaGrad)" />
           <motion.path
             d={pathD}
             fill="none"
             stroke="var(--ink)"
-            strokeWidth="2.2"
+            strokeWidth="2.5"
+            strokeLinecap="round"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
+            transition={{ duration: 0.95, ease: 'easeOut' }}
           />
           {points.map((p, i) => {
             const isSelected = activeIdx === i;
@@ -158,37 +239,48 @@ export function SalesWaveChart({
                 onPointerEnter={() => setActiveIdx(i)}
               >
                 <circle cx={p[0]} cy={p[1]} r="14" fill="transparent" />
+                {isSelected && (
+                  <circle
+                    cx={p[0]}
+                    cy={p[1]}
+                    r="10"
+                    fill="#DDF24E"
+                    fillOpacity="0.35"
+                  />
+                )}
                 <circle
                   cx={p[0]}
                   cy={p[1]}
-                  r={isSelected ? 6.5 : i % 2 ? 5 : 4}
+                  r={isSelected ? 6.5 : i % 2 ? 4.8 : 4}
                   fill={isSelected || i % 2 ? '#DDF24E' : 'var(--card)'}
                   stroke="var(--ink)"
-                  strokeWidth={isSelected ? '2.2' : '1.6'}
+                  strokeWidth={isSelected ? '2.4' : '1.7'}
                 />
               </g>
             );
           })}
         </svg>
         {activeIdx !== null && values[activeIdx] !== undefined && (
-          <div className="flex items-center justify-between text-xs text-[#78808A] mt-1 px-1">
+          <div className="flex items-center justify-between text-xs text-[#78808A] mt-2 px-3 py-2 rounded-2xl bg-[#F4F2EC]">
             <span>
-              Selected: <strong className="text-[#13222B]">{labels[activeIdx]}</strong>
+              Day: <strong className="text-[#13222B]">{labels[activeIdx]}</strong>
             </span>
-            <span className="font-doto font-bold text-[#13222B] text-sm">
+            <span className="font-mono font-bold tabular-nums text-[#13222B] text-sm">
               {formatRand0(values[activeIdx])}
             </span>
           </div>
         )}
       </div>
-      <div className="flex justify-between text-[11px] text-[#78808A] mt-1.5 px-1">
+      <div className="flex justify-between text-[11px] font-mono tabular-nums text-[#78808A] mt-2 px-1">
         {labels.map((label, idx) => (
           <button
             key={idx}
             type="button"
             onClick={() => setActiveIdx(idx)}
-            className={`transition-colors ${
-              activeIdx === idx ? 'text-[#13222B] font-semibold' : 'hover:text-[#13222B]'
+            className={`px-1.5 py-0.5 rounded-lg transition-colors ${
+              activeIdx === idx
+                ? 'bg-[#DDF24E] text-[#13222B] font-bold'
+                : 'hover:text-[#13222B]'
             }`}
           >
             {label}
@@ -199,7 +291,7 @@ export function SalesWaveChart({
   );
 }
 
-// Half-circle credit gauge with animated pointer (Theme-Aware)
+// Half-circle credit gauge with spring-animated pointer (Theme-Aware)
 export function CreditHalfGauge({
   percent,
   collectedLabel,
@@ -213,24 +305,28 @@ export function CreditHalfGauge({
 
   return (
     <div
-      className="relative w-[228px] h-[116px] mx-auto mt-3 overflow-hidden"
+      className="relative w-[228px] h-[116px] mx-auto mt-4 overflow-hidden"
       style={{ '--p': clamped } as React.CSSProperties}
     >
       <div
         className="absolute inset-x-0 top-0 -bottom-[116px] rounded-full"
         style={{
-          background: `conic-gradient(from 270deg, #9AD3F8 0deg, #F4C84E ${
-            clamped * 1.08
-          }deg, #E8453C ${clamped * 1.8}deg, var(--ln) 0deg 180deg, transparent 0deg)`,
+          background: `conic-gradient(from 270deg, #74C2F6 0deg, #DDF24E ${
+            clamped * 0.65
+          }deg, #F5B83D ${clamped * 1.25}deg, #E8453C ${
+            clamped * 1.8
+          }deg, var(--ln) 0deg 180deg, transparent 0deg)`,
         }}
       />
       <div
-        className="absolute w-[146px] h-[146px] left-[41px] top-[41px] rounded-full transition-colors"
+        className="absolute w-[148px] h-[148px] left-[40px] top-[40px] rounded-full transition-colors"
         style={{ backgroundColor: 'var(--card)' }}
       />
       <div className="absolute z-10 inset-x-0 bottom-1.5 text-center">
         <div className="text-xs text-[#78808A]">{collectedLabel}</div>
-        <b className="font-doto font-extrabold text-2xl text-[#13222B]">{collectedAmount}</b>
+        <b className="font-mono font-extrabold tabular-nums text-2xl text-[#13222B]">
+          {collectedAmount}
+        </b>
       </div>
       <motion.div
         className="absolute z-20 left-0 bottom-0 w-[228px] h-0 origin-[114px_0px]"
@@ -269,12 +365,76 @@ export function StatusRing({
       }}
     >
       <b
-        className="w-[38px] h-[38px] rounded-full grid place-items-center text-xs font-doto font-bold transition-colors"
+        className="w-[38px] h-[38px] rounded-full grid place-items-center text-xs font-mono font-bold tabular-nums transition-colors"
         style={{ backgroundColor: 'var(--in)', color: 'var(--ink)' }}
       >
         {label}
       </b>
     </div>
+  );
+}
+
+// Spaza Reminder Assistant Vector Illustration (Archway + Signal Bars + Scallop Star)
+export function ReminderSignalIllustration() {
+  const heights = [16, 26, 36, 46];
+  const barColors = ['#74C2F6', '#8FD6A5', '#F5B83D', '#E8453C'];
+
+  return (
+    <div
+      className="flex items-end gap-1.5 shrink-0 bg-[#F4F2EC] px-3 py-2 rounded-2xl"
+      aria-hidden="true"
+    >
+      {heights.map((h, idx) => (
+        <motion.i
+          key={idx}
+          initial={{ height: 6 }}
+          animate={{ height: h }}
+          transition={{
+            type: 'spring',
+            stiffness: 280,
+            damping: 20,
+            delay: idx * 0.06,
+          }}
+          className="w-2.5 rounded-t-full block"
+          style={{
+            background: `linear-gradient(180deg, ${barColors[idx]} 0%, rgba(116,194,246,0.18) 100%)`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// Spaza Shop Door Arch & Awning Illustration for Stock Order & Brand Cards
+export function SpazaArchIllustration({ className = '' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 88 88"
+      className={`w-16 h-16 shrink-0 select-none ${className}`}
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="spazaDoorGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#74C2F6" />
+          <stop offset="48%" stopColor="#DDF24E" />
+          <stop offset="100%" stopColor="#EF5B45" />
+        </linearGradient>
+      </defs>
+      {/* Background Soft Circle */}
+      <circle cx="44" cy="44" r="40" fill="#BDEBE3" fillOpacity="0.45" />
+      {/* Arch Door */}
+      <path
+        d="M26 72 V40 A18 18 0 0 1 62 40 V72 Z"
+        fill="url(#spazaDoorGrad)"
+      />
+      {/* Awning Scallops */}
+      <path
+        d="M18 24 H70 L74 33 A7 7 0 0 1 60 33 A7 7 0 0 1 46 33 A7 7 0 0 1 32 33 A7 7 0 0 1 18 33 L14 33 Z"
+        fill="#13222B"
+      />
+      {/* Sun Coin */}
+      <circle cx="44" cy="46" r="6" fill="#FFFFFF" />
+    </svg>
   );
 }
 
@@ -309,13 +469,20 @@ export function DecorativeShapes({ className = '' }: { className?: string }) {
   };
 
   return (
-    <div className={`pointer-events-none select-none ${className}`} aria-hidden="true">
+    <div
+      className={`pointer-events-none select-none ${className}`}
+      aria-hidden="true"
+    >
       <svg
         viewBox="0 0 100 100"
         className="absolute w-24 h-24 left-[5%] top-[12%] animate-float-slow opacity-90"
       >
         <path d={petalPath} fill="#2C8C8A" />
-        <path d={starPath(8)} transform="translate(25 25) scale(0.5)" fill="#FFFFFF" />
+        <path
+          d={starPath(8)}
+          transform="translate(25 25) scale(0.5)"
+          fill="#FFFFFF"
+        />
       </svg>
       <svg
         viewBox="0 0 100 100"

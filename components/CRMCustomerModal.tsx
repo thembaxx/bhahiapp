@@ -179,13 +179,15 @@ export function CRMCustomerModal({
                   </h2>
                   {!isCreatingNew && customer && (
                     <div className="flex items-center gap-2 text-xs text-[#78808A] mt-0.5 flex-wrap">
-                      <span>{customer.phone}</span>
+                      <span className="font-mono tabular-nums">{customer.phone}</span>
                       <span aria-hidden="true">·</span>
                       <span className="capitalize font-medium text-[#13222B]">
                         {customer.category} customer
                       </span>
                       <span aria-hidden="true">·</span>
-                      <span>{customer.purchaseCount} visits</span>
+                      <span>
+                        <span className="font-mono tabular-nums">{customer.purchaseCount}</span> visits
+                      </span>
                     </div>
                   )}
                 </div>
@@ -295,7 +297,7 @@ export function CRMCustomerModal({
                         onClick={() => setAmountStr(String(customer.owed))}
                         className="px-3.5 py-2 rounded-full bg-[#DDF24E] text-xs font-medium text-[#13222B]"
                       >
-                        Full {formatRand0(customer.owed)}
+                        Full <span className="font-mono font-bold tabular-nums">{formatRand0(customer.owed)}</span>
                       </motion.button>
                     )}
                   </div>
@@ -525,7 +527,9 @@ export function CRMCustomerModal({
 
                 <div className="bg-[#F4F2EC] rounded-[24px] p-4 space-y-2">
                   <div className="flex items-center justify-between text-xs text-[#78808A]">
-                    <span>To: {customer.phone}</span>
+                    <span>
+                      To: <span className="font-mono tabular-nums">{customer.phone}</span>
+                    </span>
                     <span className="flex items-center gap-1 text-[#1F5F63]">
                       <Sparkles className="w-3.5 h-3.5" />
                       {LANGUAGE_NAMES[smsLang].label} verified
@@ -588,10 +592,10 @@ export function CRMCustomerModal({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs text-[#78808A] mb-1">Customer Category</label>
-                    <div className="grid grid-cols-3 gap-1 bg-[#F4F2EC] p-1 rounded-2xl">
+                    <label className="block text-xs text-[#78808A] mb-1.5">Customer Category</label>
+                    <div className="grid grid-cols-3 gap-1.5 bg-[#F4F2EC] p-1 rounded-2xl">
                       {(['regular', 'new', 'vip'] as CustomerCategory[]).map((cat) => (
                         <button
                           key={cat}
@@ -610,14 +614,14 @@ export function CRMCustomerModal({
                   </div>
 
                   <div>
-                    <label className="block text-xs text-[#78808A] mb-1">Preferred SMS Lang</label>
-                    <div className="grid grid-cols-3 gap-1 bg-[#F4F2EC] p-1 rounded-2xl">
+                    <label className="block text-xs text-[#78808A] mb-1.5">Preferred SMS Lang</label>
+                    <div className="grid grid-cols-3 gap-1.5 bg-[#F4F2EC] p-1 rounded-2xl">
                       {(['en', 'zu', 'st'] as LanguageCode[]).map((l) => (
                         <button
                           key={l}
                           type="button"
                           onClick={() => setPreferredLang(l)}
-                          className={`min-h-[38px] rounded-xl text-xs font-semibold uppercase transition-colors ${
+                          className={`min-h-[38px] rounded-xl text-xs font-mono font-semibold uppercase transition-colors ${
                             preferredLang === l
                               ? 'bg-[#DDF24E] text-[#13222B]'
                               : 'text-[#78808A] hover:text-[#13222B]'

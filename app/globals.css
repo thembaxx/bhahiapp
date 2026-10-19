@@ -134,8 +134,17 @@ html[data-theme="dark"] #pz h4 {
   color: #1F5F63 !important;
 }
 
-.font-doto {
-  font-family: 'Doto', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+.font-doto,
+.font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+input[type="number"],
+input[type="tel"] {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
 }
 
 .font-fraunces {

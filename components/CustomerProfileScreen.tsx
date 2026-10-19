@@ -168,63 +168,65 @@ export function CustomerProfileScreen({
       className="space-y-4"
     >
       {/* Top Profile Navigation & Identity Card */}
-      <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+      >
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <motion.button
             type="button"
+            whileHover={{ x: -2 }}
             whileTap={{ scale: 0.94 }}
             onClick={onBack}
-            className="min-h-[44px] px-4 rounded-full bg-[#F4F2EC] hover:bg-[#ECE8DE] text-xs font-medium text-[#13222B] flex items-center gap-2 transition-colors"
+            className="min-h-[42px] px-4 rounded-full bg-[#F4F2EC] hover:bg-[#ECE8DE] text-xs font-medium text-[#13222B] flex items-center gap-2 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to {tt('Customers', appLang)}</span>
           </motion.button>
 
-          <div className="flex items-center gap-2">
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.94 }}
-              onClick={() => setIsEditing((prev) => !prev)}
-              className={`min-h-[44px] px-4 rounded-full text-xs font-medium flex items-center gap-2 transition-colors ${
-                isEditing
-                  ? 'bg-[#DDF24E] text-[#13222B] font-semibold'
-                  : 'bg-[#13222B] text-white'
-              }`}
-            >
-              <Edit3 className="w-3.5 h-3.5" />
-              <span>{tt('Edit details', appLang)}</span>
-            </motion.button>
-          </div>
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.94 }}
+            onClick={() => setIsEditing((prev) => !prev)}
+            className={`min-h-[42px] px-4 rounded-full text-xs font-medium flex items-center gap-2 transition-colors ${
+              isEditing
+                ? 'bg-[#DDF24E] text-[#13222B] font-semibold'
+                : 'bg-[#13222B] text-white'
+            }`}
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+            <span>{tt('Edit details', appLang)}</span>
+          </motion.button>
         </div>
 
         {/* Customer Identity Header */}
-        <div className="mt-5 flex items-start justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-4 min-w-0">
-            <div
-              className="w-16 h-16 rounded-full grid place-items-center font-fraunces font-semibold text-2xl text-[#13222B] shrink-0 shadow-sm"
+        <div className="mt-5 flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <motion.div
+              initial={{ scale: 0.85 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 360, damping: 22 }}
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full grid place-items-center font-fraunces font-semibold text-2xl text-[#13222B] shrink-0 shadow-sm"
               style={{ backgroundColor: customer.avatarColor }}
             >
               {customer.name[0]}
-            </div>
+            </motion.div>
             <div className="min-w-0">
-              <h2 className="font-fraunces text-2xl sm:text-3xl font-medium text-[#13222B] truncate">
+              <h2 className="font-fraunces text-2xl sm:text-3xl font-medium text-[#13222B] leading-tight">
                 {customer.name}
               </h2>
-              <div className="flex items-center gap-2 text-xs text-[#78808A] mt-1 flex-wrap">
-                <span className="flex items-center gap-1 text-[#13222B] font-medium">
-                  <Phone className="w-3.5 h-3.5 text-[#1F5F63]" />
+              <div className="flex items-center gap-2 text-xs text-[#78808A] mt-1.5 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 bg-[#F4F2EC] px-2.5 py-1 rounded-full text-[#13222B] font-mono tabular-nums font-medium">
+                  <Phone className="w-3 h-3 text-[#1F5F63]" />
                   {customer.phone}
                 </span>
-                <span aria-hidden="true">·</span>
-                <span className="capitalize font-medium text-[#1F5F63]">
-                  {customer.category} customer
+                <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#F4F2EC] capitalize font-medium text-[#1F5F63]">
+                  {customer.category}
                 </span>
-                <span aria-hidden="true">·</span>
-                <span>
+                <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#F4F2EC] text-[#78808A]">
                   SMS: {LANGUAGE_NAMES[customer.preferredLang || 'en'].label}
                 </span>
-                <span aria-hidden="true">·</span>
-                <span>Last active {customer.lastPurchaseDate}</span>
               </div>
               {customer.notes && (
                 <p className="text-xs text-[#78808A] mt-2 flex items-center gap-1.5">
@@ -241,55 +243,59 @@ export function CustomerProfileScreen({
             label={customer.owed > 0 ? `${customer.daysOverdue}d` : '✓'}
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* Main 2-Column Layout for Customer Profile */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Left Column: Total Credit Summary, Quick Ledger Actions, & Edit Details Form */}
+        {/* Left Column: Total Credit Summary & Edit Details Form */}
         <div className="lg:col-span-5 space-y-4">
           {/* Total Credit & Repayment Metrics Card */}
-          <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="text-sm text-[#78808A]">
-                  {tt('Owes you', appLang)} (Current Balance)
-                </div>
-                <div className="text-4xl sm:text-5xl text-[#13222B] my-1">
-                  <DotMatrixCounter value={customer.owed} decimals={2} />
-                </div>
-                <div className="text-xs text-[#78808A]">
-                  {customer.owed > 0
-                    ? customer.daysOverdue >= 7
-                      ? tt(`Late · ${customer.daysOverdue} days`, appLang)
-                      : tt(`Owing · ${customer.daysOverdue} days`, appLang)
-                    : tt('Settled', appLang)}
-                </div>
+          <motion.div
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+          >
+            <div>
+              <div className="text-sm text-[#78808A]">
+                {tt('Owes you', appLang)} (Current Balance)
+              </div>
+              <div className="text-4xl sm:text-5xl text-[#13222B] my-1.5">
+                <DotMatrixCounter value={customer.owed} decimals={2} />
+              </div>
+              <div className="text-xs text-[#78808A]">
+                {customer.owed > 0
+                  ? customer.daysOverdue >= 7
+                    ? tt(`Late · ${customer.daysOverdue} days`, appLang)
+                    : tt(`Owing · ${customer.daysOverdue} days`, appLang)
+                  : tt('Settled', appLang)}{' '}
+                · Last active {customer.lastPurchaseDate}
               </div>
             </div>
 
             {/* 3-Metric Breakdown: Total Credit Extended, Total Paid, Visits */}
-            <div className="grid grid-cols-3 gap-2.5 mt-5 pt-4 border-t border-[#ECE8DE]">
-              <div className="bg-[#F4F2EC] rounded-3xl p-3">
-                <small className="text-[11px] text-[#78808A] block">
+            <div className="grid grid-cols-3 gap-2 sm:gap-2.5 mt-5 pt-4 border-t border-[#ECE8DE]">
+              <div className="bg-[#F4F2EC] rounded-2xl sm:rounded-3xl p-3">
+                <small className="text-[11px] text-[#78808A] block truncate">
                   Total credit
                 </small>
-                <div className="font-doto font-bold text-lg text-[#13222B] mt-0.5">
+                <div className="font-mono font-bold tabular-nums text-base sm:text-lg text-[#13222B] mt-0.5">
                   {formatRand0(customer.totalCreditExtended)}
                 </div>
               </div>
-              <div className="bg-[#F4F2EC] rounded-3xl p-3">
-                <small className="text-[11px] text-[#78808A] block">
+              <div className="bg-[#F4F2EC] rounded-2xl sm:rounded-3xl p-3">
+                <small className="text-[11px] text-[#78808A] block truncate">
                   Total paid
                 </small>
-                <div className="font-doto font-bold text-lg text-[#1F5F63] mt-0.5">
+                <div className="font-mono font-bold tabular-nums text-base sm:text-lg text-[#1F5F63] mt-0.5">
                   {formatRand0(customer.totalPaid)}
                 </div>
               </div>
-              <div className="bg-[#F4F2EC] rounded-3xl p-3">
-                <small className="text-[11px] text-[#78808A] block">
+              <div className="bg-[#F4F2EC] rounded-2xl sm:rounded-3xl p-3">
+                <small className="text-[11px] text-[#78808A] block truncate">
                   Purchases
                 </small>
-                <div className="font-doto font-bold text-lg text-[#13222B] mt-0.5">
+                <div className="font-mono font-bold tabular-nums text-base sm:text-lg text-[#13222B] mt-0.5">
                   {customer.purchaseCount}x
                 </div>
               </div>
@@ -312,16 +318,21 @@ export function CustomerProfileScreen({
                   initial={{ left: '0%' }}
                   animate={{ left: `${repaymentRate}%` }}
                   transition={{ type: 'spring', stiffness: 140, damping: 20 }}
-                  className="absolute -top-7 -translate-x-1/2 bg-[#0B0B0C] text-white rounded-full px-2.5 py-0.5 text-[11px] font-semibold whitespace-nowrap"
+                  className="absolute -top-7 -translate-x-1/2 bg-[#0B0B0C] text-white rounded-full px-2.5 py-0.5 text-[11px] font-mono tabular-nums font-semibold whitespace-nowrap"
                 >
                   {repaymentRate}% repaid
                 </motion.span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Edit Details Form Card (Always accessible & toggleable) */}
-          <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
+          {/* Edit Details Form Card (Spacious Mobile-First Layout) */}
+          <motion.div
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+          >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <UserCheck className="w-5 h-5 text-[#1F5F63]" />
@@ -336,7 +347,7 @@ export function CustomerProfileScreen({
               )}
             </div>
 
-            <form onSubmit={handleSaveDetailsSubmit} className="space-y-3">
+            <form onSubmit={handleSaveDetailsSubmit} className="space-y-3.5">
               <div>
                 <label className="block text-xs text-[#78808A] mb-1">
                   Customer Full Name
@@ -363,24 +374,25 @@ export function CustomerProfileScreen({
                     value={editPhone}
                     onChange={(e) => setEditPhone(e.target.value)}
                     placeholder="+27 82 000 0000"
-                    className="w-full bg-[#F4F2EC] rounded-2xl pl-10 pr-4 py-3 text-sm text-[#13222B] focus:outline-2 focus:outline-[#74C2F6]"
+                    className="w-full bg-[#F4F2EC] rounded-2xl pl-10 pr-4 py-3 text-sm font-mono tabular-nums text-[#13222B] focus:outline-2 focus:outline-[#74C2F6]"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2.5">
+              {/* Stacked on mobile so 6 buttons never squash horizontally */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-[#78808A] mb-1">
-                    Category
+                  <label className="block text-xs text-[#78808A] mb-1.5">
+                    Customer Category
                   </label>
-                  <div className="grid grid-cols-3 gap-1 bg-[#F4F2EC] p-1 rounded-2xl">
+                  <div className="grid grid-cols-3 gap-1.5 bg-[#F4F2EC] p-1 rounded-2xl">
                     {(['regular', 'new', 'vip'] as CustomerCategory[]).map(
                       (cat) => (
                         <button
                           key={cat}
                           type="button"
                           onClick={() => setEditCategory(cat)}
-                          className={`min-h-[36px] rounded-xl text-xs font-medium capitalize transition-colors ${
+                          className={`min-h-[38px] rounded-xl text-xs font-medium capitalize transition-colors ${
                             editCategory === cat
                               ? 'bg-[#13222B] text-white'
                               : 'text-[#78808A] hover:text-[#13222B]'
@@ -394,10 +406,10 @@ export function CustomerProfileScreen({
                 </div>
 
                 <div>
-                  <label className="block text-xs text-[#78808A] mb-1">
+                  <label className="block text-xs text-[#78808A] mb-1.5">
                     SMS Language
                   </label>
-                  <div className="grid grid-cols-3 gap-1 bg-[#F4F2EC] p-1 rounded-2xl">
+                  <div className="grid grid-cols-3 gap-1.5 bg-[#F4F2EC] p-1 rounded-2xl">
                     {(['en', 'zu', 'st'] as LanguageCode[]).map((l) => (
                       <button
                         key={l}
@@ -406,7 +418,7 @@ export function CustomerProfileScreen({
                           setEditPreferredLang(l);
                           setSmsLang(l);
                         }}
-                        className={`min-h-[36px] rounded-xl text-xs font-semibold uppercase transition-colors ${
+                        className={`min-h-[38px] rounded-xl text-xs font-mono font-semibold uppercase transition-colors ${
                           editPreferredLang === l
                             ? 'bg-[#DDF24E] text-[#13222B]'
                             : 'text-[#78808A] hover:text-[#13222B]'
@@ -441,13 +453,18 @@ export function CustomerProfileScreen({
                 <span>Save Contact Details</span>
               </motion.button>
             </form>
-          </div>
+          </motion.div>
         </div>
 
         {/* Right Column: Record Credit/Payment, Purchase History, & Multi-Language SMS */}
         <div className="lg:col-span-7 space-y-4">
           {/* Quick Record Credit Sale / Payment Card */}
-          <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white space-y-3.5">
+          <motion.div
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white space-y-3.5"
+          >
             <h3 className="font-fraunces text-xl font-medium text-[#13222B]">
               Record sale or payment
             </h3>
@@ -459,7 +476,7 @@ export function CustomerProfileScreen({
                 value={amountStr}
                 onChange={(e) => setAmountStr(e.target.value)}
                 placeholder={tt('Amount in rand', appLang)}
-                className="w-full bg-[#F4F2EC] rounded-2xl px-4 py-3.5 font-doto text-xl font-bold text-[#13222B] focus:outline-2 focus:outline-[#74C2F6]"
+                className="w-full bg-[#F4F2EC] rounded-2xl px-4 py-3.5 font-mono tabular-nums text-xl font-bold text-[#13222B] focus:outline-2 focus:outline-[#74C2F6]"
               />
               <input
                 type="text"
@@ -477,7 +494,7 @@ export function CustomerProfileScreen({
                   type="button"
                   whileTap={{ scale: 0.94 }}
                   onClick={() => setAmountStr(String(preset))}
-                  className="px-3.5 py-1.5 rounded-full bg-[#F4F2EC] hover:bg-[#ECE8DE] text-xs font-doto font-bold text-[#13222B]"
+                  className="px-3.5 py-2 rounded-full bg-[#F4F2EC] hover:bg-[#ECE8DE] text-xs font-mono tabular-nums font-bold text-[#13222B]"
                 >
                   +R{preset}
                 </motion.button>
@@ -487,14 +504,17 @@ export function CustomerProfileScreen({
                   type="button"
                   whileTap={{ scale: 0.94 }}
                   onClick={() => setAmountStr(String(customer.owed))}
-                  className="px-3.5 py-1.5 rounded-full bg-[#DDF24E] text-xs font-semibold text-[#13222B]"
+                  className="px-3.5 py-2 rounded-full bg-[#DDF24E] text-xs font-semibold text-[#13222B]"
                 >
-                  Settle Full {formatRand0(customer.owed)}
+                  Settle Full{' '}
+                  <span className="font-mono tabular-nums">
+                    {formatRand0(customer.owed)}
+                  </span>
                 </motion.button>
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
               <motion.button
                 type="button"
                 whileTap={{ scale: 0.94 }}
@@ -539,11 +559,16 @@ export function CustomerProfileScreen({
                 <span>{tt('Record payment', appLang)}</span>
               </motion.button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Complete Purchase & Payment History Card */}
-          <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
-            <div className="flex items-center justify-between gap-3 flex-wrap">
+          <motion.div
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <History className="w-5 h-5 text-[#1F5F63]" />
                 <h3 className="font-fraunces text-xl font-medium text-[#13222B]">
@@ -551,12 +576,12 @@ export function CustomerProfileScreen({
                 </h3>
               </div>
 
-              <div className="flex items-center gap-1 bg-[#F4F2EC] p-1 rounded-full flex-wrap">
+              <div className="grid grid-cols-4 sm:flex items-center gap-1 bg-[#F4F2EC] p-1 rounded-full w-full sm:w-auto">
                 {(
                   [
                     { id: 'all', label: 'All' },
                     { id: 'credit_sale', label: 'Credit' },
-                    { id: 'payment', label: 'Payments' },
+                    { id: 'payment', label: 'Paid' },
                     { id: 'sms_reminder', label: 'SMS' },
                   ] as const
                 ).map((f) => (
@@ -564,7 +589,7 @@ export function CustomerProfileScreen({
                     key={f.id}
                     type="button"
                     onClick={() => setHistoryFilter(f.id)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors text-center ${
                       historyFilter === f.id
                         ? 'bg-[#13222B] text-white'
                         : 'text-[#78808A] hover:text-[#13222B]'
@@ -634,7 +659,7 @@ export function CustomerProfileScreen({
 
                         {!isSms && (
                           <span
-                            className={`font-doto font-extrabold text-base shrink-0 ${
+                            className={`font-mono font-extrabold tabular-nums text-base shrink-0 ${
                               isPayment ? 'text-[#1F5F63]' : 'text-[#E8453C]'
                             }`}
                           >
@@ -648,24 +673,29 @@ export function CustomerProfileScreen({
                 )}
               </AnimatePresence>
             </div>
-          </div>
+          </motion.div>
 
           {/* Multi-Language SMS Reminder Composer Card */}
-          <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white space-y-4">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
+          <motion.div
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white space-y-4"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-[#1F5F63]" />
                 <h3 className="font-fraunces text-xl font-medium text-[#13222B]">
                   {tt('Send reminder SMS', appLang)}
                 </h3>
               </div>
-              <div className="flex items-center gap-1 bg-[#F4F2EC] p-1 rounded-full">
+              <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-[#F4F2EC] p-1 rounded-full w-full sm:w-auto">
                 {(['en', 'zu', 'st'] as LanguageCode[]).map((l) => (
                   <button
                     key={l}
                     type="button"
                     onClick={() => setSmsLang(l)}
-                    className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors text-center ${
                       smsLang === l
                         ? 'bg-[#13222B] text-white'
                         : 'text-[#78808A] hover:text-[#13222B]'
@@ -682,14 +712,14 @@ export function CustomerProfileScreen({
                 [
                   { id: 'friendly', label: 'Warm & Polite' },
                   { id: 'standard', label: 'Standard' },
-                  { id: 'urgent', label: 'Firm / Overdue' },
+                  { id: 'urgent', label: 'Firm / Late' },
                 ] as const
               ).map((t) => (
                 <button
                   key={t.id}
                   type="button"
                   onClick={() => setSmsTone(t.id)}
-                  className={`min-h-[38px] rounded-xl text-xs font-medium transition-colors ${
+                  className={`min-h-[40px] rounded-xl text-xs font-medium px-2 transition-colors ${
                     smsTone === t.id
                       ? 'bg-[#DDF24E] text-[#13222B] font-semibold'
                       : 'bg-[#F4F2EC] text-[#78808A] hover:text-[#13222B]'
@@ -701,8 +731,13 @@ export function CustomerProfileScreen({
             </div>
 
             <div className="bg-[#F4F2EC] rounded-[24px] p-4 space-y-2">
-              <div className="flex items-center justify-between text-xs text-[#78808A]">
-                <span>Recipient: {customer.phone}</span>
+              <div className="flex items-center justify-between text-xs text-[#78808A] flex-wrap gap-1">
+                <span>
+                  Recipient:{' '}
+                  <span className="font-mono tabular-nums">
+                    {customer.phone}
+                  </span>
+                </span>
                 <span className="flex items-center gap-1 text-[#1F5F63]">
                   <Sparkles className="w-3.5 h-3.5" />
                   {LANGUAGE_NAMES[smsLang].label}
@@ -713,7 +748,7 @@ export function CustomerProfileScreen({
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <motion.button
                 type="button"
                 whileTap={{ scale: 0.94 }}
@@ -735,7 +770,7 @@ export function CustomerProfileScreen({
                 <span>{tt('Send reminder SMS', appLang)}</span>
               </motion.button>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </motion.div>

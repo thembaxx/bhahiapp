@@ -19,8 +19,6 @@ import {
   Settings,
   ChevronRight,
   X,
-  Sun,
-  Moon,
 } from 'lucide-react';
 import {
   BahiState,
@@ -37,11 +35,14 @@ import {
   tt,
 } from '@/lib/bahi-data';
 import {
+  BahiBrandLogo,
   CreditHalfGauge,
   DecorativeShapes,
   DotMatrixCounter,
   PixelBlockChart,
+  ReminderSignalIllustration,
   SalesWaveChart,
+  SpazaArchIllustration,
   StatusRing,
 } from '@/components/VisualCharts';
 import { CRMCustomerModal } from '@/components/CRMCustomerModal';
@@ -50,7 +51,6 @@ import { BarcodeScannerModal } from '@/components/BarcodeScannerModal';
 import { OnboardingModal } from '@/components/OnboardingModal';
 import { ReportsDashboard } from '@/components/ReportsDashboard';
 import { SettingsModal } from '@/components/SettingsModal';
-import { PWAInstallBanner } from '@/components/PWAInstallBanner';
 import { ThreeOnboardingScene } from '@/components/ThreeOnboardingScene';
 
 const STORAGE_KEY = 'bahiapp.v3.state';
@@ -671,7 +671,7 @@ export default function BahiAppPage() {
 
   return (
     <div className="min-h-screen relative pb-32">
-      {/* Drifting Aurora Background */}
+      {/* Layered Drifting Aurora + Tactile Ledger Dot-Grid Background */}
       <div
         className="fixed inset-0 -z-10 overflow-hidden pointer-events-none"
         aria-hidden="true"
@@ -679,124 +679,68 @@ export default function BahiAppPage() {
         <i className="absolute w-[70vmax] h-[70vmax] rounded-full bg-[#BDEBE3] -left-[20vmax] -top-[25vmax] blur-[75px] opacity-55 animate-aurora-1" />
         <i className="absolute w-[70vmax] h-[70vmax] rounded-full bg-[#E6F58B] -right-[30vmax] top-[10vh] blur-[75px] opacity-55 animate-aurora-2" />
         <i className="absolute w-[70vmax] h-[70vmax] rounded-full bg-[#F6C4C0] -left-[10vmax] -bottom-[35vmax] blur-[75px] opacity-55 animate-aurora-3" />
+        <div
+          className="absolute inset-0 opacity-[0.045]"
+          style={{
+            backgroundImage:
+              'radial-gradient(var(--ink) 0.85px, transparent 0.85px)',
+            backgroundSize: '22px 22px',
+          }}
+        />
       </div>
 
-      {/* Hidden SVG Brand Symbol Definition */}
-      <svg width="0" height="0" className="absolute">
-        <symbol id="bahi-mark" viewBox="0 0 64 64">
-          <defs>
-            <linearGradient id="bahi-lg" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#DDF24E" />
-              <stop offset="0.5" stopColor="#8FD6A5" />
-              <stop offset="1" stopColor="#2C8C8A" />
-            </linearGradient>
-          </defs>
-          <rect width="64" height="64" rx="18" fill="#0B0B0C" />
-          <rect x="17" y="10" width="12" height="44" rx="6" fill="#FFFFFF" />
-          <circle
-            cx="38"
-            cy="38"
-            r="9"
-            fill="none"
-            stroke="url(#bahi-lg)"
-            strokeWidth="10"
-          />
-        </symbol>
-      </svg>
-
       {/* Main Responsive Container */}
-      <div className="max-w-6xl mx-auto px-3 sm:px-6">
-        {/* Clean Header with Brand Identity, Sync Status & Settings Trigger */}
-        <header className="pt-5 pb-6 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
+      <div className="max-w-6xl mx-auto px-3.5 sm:px-6">
+        {/* Simplified Header: Brand Emblem + Greeting + Single Settings Trigger */}
+        <header className="pt-5 pb-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 min-w-0">
             <motion.button
               type="button"
+              whileHover={{ scale: 1.05, rotate: -3 }}
               whileTap={{ scale: 0.92 }}
               onClick={() => {
                 setProfileCustomerId(null);
                 setActiveTab('home');
               }}
-              className="w-11 h-11 rounded-full bg-[#0B0B0C] grid place-items-center shadow-[0_0_0_3px_#DDF24E] shrink-0"
+              className="w-12 h-12 rounded-[18px] bg-[#0B0B0C] grid place-items-center shadow-[0_0_0_3px_#DDF24E,0_10px_24px_-8px_rgba(0,0,0,0.45)] shrink-0 overflow-hidden"
               aria-label="BahiApp Home"
             >
-              <svg width="30" height="30">
-                <use href="#bahi-mark" />
-              </svg>
+              <BahiBrandLogo size={42} />
             </motion.button>
             <div className="min-w-0">
               <h1 className="font-fraunces text-2xl sm:text-3xl font-medium tracking-tight text-[#13222B] truncate">
                 {tt('Hello', state.lang)}, {state.ownerName}
               </h1>
-              <small className="text-xs text-[#78808A] block truncate">
-                {state.shopName}
+              <small className="text-xs text-[#78808A] flex items-center gap-1.5 truncate mt-0.5">
+                <span
+                  className={`w-2 h-2 rounded-full shrink-0 ${
+                    state.online ? 'bg-[#5BD16B]' : 'bg-[#F4C84E]'
+                  }`}
+                  aria-hidden="true"
+                />
+                <span className="truncate">{state.shopName}</span>
               </small>
             </div>
           </div>
 
-          {/* Right Zone: Sync Pill + Settings Button */}
-          <div className="flex items-center gap-2 shrink-0">
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.94 }}
-              onClick={handleToggleSync}
-              className="min-h-[42px] bg-white rounded-full px-3.5 py-2 text-xs font-medium text-[#13222B] shadow-[0_6px_20px_-10px_rgba(19,34,43,0.4)] flex items-center gap-2 whitespace-nowrap"
-            >
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  state.online ? 'bg-[#5BD16B]' : 'bg-[#F4C84E]'
-                }`}
-              />
-              <span>
-                {state.online
-                  ? tt('Synced', state.lang)
-                  : tt(`Offline · ${state.syncQueue} queued`, state.lang)}
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.06, rotate: 12 }}
+            whileTap={{ scale: 0.92 }}
+            onClick={() => {
+              vibrate();
+              setSettingsOpen(true);
+            }}
+            className="relative w-11 h-11 bg-white rounded-full text-[#13222B] shadow-[0_8px_24px_-10px_rgba(19,34,43,0.45)] border border-[#ECE8DE] grid place-items-center shrink-0"
+            aria-label="Open Shop Settings"
+          >
+            <Settings className="w-5 h-5 text-[#1F5F63]" />
+            {!state.online && state.syncQueue > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#DDF24E] text-[#13222B] font-mono text-[10px] font-bold grid place-items-center">
+                {state.syncQueue}
               </span>
-            </motion.button>
-
-            <PWAInstallBanner />
-
-            <motion.button
-              type="button"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.92 }}
-              onClick={() => handleToggleTheme()}
-              className="min-h-[42px] min-w-[42px] bg-white rounded-full px-3 py-2 text-xs font-semibold text-[#13222B] shadow-[0_6px_20px_-10px_rgba(19,34,43,0.4)] flex items-center justify-center gap-1.5"
-              aria-label={
-                state.theme === 'dark'
-                  ? 'Switch to light theme'
-                  : 'Switch to high-contrast dark mode'
-              }
-              title={
-                state.theme === 'dark'
-                  ? 'Switch to Warm Paper Light Theme'
-                  : 'Switch to High-Contrast Dark Mode'
-              }
-            >
-              {state.theme === 'dark' ? (
-                <Sun className="w-4 h-4 text-[#DDF24E]" />
-              ) : (
-                <Moon className="w-4 h-4 text-[#1F5F63]" />
-              )}
-              <span className="hidden sm:inline">
-                {state.theme === 'dark' ? 'Light' : 'Dark'}
-              </span>
-            </motion.button>
-
-            <motion.button
-              type="button"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.92 }}
-              onClick={() => {
-                vibrate();
-                setSettingsOpen(true);
-              }}
-              className="min-h-[42px] bg-white rounded-full px-3.5 py-2 text-xs font-semibold text-[#13222B] shadow-[0_6px_20px_-10px_rgba(19,34,43,0.4)] flex items-center gap-1.5"
-              aria-label="Open Shop Settings"
-            >
-              <Settings className="w-4 h-4 text-[#1F5F63]" />
-              <span>{state.lang.toUpperCase()}</span>
-            </motion.button>
-          </div>
+            )}
+          </motion.button>
         </header>
 
         {/* VIEW 1: HOME TAB */}
@@ -812,20 +756,22 @@ export default function BahiAppPage() {
             <div className="lg:col-span-7 space-y-4">
               {/* Today's Takings Hero Card */}
               <motion.section
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+                initial={{ opacity: 0, y: 24, scale: 0.985 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
               >
-                <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div>
                     <div className="text-sm text-[#78808A]">
                       {tt('Today’s takings', state.lang)}
                     </div>
-                    <div className="text-4xl sm:text-5xl text-[#13222B] my-1">
+                    <div className="text-4xl sm:text-5xl text-[#13222B] my-1.5">
                       <DotMatrixCounter value={todayTotal} decimals={2} />
                     </div>
                     <div className="flex items-center gap-2 text-xs text-[#78808A]">
-                      <b className="w-5 h-5 rounded-full bg-[#4CB944] text-white text-[11px] grid place-items-center">
+                      <b className="w-5 h-5 rounded-full bg-[#4CB944] text-white text-[11px] grid place-items-center shrink-0">
                         ↑
                       </b>
                       <span>{tt('R410 more than yesterday', state.lang)}</span>
@@ -834,52 +780,54 @@ export default function BahiAppPage() {
                   <PixelBlockChart />
                 </div>
 
-                <div className="grid grid-cols-3 gap-3 mt-7 pt-5 border-t border-[#ECE8DE]">
-                  <div>
-                    <div className="font-doto font-bold text-lg sm:text-xl text-[#13222B]">
-                      {formatRand0(state.today.cash)}
-                    </div>
-                    <small className="text-xs text-[#78808A] block">
+                {/* Spacious 3-Metric Pills */}
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-6 pt-5 border-t border-[#ECE8DE]">
+                  <div className="bg-[#F4F2EC] rounded-2xl sm:rounded-3xl p-3">
+                    <small className="text-[11px] sm:text-xs text-[#78808A] block truncate">
                       {tt('Cash', state.lang)}
                     </small>
-                  </div>
-                  <div>
-                    <div className="font-doto font-bold text-lg sm:text-xl text-[#13222B]">
-                      {formatRand0(state.today.credit)}
+                    <div className="font-mono font-bold tabular-nums text-base sm:text-xl text-[#13222B] mt-0.5">
+                      {formatRand0(state.today.cash)}
                     </div>
-                    <small className="text-xs text-[#78808A] block">
+                  </div>
+                  <div className="bg-[#F4F2EC] rounded-2xl sm:rounded-3xl p-3">
+                    <small className="text-[11px] sm:text-xs text-[#78808A] block truncate">
                       {tt('On credit', state.lang)}
                     </small>
-                  </div>
-                  <div>
-                    <div className="font-doto font-bold text-lg sm:text-xl text-[#1F5F63]">
-                      {formatRand0(todayTotal * 0.21)}
+                    <div className="font-mono font-bold tabular-nums text-base sm:text-xl text-[#13222B] mt-0.5">
+                      {formatRand0(state.today.credit)}
                     </div>
-                    <small className="text-xs text-[#78808A] block">
+                  </div>
+                  <div className="bg-[#F4F2EC] rounded-2xl sm:rounded-3xl p-3">
+                    <small className="text-[11px] sm:text-xs text-[#78808A] block truncate">
                       {tt('Profit est.', state.lang)}
                     </small>
+                    <div className="font-mono font-bold tabular-nums text-base sm:text-xl text-[#1F5F63] mt-0.5">
+                      {formatRand0(todayTotal * 0.21)}
+                    </div>
                   </div>
                 </div>
               </motion.section>
 
               {/* This Week Wave Card */}
               <motion.section
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 24, scale: 0.985 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+                transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
               >
                 <div className="text-sm text-[#78808A]">
                   {tt('This week', state.lang)}
                 </div>
-                <div className="text-4xl sm:text-5xl text-[#13222B] my-1">
+                <div className="text-4xl sm:text-5xl text-[#13222B] my-1.5">
                   <DotMatrixCounter
                     value={18800 + todayTotal}
                     decimals={2}
                   />
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[#78808A]">
-                  <b className="w-5 h-5 rounded-full bg-[#4CB944] text-white text-[11px] grid place-items-center">
+                  <b className="w-5 h-5 rounded-full bg-[#4CB944] text-white text-[11px] grid place-items-center shrink-0">
                     ↑
                   </b>
                   <span>{tt('Sales up 12% on last week', state.lang)}</span>
@@ -892,19 +840,20 @@ export default function BahiAppPage() {
 
               {/* Credit Owed Spectrum Card */}
               <motion.section
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 24, scale: 0.985 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+                transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
               >
                 <div className="text-sm text-[#78808A]">
                   {tt('Credit owed to you', state.lang)}
                 </div>
-                <div className="text-4xl sm:text-5xl text-[#13222B] my-1">
+                <div className="text-4xl sm:text-5xl text-[#13222B] my-1.5">
                   <DotMatrixCounter value={outstandingTotal} decimals={2} />
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[#78808A]">
-                  <b className="w-5 h-5 rounded-full bg-[#4CB944] text-white text-[11px] grid place-items-center">
+                  <b className="w-5 h-5 rounded-full bg-[#4CB944] text-white text-[11px] grid place-items-center shrink-0">
                     ↑
                   </b>
                   <span>
@@ -916,7 +865,7 @@ export default function BahiAppPage() {
                 </div>
 
                 {/* Spectrum Progress Bar with Collected % Bubble */}
-                <div className="h-3 rounded-full bg-[#F4F2EC] relative mt-10 mb-5">
+                <div className="h-3.5 rounded-full bg-[#F4F2EC] relative mt-10 mb-5">
                   <motion.i
                     initial={{ width: 0 }}
                     animate={{ width: `${monthCollectedPct}%` }}
@@ -931,23 +880,23 @@ export default function BahiAppPage() {
                     initial={{ left: '0%' }}
                     animate={{ left: `${monthCollectedPct}%` }}
                     transition={{ type: 'spring', stiffness: 140, damping: 20 }}
-                    className="absolute -top-8 -translate-x-1/2 bg-[#0B0B0C] text-white rounded-full px-3 py-0.5 text-xs font-semibold whitespace-nowrap"
+                    className="absolute -top-8 -translate-x-1/2 bg-[#0B0B0C] text-white rounded-full px-3 py-0.5 text-xs font-mono font-semibold tabular-nums whitespace-nowrap shadow-sm"
                   >
                     {tt(`Collected ${monthCollectedPct}%`, state.lang)}
                   </motion.span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                  <div>
-                    <div className="font-doto font-bold text-xl text-[#13222B]">
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div className="bg-[#F4F2EC] rounded-2xl p-3">
+                    <div className="font-mono font-bold tabular-nums text-lg sm:text-xl text-[#13222B]">
                       {formatRand0(state.month.collected)}
                     </div>
                     <small className="text-xs text-[#78808A] block">
                       {tt('Collected', state.lang)}
                     </small>
                   </div>
-                  <div>
-                    <div className="font-doto font-bold text-xl text-[#E8453C]">
+                  <div className="bg-[#F4F2EC] rounded-2xl p-3">
+                    <div className="font-mono font-bold tabular-nums text-lg sm:text-xl text-[#E8453C]">
                       {formatRand0(outstandingTotal)}
                     </div>
                     <small className="text-xs text-[#78808A] block">
@@ -962,65 +911,60 @@ export default function BahiAppPage() {
             <div className="lg:col-span-5 space-y-4">
               {/* Multi-Language SMS Reminder Assistant Card */}
               <motion.section
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.06 }}
-                className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white space-y-4"
+                initial={{ opacity: 0, y: 24, scale: 0.985 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{
+                  delay: 0.05,
+                  type: 'spring',
+                  stiffness: 280,
+                  damping: 24,
+                }}
+                className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white space-y-4"
               >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-12 h-12 rounded-full grid place-items-center text-lg shrink-0"
-                    style={{
-                      background:
-                        'linear-gradient(135deg, #BFE3FB, #74C2F6 50%, #9FD3B3)',
-                    }}
-                  >
-                    ✦
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs text-[#78808A]">
-                      {tt('Reminder assistant', state.lang)}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <motion.div
+                      whileHover={{ rotate: 15, scale: 1.06 }}
+                      className="w-12 h-12 rounded-2xl grid place-items-center text-lg text-[#13222B] shrink-0 shadow-sm"
+                      style={{
+                        background:
+                          'linear-gradient(135deg, #DDF24E 0%, #74C2F6 55%, #BDEBE3 100%)',
+                      }}
+                    >
+                      ✦
+                    </motion.div>
+                    <div className="min-w-0">
+                      <div className="text-xs text-[#78808A]">
+                        {tt('Reminder assistant', state.lang)}
+                      </div>
+                      <b className="font-fraunces font-medium text-lg text-[#13222B] block leading-snug">
+                        {tt(
+                          `${lateAccounts.length} accounts are a week late`,
+                          state.lang
+                        )}
+                      </b>
                     </div>
-                    <b className="font-medium text-base text-[#13222B] block">
-                      {tt(
-                        `${lateAccounts.length} accounts are a week late`,
-                        state.lang
-                      )}
-                    </b>
                   </div>
-                  <div
-                    className="flex items-end gap-1.5 shrink-0"
-                    aria-hidden="true"
-                  >
-                    {[14, 24, 34, 42].map((h, idx) => (
-                      <i
-                        key={idx}
-                        className="w-3 rounded-t-md block"
-                        style={{
-                          height: h,
-                          background: 'linear-gradient(#4F6D8A, transparent)',
-                        }}
-                      />
-                    ))}
-                  </div>
+                  <ReminderSignalIllustration />
                 </div>
 
-                {/* Multi-language & tone selector for SMS reminders */}
-                <div className="bg-[#F4F2EC] rounded-3xl p-3.5 space-y-2.5">
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                {/* Multi-language selector for SMS reminders (Spacious on mobile) */}
+                <div className="bg-[#F4F2EC] rounded-3xl p-4 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <span className="text-xs font-medium text-[#13222B]">
-                      SMS Language:
+                      SMS Reminder Language
                     </span>
-                    <div className="flex items-center gap-1">
+                    <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-white p-1 rounded-full">
                       {(['en', 'zu', 'st'] as LanguageCode[]).map((l) => (
                         <button
                           key={l}
                           type="button"
                           onClick={() => setAssistantSmsLang(l)}
-                          className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${
+                          className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors text-center ${
                             assistantSmsLang === l
                               ? 'bg-[#13222B] text-white'
-                              : 'bg-white text-[#78808A] hover:text-[#13222B]'
+                              : 'text-[#78808A] hover:text-[#13222B]'
                           }`}
                         >
                           {LANGUAGE_NAMES[l].label}
@@ -1046,12 +990,13 @@ export default function BahiAppPage() {
 
                 <motion.button
                   type="button"
+                  whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleSendBulkLateSMS}
-                  className="w-full min-h-[52px] rounded-full bg-[#DDF24E] text-[#13222B] font-semibold text-sm shadow-[0_14px_30px_-14px_rgba(130,160,0,0.8)] flex items-center justify-center gap-2"
+                  className="w-full min-h-[52px] rounded-full bg-[#DDF24E] text-[#13222B] font-semibold text-sm shadow-[0_14px_30px_-14px_rgba(130,160,0,0.8)] flex items-center justify-center gap-2 px-4"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>
+                  <Send className="w-4 h-4 shrink-0" />
+                  <span className="truncate">
                     {tt(
                       `Send ${lateAccounts.length} SMS reminders`,
                       state.lang
@@ -1061,12 +1006,13 @@ export default function BahiAppPage() {
                 </motion.button>
               </motion.section>
 
-              {/* Regulars Pill Grid */}
+              {/* Regulars Grid (Spacious cards, never squashed on mobile) */}
               <motion.section
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 24, scale: 0.985 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+                transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
               >
                 <div className="flex items-center justify-between">
                   <h2 className="font-fraunces text-xl font-medium text-[#13222B]">
@@ -1078,102 +1024,108 @@ export default function BahiAppPage() {
                       setProfileCustomerId(null);
                       setActiveTab('credit');
                     }}
-                    className="text-xs text-[#78808A] hover:text-[#13222B]"
+                    className="text-xs font-medium text-[#1F5F63] hover:underline"
                   >
-                    {tt('View all', state.lang)}
+                    {tt('View all', state.lang)} →
                   </button>
                 </div>
-                <div className="grid grid-cols-2 gap-2.5 mt-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3.5">
                   {state.customers.slice(0, 4).map((c) => (
                     <motion.button
                       key={c.id}
                       type="button"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ y: -2, scale: 1.01 }}
+                      whileTap={{ scale: 0.96 }}
                       onClick={() => openCustomerProfile(c.id)}
-                      className="flex items-center justify-between gap-2 bg-[#F4F2EC] hover:bg-[#ECE8DE] rounded-full py-1.5 pl-4 pr-1.5 text-left transition-colors min-w-0"
+                      className="flex items-center justify-between gap-3 bg-[#F4F2EC] hover:bg-[#ECE8DE] rounded-[26px] p-3 text-left transition-colors min-w-0"
                     >
-                      <div className="min-w-0">
-                        <span className="block text-sm font-medium text-[#13222B] truncate">
-                          {c.name.split(' ')[0]}
-                        </span>
-                        <small className="text-[11px] font-doto font-bold text-[#78808A] block">
-                          {c.owed > 0 ? formatRand0(c.owed) : 'Settled'}
-                        </small>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <i
+                          className="w-11 h-11 rounded-full grid place-items-center font-fraunces font-semibold text-base not-italic text-[#13222B] shrink-0 shadow-xs"
+                          style={{ backgroundColor: c.avatarColor }}
+                        >
+                          {c.name[0]}
+                        </i>
+                        <div className="min-w-0">
+                          <span className="block text-sm font-medium text-[#13222B] truncate">
+                            {c.name}
+                          </span>
+                          <small className="text-xs font-mono font-bold tabular-nums text-[#78808A] block">
+                            {c.owed > 0 ? formatRand0(c.owed) : 'Settled'}
+                          </small>
+                        </div>
                       </div>
-                      <i
-                        className="w-10 h-10 rounded-full grid place-items-center font-fraunces font-semibold text-base not-italic text-[#13222B] shrink-0"
-                        style={{ backgroundColor: c.avatarColor }}
-                      >
-                        {c.name[0]}
-                      </i>
+                      <ChevronRight className="w-4 h-4 text-[#78808A] shrink-0" />
                     </motion.button>
                   ))}
                 </div>
               </motion.section>
 
-              {/* Next Stock Order Card */}
+              {/* Next Stock Order Card with Spaza Archway Illustration */}
               <motion.section
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 24, scale: 0.985 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white flex items-center justify-between gap-4"
+                transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
-                <div>
-                  <div className="text-sm text-[#78808A]">
-                    {tt('Next stock order', state.lang)}
-                  </div>
-                  <div className="font-doto font-extrabold text-3xl sm:text-4xl text-[#13222B] my-1">
-                    OCT 23
-                  </div>
-                  <div
-                    className="flex items-center gap-2 mt-2"
-                    aria-hidden="true"
-                  >
-                    {[0, 1, 2, 3, 4].map((d) => (
-                      <i
-                        key={d}
-                        className={`w-3.5 h-3.5 rounded-full border-[1.5px] block ${
-                          d === 4
-                            ? 'bg-[#13222B] border-[#13222B]'
-                            : 'border-[#78808A]'
-                        }`}
-                      />
-                    ))}
+                <div className="flex items-center gap-4">
+                  <SpazaArchIllustration />
+                  <div>
+                    <div className="text-xs text-[#78808A]">
+                      {tt('Next stock order', state.lang)}
+                    </div>
+                    <div className="font-mono font-extrabold tabular-nums text-3xl sm:text-4xl text-[#13222B] my-0.5">
+                      OCT 23
+                    </div>
+                    <div
+                      className="flex items-center gap-2 mt-1.5"
+                      aria-hidden="true"
+                    >
+                      {[0, 1, 2, 3, 4].map((d) => (
+                        <i
+                          key={d}
+                          className={`w-3 h-3 rounded-full border-[1.5px] block ${
+                            d === 4
+                              ? 'bg-[#13222B] border-[#13222B]'
+                              : 'border-[#78808A]'
+                          }`}
+                        />
+                      ))}
+                      <span className="text-xs font-mono tabular-nums text-[#78808A] ml-1">
+                        {tt('in 4 days', state.lang)}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-xs text-[#78808A] block">
-                    {tt('in 4 days', state.lang)}
-                  </span>
-                  <motion.button
-                    type="button"
-                    whileTap={{ scale: 0.94 }}
-                    onClick={() => setActiveTab('stock')}
-                    className="mt-3 px-4 py-2 rounded-full bg-[#F4F2EC] text-xs font-medium text-[#13222B]"
-                  >
-                    Check low stock →
-                  </motion.button>
-                </div>
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.94 }}
+                  onClick={() => setActiveTab('stock')}
+                  className="min-h-[42px] px-4 py-2 rounded-full bg-[#F4F2EC] hover:bg-[#ECE8DE] text-xs font-medium text-[#13222B] self-start sm:self-center shrink-0"
+                >
+                  Check low stock →
+                </motion.button>
               </motion.section>
 
-              {/* Running Low Stock Card */}
+              {/* Running Low Stock Card (Un-squashed responsive rows) */}
               <motion.section
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 24, scale: 0.985 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+                transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
               >
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-3">
                   <h2 className="font-fraunces text-xl font-medium text-[#13222B]">
                     {tt('Running low', state.lang)}
                   </h2>
                   <button
                     type="button"
                     onClick={() => setActiveTab('stock')}
-                    className="text-xs text-[#78808A] hover:text-[#13222B]"
+                    className="text-xs font-medium text-[#1F5F63] hover:underline"
                   >
-                    {tt('View all', state.lang)}
+                    {tt('View all', state.lang)} →
                   </button>
                 </div>
                 <div className="space-y-2.5">
@@ -1184,7 +1136,7 @@ export default function BahiAppPage() {
                     return (
                       <div
                         key={item.id}
-                        className="flex items-center justify-between gap-3 bg-[#F4F2EC] rounded-[26px] p-3"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#F4F2EC] rounded-[28px] p-3.5"
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <StatusRing
@@ -1193,7 +1145,7 @@ export default function BahiAppPage() {
                             label={String(item.qty)}
                           />
                           <div className="min-w-0">
-                            <b className="text-sm font-medium text-[#13222B] block truncate">
+                            <b className="text-sm font-medium text-[#13222B] block leading-snug">
                               {item.name}
                             </b>
                             <small className="text-xs text-[#78808A]">
@@ -1213,20 +1165,23 @@ export default function BahiAppPage() {
                             </small>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
+                        <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto shrink-0">
                           <motion.button
                             type="button"
                             whileTap={{ scale: 0.92 }}
                             onClick={(e) => handleSellItem(item.id, e)}
-                            className="min-h-[38px] px-3 rounded-full bg-[#13222B] text-white text-xs font-medium"
+                            className="min-h-[40px] px-4 rounded-full bg-[#13222B] text-white text-xs font-medium text-center"
                           >
-                            Sell
+                            Sell ·{' '}
+                            <span className="font-mono tabular-nums">
+                              {formatRand0(item.price)}
+                            </span>
                           </motion.button>
                           <motion.button
                             type="button"
                             whileTap={{ scale: 0.92 }}
                             onClick={() => handleRestockItem(item.id)}
-                            className="min-h-[38px] px-3 rounded-full bg-white text-xs font-medium text-[#13222B]"
+                            className="min-h-[40px] px-3.5 rounded-full bg-white text-xs font-mono font-semibold tabular-nums text-[#13222B] text-center"
                           >
                             +{Math.round(item.maxQty / 3)}
                           </motion.button>
@@ -1249,7 +1204,7 @@ export default function BahiAppPage() {
             transition={{ type: 'spring', stiffness: 280, damping: 26 }}
             className="max-w-4xl mx-auto space-y-4"
           >
-            <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
+            <div className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div>
                   <h2 className="font-fraunces text-2xl font-medium text-[#13222B]">
@@ -1259,17 +1214,16 @@ export default function BahiAppPage() {
                     Tap Sell to ring up cash sales or Scan barcode with camera
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <motion.button
-                    type="button"
-                    whileTap={{ scale: 0.94 }}
-                    onClick={() => setScannerOpen(true)}
-                    className="min-h-[44px] px-4 rounded-full bg-[#13222B] text-white text-xs font-medium flex items-center gap-2"
-                  >
-                    <ScanBarcode className="w-4 h-4 text-[#DDF24E]" />
-                    <span>{tt('Scan', state.lang)}</span>
-                  </motion.button>
-                </div>
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.94 }}
+                  onClick={() => setScannerOpen(true)}
+                  className="min-h-[44px] px-4 rounded-full bg-[#13222B] text-white text-xs font-medium flex items-center gap-2"
+                >
+                  <ScanBarcode className="w-4 h-4 text-[#DDF24E]" />
+                  <span>{tt('Scan', state.lang)}</span>
+                </motion.button>
               </div>
 
               {/* Search & Category Filter */}
@@ -1315,8 +1269,8 @@ export default function BahiAppPage() {
                 ))}
               </div>
 
-              {/* Stock Items List */}
-              <div className="space-y-2.5 mt-5">
+              {/* Stock Items List (Spacious mobile-first cards) */}
+              <div className="space-y-3 mt-5">
                 {filteredStock.length === 0 ? (
                   <p className="text-sm text-[#78808A] py-8 text-center">
                     {tt('No items match. Try another name.', state.lang)}
@@ -1330,19 +1284,20 @@ export default function BahiAppPage() {
                       <motion.div
                         key={item.id}
                         layout
-                        className="flex items-center justify-between gap-3 bg-[#F4F2EC] rounded-[28px] p-3.5 flex-wrap sm:flex-nowrap"
+                        whileHover={{ y: -1 }}
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 bg-[#F4F2EC] rounded-[30px] p-4"
                       >
-                        <div className="flex items-center gap-3 min-w-[180px] flex-1">
+                        <div className="flex items-center gap-3.5 min-w-0">
                           <StatusRing
                             percent={pct}
                             color={color}
                             label={String(item.qty)}
                           />
                           <div className="min-w-0">
-                            <b className="text-sm sm:text-base font-medium text-[#13222B] block truncate">
+                            <b className="text-base font-medium text-[#13222B] block leading-snug">
                               {item.name}
                             </b>
-                            <small className="text-xs text-[#78808A]">
+                            <small className="text-xs text-[#78808A] block mt-0.5">
                               {item.qty > 0
                                 ? tt(
                                     `${formatRand0(item.price)} each · ${
@@ -1360,22 +1315,26 @@ export default function BahiAppPage() {
                             </small>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 ml-auto">
+                        <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto shrink-0">
                           <motion.button
                             type="button"
-                            whileTap={{ scale: 0.92 }}
+                            whileTap={{ scale: 0.93 }}
                             onClick={(e) => handleSellItem(item.id, e)}
-                            className="min-h-[42px] px-4 rounded-full bg-[#0B0B0C] text-white text-xs font-medium"
+                            className="min-h-[42px] px-4 rounded-full bg-[#0B0B0C] text-white text-xs font-medium text-center"
                           >
-                            Sell ({formatRand0(item.price)})
+                            Sell (
+                            <span className="font-mono tabular-nums">
+                              {formatRand0(item.price)}
+                            </span>
+                            )
                           </motion.button>
                           <motion.button
                             type="button"
-                            whileTap={{ scale: 0.92 }}
+                            whileTap={{ scale: 0.93 }}
                             onClick={() => handleRestockItem(item.id)}
-                            className="min-h-[42px] px-3.5 rounded-full bg-white border border-[#ECE8DE] text-[#13222B] text-xs font-medium"
+                            className="min-h-[42px] px-4 rounded-full bg-white border border-[#ECE8DE] text-[#13222B] text-xs font-mono font-semibold tabular-nums text-center"
                           >
-                            +{Math.round(item.maxQty / 3)}
+                            Restock +{Math.round(item.maxQty / 3)}
                           </motion.button>
                         </div>
                       </motion.div>
@@ -1410,12 +1369,17 @@ export default function BahiAppPage() {
                 {/* Left Column: Credit Half-Gauge + Top Customers Leaderboard */}
                 <div className="lg:col-span-5 space-y-4">
                   {/* Half-Circle Credit Gauge Card */}
-                  <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
+                  <motion.div
+                    initial={{ opacity: 0, y: 22 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+                  >
                     <div className="flex items-center justify-between">
                       <h2 className="font-fraunces text-xl font-medium text-[#13222B]">
                         {tt('Credit book', state.lang)}
                       </h2>
-                      <span className="text-xs text-[#78808A]">
+                      <span className="text-xs font-mono tabular-nums text-[#78808A]">
                         {state.customers.length} accounts
                       </span>
                     </div>
@@ -1441,22 +1405,27 @@ export default function BahiAppPage() {
                         </small>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
 
-                  {/* Top Customers Leaderboard Card (by Total Credit or Purchase Frequency) */}
-                  <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
-                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                  {/* Top Customers Leaderboard Card */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 22 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
                         <Award className="w-5 h-5 text-[#1F5F63]" />
                         <h2 className="font-fraunces text-xl font-medium text-[#13222B]">
                           {tt('Top customers', state.lang)}
                         </h2>
                       </div>
-                      <div className="flex items-center gap-1 bg-[#F4F2EC] p-1 rounded-full">
+                      <div className="grid grid-cols-2 sm:flex items-center gap-1 bg-[#F4F2EC] p-1 rounded-full w-full sm:w-auto">
                         <button
                           type="button"
                           onClick={() => setTopCustomerMetric('credit')}
-                          className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors text-center ${
                             topCustomerMetric === 'credit'
                               ? 'bg-[#13222B] text-white'
                               : 'text-[#78808A] hover:text-[#13222B]'
@@ -1467,7 +1436,7 @@ export default function BahiAppPage() {
                         <button
                           type="button"
                           onClick={() => setTopCustomerMetric('frequency')}
-                          className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors text-center ${
                             topCustomerMetric === 'frequency'
                               ? 'bg-[#13222B] text-white'
                               : 'text-[#78808A] hover:text-[#13222B]'
@@ -1483,13 +1452,14 @@ export default function BahiAppPage() {
                         <motion.button
                           key={cust.id}
                           type="button"
+                          whileHover={{ y: -1 }}
                           whileTap={{ scale: 0.97 }}
                           onClick={() => openCustomerProfile(cust.id)}
-                          className="w-full flex items-center justify-between gap-3 bg-[#F4F2EC] hover:bg-[#ECE8DE] rounded-[24px] p-3 text-left transition-colors"
+                          className="w-full flex items-center justify-between gap-3 bg-[#F4F2EC] hover:bg-[#ECE8DE] rounded-[24px] p-3.5 text-left transition-colors"
                         >
                           <div className="flex items-center gap-3 min-w-0">
                             <span
-                              className="w-10 h-10 rounded-full grid place-items-center font-fraunces font-semibold text-sm text-[#13222B] shrink-0"
+                              className="w-10 h-10 rounded-full grid place-items-center font-mono font-bold tabular-nums text-xs text-[#13222B] shrink-0"
                               style={{ backgroundColor: cust.avatarColor }}
                             >
                               0{i + 1}
@@ -1499,12 +1469,16 @@ export default function BahiAppPage() {
                                 {cust.name}
                               </b>
                               <small className="text-xs text-[#78808A] capitalize">
-                                {cust.category} · {cust.purchaseCount} purchases
+                                {cust.category} ·{' '}
+                                <span className="font-mono tabular-nums">
+                                  {cust.purchaseCount}
+                                </span>{' '}
+                                purchases
                               </small>
                             </div>
                           </div>
                           <div className="text-right shrink-0">
-                            <b className="font-doto font-extrabold text-base text-[#13222B] block">
+                            <b className="font-mono font-extrabold tabular-nums text-base text-[#13222B] block">
                               {topCustomerMetric === 'credit'
                                 ? formatRand0(cust.totalCreditExtended)
                                 : `${cust.purchaseCount}x`}
@@ -1518,12 +1492,17 @@ export default function BahiAppPage() {
                         </motion.button>
                       ))}
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
 
                 {/* Right Column: Full CRM Directory with Customer Search, Category Filter & Add Customer */}
                 <div className="lg:col-span-7">
-                  <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
+                  <motion.div
+                    initial={{ opacity: 0, y: 22 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+                  >
                     <div className="flex items-center justify-between gap-3 flex-wrap">
                       <div>
                         <h2 className="font-fraunces text-2xl font-medium text-[#13222B]">
@@ -1536,6 +1515,7 @@ export default function BahiAppPage() {
                       </div>
                       <motion.button
                         type="button"
+                        whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.94 }}
                         onClick={() => setCreatingCustomer(true)}
                         className="min-h-[44px] px-4 rounded-full bg-[#13222B] text-white text-xs font-medium flex items-center gap-1.5"
@@ -1595,7 +1575,7 @@ export default function BahiAppPage() {
                           </button>
                         ))}
                       </div>
-                      <span className="text-xs text-[#78808A]">
+                      <span className="text-xs font-mono tabular-nums text-[#78808A]">
                         {filteredCustomers.length} shown
                       </span>
                     </div>
@@ -1623,6 +1603,7 @@ export default function BahiAppPage() {
                             <motion.div
                               key={c.id}
                               layout
+                              whileHover={{ y: -1 }}
                               whileTap={{ scale: 0.98 }}
                               onClick={() => openCustomerProfile(c.id)}
                               role="button"
@@ -1659,17 +1640,23 @@ export default function BahiAppPage() {
                                     <span className="capitalize">
                                       {c.category}
                                     </span>{' '}
-                                    · {c.phone}
+                                    ·{' '}
+                                    <span className="font-mono tabular-nums">
+                                      {c.phone}
+                                    </span>
                                   </small>
                                 </div>
                               </div>
                               <div className="flex items-center gap-2 shrink-0">
                                 <div className="text-right">
-                                  <b className="font-doto font-extrabold text-lg text-[#13222B] block">
+                                  <b className="font-mono font-extrabold tabular-nums text-lg text-[#13222B] block">
                                     {formatRand0(c.owed)}
                                   </b>
                                   <small className="text-[11px] text-[#78808A]">
-                                    Total: {formatRand0(c.totalCreditExtended)}
+                                    Total:{' '}
+                                    <span className="font-mono tabular-nums">
+                                      {formatRand0(c.totalCreditExtended)}
+                                    </span>
                                   </small>
                                 </div>
                                 <ChevronRight className="w-4 h-4 text-[#78808A] group-hover:text-[#13222B] group-hover:translate-x-0.5 transition-all" />
@@ -1679,7 +1666,7 @@ export default function BahiAppPage() {
                         })
                       )}
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             )}
@@ -1713,13 +1700,16 @@ export default function BahiAppPage() {
           >
             <div className="lg:col-span-6 space-y-4">
               {/* Brand Story Card */}
-              <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
+              <motion.div
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+              >
                 <div className="flex items-center gap-4">
-                  <svg className="w-16 h-16 shrink-0">
-                    <use href="#bahi-mark" />
-                  </svg>
+                  <BahiBrandLogo size={64} className="rounded-[20px] shadow-md" />
                   <div>
-                    <b className="font-fraunces text-4xl font-medium tracking-tight text-[#13222B] block">
+                    <b className="font-fraunces text-3xl sm:text-4xl font-medium tracking-tight text-[#13222B] block">
                       BahiApp
                     </b>
                     <span className="text-xs text-[#78808A]">
@@ -1730,9 +1720,9 @@ export default function BahiAppPage() {
                 <p className="text-sm text-[#78808A] mt-4 leading-relaxed">
                   Bahi is the traditional shopkeeper’s ledger (bahi-khata), the
                   book credit has always lived in. BahiApp puts that book on
-                  every spaza and duka phone, offline. The mark is a lowercase b:
-                  a book spine with a coin for its bowl, glowing from stocked to
-                  overdue.
+                  every spaza and duka phone, offline. The mark combines a spaza
+                  shop awning with a lowercase b: a book spine and a spectrum
+                  coin bowl glowing from stocked blue to overdue coral.
                 </p>
                 <motion.button
                   type="button"
@@ -1743,10 +1733,15 @@ export default function BahiAppPage() {
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Replay Interactive 3D Onboarding</span>
                 </motion.button>
-              </div>
+              </motion.div>
 
               {/* Interactive 3D Shape Language Card */}
-              <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
+              <motion.div
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+              >
                 <h2 className="font-fraunces text-xl font-medium text-[#13222B]">
                   3D & Shape language
                 </h2>
@@ -1772,37 +1767,42 @@ export default function BahiAppPage() {
                   and a sun for the day’s takings. Move your pointer or finger
                   to rotate.
                 </p>
-              </div>
+              </motion.div>
 
               {/* Colour Means Status Card */}
-              <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
+              <motion.div
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+              >
                 <h2 className="font-fraunces text-xl font-medium text-[#13222B]">
                   Colour means status
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-3">
                   <div className="rounded-2xl p-3 text-xs text-white min-h-[68px] bg-[#1F5F63]">
                     Lagoon
-                    <small className="block opacity-80">#1F5F63</small>
+                    <small className="block opacity-80 font-mono">#1F5F63</small>
                   </div>
                   <div className="rounded-2xl p-3 text-xs text-white min-h-[68px] bg-[#13222B]">
                     Till
-                    <small className="block opacity-80">#13222B</small>
+                    <small className="block opacity-80 font-mono">#13222B</small>
                   </div>
                   <div className="rounded-2xl p-3 text-xs text-[#13222B] min-h-[68px] bg-[#DDF24E]">
                     Lime
-                    <small className="block opacity-80">#DDF24E</small>
+                    <small className="block opacity-80 font-mono">#DDF24E</small>
                   </div>
                   <div className="rounded-2xl p-3 text-xs text-[#13222B] min-h-[68px] bg-[#74C2F6]">
                     Stocked
-                    <small className="block opacity-80">#74C2F6</small>
+                    <small className="block opacity-80 font-mono">#74C2F6</small>
                   </div>
                   <div className="rounded-2xl p-3 text-xs text-[#13222B] min-h-[68px] bg-[#F5B83D]">
                     Due soon
-                    <small className="block opacity-80">#F5B83D</small>
+                    <small className="block opacity-80 font-mono">#F5B83D</small>
                   </div>
                   <div className="rounded-2xl p-3 text-xs text-white min-h-[68px] bg-[#E8453C]">
                     Overdue
-                    <small className="block opacity-80">#E8453C</small>
+                    <small className="block opacity-80 font-mono">#E8453C</small>
                   </div>
                 </div>
                 <div
@@ -1812,12 +1812,17 @@ export default function BahiAppPage() {
                       'linear-gradient(90deg, #DDF24E, #74C2F6 30%, #F5B83D 62%, #E8453C)',
                   }}
                 />
-              </div>
+              </motion.div>
             </div>
 
             {/* Right Column: Printable A4 Shop Window Poster */}
             <div className="lg:col-span-6 space-y-4">
-              <div className="bg-white/85 rounded-[44px] p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white">
+              <motion.div
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white"
+              >
                 <div className="flex items-center justify-between">
                   <h2 className="font-fraunces text-xl font-medium text-[#13222B]">
                     {tt('Window poster', state.lang)} (A4)
@@ -1830,13 +1835,14 @@ export default function BahiAppPage() {
                 {/* Printable A4 Container */}
                 <div
                   id="pz"
-                  className="aspect-[1/1.414] bg-white rounded-[24px] overflow-hidden my-4 border-2 border-[#ECE8DE] p-7 sm:p-10 flex flex-col justify-between text-[#0B0B0C]"
+                  className="aspect-[1/1.414] bg-white rounded-[24px] overflow-hidden my-4 border-2 border-[#ECE8DE] p-6 sm:p-10 flex flex-col justify-between text-[#0B0B0C]"
                 >
                   <div className="space-y-4">
-                    <svg className="w-16 h-16">
-                      <use href="#bahi-mark" />
-                    </svg>
-                    <h3 className="font-fraunces text-4xl sm:text-5xl font-medium leading-none tracking-tight">
+                    <div className="flex items-center justify-between">
+                      <BahiBrandLogo size={60} />
+                      <SpazaArchIllustration />
+                    </div>
+                    <h3 className="font-fraunces text-3xl sm:text-5xl font-medium leading-none tracking-tight">
                       {state.shopName}
                     </h3>
                     <h4 className="font-fraunces text-2xl sm:text-3xl font-medium text-[#1F5F63]">
@@ -1871,16 +1877,16 @@ export default function BahiAppPage() {
                   <Printer className="w-4 h-4" />
                   <span>{tt('Print window poster', state.lang)}</span>
                 </motion.button>
-              </div>
+              </motion.div>
             </div>
           </motion.main>
         )}
       </div>
 
-      {/* Floating iOS Bottom Navigation Pill with Spring Indicator */}
+      {/* Responsive Floating iOS Bottom Navigation Pill with Spring Indicator */}
       <nav
         aria-label="Primary Navigation"
-        className="fixed left-1/2 -translate-x-1/2 bottom-4 z-30 bg-[#13222B]/95 backdrop-blur-xl border border-white/15 rounded-[30px] p-1.5 flex items-center gap-0.5 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.55)]"
+        className="fixed left-1/2 -translate-x-1/2 bottom-4 z-30 w-[calc(100vw-24px)] max-w-[440px] sm:max-w-[460px] bg-[#13222B]/95 backdrop-blur-xl border border-white/15 rounded-[30px] p-1.5 flex items-center justify-between gap-1 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.55)]"
       >
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -1900,7 +1906,7 @@ export default function BahiAppPage() {
               }}
               aria-label={item.label}
               data-active-nav={isActive ? 'true' : 'false'}
-              className={`relative w-[64px] sm:w-[78px] h-[52px] rounded-[22px] flex flex-col items-center justify-center gap-0.5 transition-colors z-10 ${
+              className={`relative flex-1 min-w-0 h-[52px] rounded-[22px] flex flex-col items-center justify-center gap-0.5 transition-colors z-10 px-1 ${
                 isActive ? 'text-[#13222B]' : 'text-white/80 hover:text-white'
               }`}
             >
@@ -1927,7 +1933,7 @@ export default function BahiAppPage() {
               >
                 <Icon className="w-5 h-5" />
               </motion.span>
-              <span className="text-[10px] font-medium tracking-tight leading-none whitespace-nowrap">
+              <span className="text-[10px] font-medium tracking-tight leading-none truncate max-w-full">
                 {item.label}
               </span>
             </motion.button>
@@ -1945,7 +1951,7 @@ export default function BahiAppPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.9, ease: 'easeOut' }}
             style={{ left: chip.x, top: chip.y }}
-            className="fixed z-50 pointer-events-none -translate-x-1/2 -translate-y-1/2 font-doto font-extrabold text-xl text-[#13222B] bg-[#DDF24E] px-3 py-0.5 rounded-full shadow-md"
+            className="fixed z-50 pointer-events-none -translate-x-1/2 -translate-y-1/2 font-mono font-extrabold tabular-nums text-xl text-[#13222B] bg-[#DDF24E] px-3 py-0.5 rounded-full shadow-md"
           >
             {chip.text}
           </motion.div>

@@ -135,7 +135,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="author" type="text/plain" href="/llm.txt" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700;800;900&family=Fraunces:opsz,wght@9..144,400;500;600&family=Lexend:wght@400;500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;500;600&family=JetBrains+Mono:wght@400;500;600;700;800&family=Lexend:wght@400;500;600&display=swap"
         />
         <script
           type="application/ld+json"
