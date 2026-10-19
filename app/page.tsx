@@ -19,6 +19,10 @@ import {
   Settings,
   ChevronRight,
   X,
+  ShieldCheck,
+  Scale,
+  Lock,
+  Download,
 } from 'lucide-react';
 import {
   BahiState,
@@ -54,6 +58,7 @@ import { BarcodeScannerModal } from '@/components/BarcodeScannerModal';
 import { OnboardingModal } from '@/components/OnboardingModal';
 import { ReportsDashboard } from '@/components/ReportsDashboard';
 import { SettingsModal } from '@/components/SettingsModal';
+import { LegalPrivacyModal } from '@/components/LegalPrivacyModal';
 import { ThreeOnboardingScene } from '@/components/ThreeOnboardingScene';
 
 const STORAGE_KEY = 'bahiapp.v3.state';
@@ -74,8 +79,12 @@ export default function BahiAppPage() {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [flyingChips, setFlyingChips] = useState<FlyingChip[]>([]);
 
-  // Header Settings & Onboarding tour state
+  // Header Settings, Legal/Privacy & Onboarding tour state
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [legalModalOpen, setLegalModalOpen] = useState(false);
+  const [legalInitialSection, setLegalInitialSection] = useState<
+    'privacy' | 'terms' | 'sms' | 'rights'
+  >('privacy');
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Stock filters
@@ -640,6 +649,59 @@ export default function BahiAppPage() {
     setState(INITIAL_STATE);
     setProfileCustomerId(null);
     showToast('Demo data restored');
+  };
+
+  const handleOpenLegalSection = (
+    section: 'privacy' | 'terms' | 'sms' | 'rights' = 'privacy'
+  ) => {
+    vibrate();
+    setLegalInitialSection(section);
+    setLegalModalOpen(true);
+  };
+
+  const handleAcceptLegalTerms = () => {
+    vibrate();
+    const stamp = `${new Date().toISOString().slice(0, 10)} · v1.4 (POPIA & NCA Compliant)`;
+    setState((prev) => ({
+      ...prev,
+      legalAcceptedAt: stamp,
+    }));
+    showToast('Legal & POPIA terms accepted');
+  };
+
+  const handleExportDataJson = () => {
+    vibrate();
+    try {
+      const payload = JSON.stringify(state, null, 2);
+      const blob = new Blob([payload], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `bahiapp-ledger-backup-${new Date()
+        .toISOString()
+        .slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Shop ledger exported (.JSON)');
+    } catch {
+      showToast('Export failed');
+    }
+  };
+
+  const handleWipeAllData = () => {
+    vibrate();
+    localStorage.removeItem(STORAGE_KEY);
+    setState({
+      ...INITIAL_STATE,
+      today: { cash: 0, credit: 0 },
+      month: { given: 0, collected: 0 },
+      customers: [],
+      transactions: [],
+    });
+    setProfileCustomerId(null);
+    showToast('All local customer & transaction data wiped');
   };
 
   // Derived metrics
@@ -1884,9 +1946,122 @@ export default function BahiAppPage() {
                   <span>{tt('Print window poster', state.lang)}</span>
                 </motion.button>
               </motion.div>
+
+              {/* Legal, POPIA Privacy & NCA Compliance Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border border-white space-y-3.5"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5 text-[#1F5F63]" />
+                    <h2 className="font-fraunces text-xl font-medium text-[#13222B]">
+                      Data Usage, Privacy & Legal Protection
+                    </h2>
+                  </div>
+                  <span className="text-[11px] font-mono tabular-nums text-[#1F5F63]">
+                    POPIA · NCA · CPA
+                  </span>
+                </div>
+
+                <p className="text-xs text-[#78808A] leading-relaxed">
+                  BahiApp is an <b>offline-first digital notebook</b> and
+                  arithmetic calculator—not a bank, debt collector, or
+                  registered credit provider under the{' '}
+                  <b>National Credit Act (NCA)</b>. Customer phone numbers and
+                  credit tabs stay on your phone under <b>POPIA</b> data
+                  minimization rules and are never sold or shared with credit
+                  bureaus.
+                </p>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleOpenLegalSection('privacy')}
+                    className="min-h-[42px] rounded-2xl bg-[#F4F2EC] hover:bg-[#ECE8DE] text-xs font-medium text-[#13222B] px-3 py-2 flex items-center justify-center gap-1.5"
+                  >
+                    <Lock className="w-3.5 h-3.5 text-[#1F5F63]" />
+                    <span>POPIA & Data Policy</span>
+                  </motion.button>
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleOpenLegalSection('terms')}
+                    className="min-h-[42px] rounded-2xl bg-[#F4F2EC] hover:bg-[#ECE8DE] text-xs font-medium text-[#13222B] px-3 py-2 flex items-center justify-center gap-1.5"
+                  >
+                    <Scale className="w-3.5 h-3.5 text-[#1F5F63]" />
+                    <span>NCA & Tax Disclaimers</span>
+                  </motion.button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleExportDataJson}
+                    className="min-h-[42px] rounded-2xl bg-[#13222B] text-white text-xs font-medium px-3 py-2 flex items-center justify-center gap-1.5"
+                  >
+                    <Download className="w-3.5 h-3.5 text-[#DDF24E]" />
+                    <span>Export Shop Backup (.JSON)</span>
+                  </motion.button>
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleOpenLegalSection('rights')}
+                    className="min-h-[42px] rounded-2xl bg-[#F4F2EC] hover:bg-[#ECE8DE] text-xs font-medium text-[#13222B] px-3 py-2 flex items-center justify-center gap-1.5"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#1F5F63]" />
+                    <span>Data Rights & Erase</span>
+                  </motion.button>
+                </div>
+              </motion.div>
             </div>
           </motion.main>
         )}
+
+        {/* Quiet Legal, POPIA Privacy & NCA Disclaimer Footer */}
+        <footer className="mt-8 pt-4 border-t border-[#ECE8DE] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#78808A]">
+          <p className="text-center sm:text-left">
+            BahiApp is an informal bookkeeping notebook only · Not a registered
+            credit provider (NCA) or tax advisor (SARS).
+          </p>
+          <div className="flex items-center gap-3 flex-wrap justify-center">
+            <button
+              type="button"
+              onClick={() => handleOpenLegalSection('privacy')}
+              className="hover:text-[#13222B] underline underline-offset-2 transition-colors"
+            >
+              Data Usage & POPIA Privacy
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={() => handleOpenLegalSection('terms')}
+              className="hover:text-[#13222B] underline underline-offset-2 transition-colors"
+            >
+              NCA & Liability Terms
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={() => handleOpenLegalSection('sms')}
+              className="hover:text-[#13222B] underline underline-offset-2 transition-colors"
+            >
+              SMS Rules
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={() => handleOpenLegalSection('rights')}
+              className="hover:text-[#13222B] underline underline-offset-2 transition-colors"
+            >
+              Export / Wipe Data
+            </button>
+          </div>
+        </footer>
       </div>
 
       {/* Responsive Floating iOS Bottom Navigation Pill with Spring Indicator */}
@@ -2004,7 +2179,19 @@ export default function BahiAppPage() {
         onToggleSync={handleToggleSync}
         onLaunchOnboarding={() => setShowOnboarding(true)}
         onOpenBrandPoster={() => setActiveTab('brand')}
+        onOpenLegalPrivacy={() => handleOpenLegalSection('privacy')}
         onResetDemoData={handleResetDemoData}
+      />
+
+      {/* Legal, Data Usage & POPIA Privacy Modal */}
+      <LegalPrivacyModal
+        isOpen={legalModalOpen}
+        state={state}
+        initialSection={legalInitialSection}
+        onClose={() => setLegalModalOpen(false)}
+        onAcceptLegalTerms={handleAcceptLegalTerms}
+        onExportDataJson={handleExportDataJson}
+        onWipeAllData={handleWipeAllData}
       />
 
       {/* Add Customer Modal */}

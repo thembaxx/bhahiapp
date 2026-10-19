@@ -71,6 +71,7 @@ export interface Customer {
   lastPurchaseDate: string;
   notes: string;
   tags?: CustomerTag[];
+  popiaConsent?: boolean;
   history: TransactionRecord[];
 }
 
@@ -82,6 +83,7 @@ export interface BahiState {
   theme?: 'light' | 'dark';
   ownerName: string;
   shopName: string;
+  legalAcceptedAt?: string;
   today: {
     cash: number;
     credit: number;
@@ -109,6 +111,7 @@ export const INITIAL_STATE: BahiState = {
   theme: 'light',
   ownerName: 'Thandi',
   shopName: 'Thandi’s Spaza',
+  legalAcceptedAt: '2026-10-19 · v1.4 (POPIA & NCA Compliant)',
   today: {
     cash: 1920.5,
     credit: 925.0,

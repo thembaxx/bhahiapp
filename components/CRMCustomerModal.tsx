@@ -16,6 +16,7 @@ import {
   Sparkles,
   ArrowDownLeft,
   ArrowUpRight,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   Customer,
@@ -51,6 +52,7 @@ interface CRMCustomerModalProps {
       category: CustomerCategory;
       preferredLang: LanguageCode;
       notes: string;
+      popiaConsent?: boolean;
     },
     initialCredit?: number
   ) => void;
@@ -81,6 +83,7 @@ export function CRMCustomerModal({
   const [preferredLang, setPreferredLang] = useState<LanguageCode>('en');
   const [notes, setNotes] = useState('');
   const [initialCreditStr, setInitialCreditStr] = useState('');
+  const [popiaConsent, setPopiaConsent] = useState(true);
 
   useEffect(() => {
     if (isCreatingNew) {
@@ -91,6 +94,7 @@ export function CRMCustomerModal({
       setPreferredLang(appLang);
       setNotes('');
       setInitialCreditStr('');
+      setPopiaConsent(true);
     } else if (customer) {
       setSubTab('ledger');
       setAmountStr('');
@@ -102,6 +106,7 @@ export function CRMCustomerModal({
       setCategory(customer.category);
       setPreferredLang(customer.preferredLang || appLang);
       setNotes(customer.notes || '');
+      setPopiaConsent(customer.popiaConsent ?? true);
     }
   }, [customer, isCreatingNew, appLang, isOpen]);
 
@@ -136,6 +141,7 @@ export function CRMCustomerModal({
         category,
         preferredLang,
         notes: notes.trim(),
+        popiaConsent,
       },
       isCreatingNew ? parseFloat(initialCreditStr) || 0 : undefined
     );
@@ -662,6 +668,26 @@ export function CRMCustomerModal({
                     className="w-full bg-[#F4F2EC] rounded-2xl px-4 py-3 text-sm text-[#13222B]"
                   />
                 </div>
+
+                {/* POPIA & Transactional SMS Consent Confirmation */}
+                <label className="flex items-start gap-3 bg-[#F4F2EC] rounded-2xl p-3.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    required
+                    checked={popiaConsent}
+                    onChange={(e) => setPopiaConsent(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 accent-[#1F5F63] rounded shrink-0"
+                  />
+                  <span className="text-xs text-[#78808A] leading-relaxed">
+                    <b className="text-[#13222B] inline-flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#1F5F63] inline" />
+                      POPIA & SMS Consent:
+                    </b>{' '}
+                    Customer consented to store their name & mobile number on
+                    this device and receive transactional SMS balance reminders
+                    (interest-free informal bookkeeping under NCA).
+                  </span>
+                </label>
 
                 <motion.button
                   type="submit"

@@ -14,6 +14,7 @@ import {
   RefreshCw,
   Sun,
   Moon,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   BahiState,
@@ -33,6 +34,7 @@ interface SettingsModalProps {
   onToggleSync: () => void;
   onLaunchOnboarding: () => void;
   onOpenBrandPoster: () => void;
+  onOpenLegalPrivacy: () => void;
   onResetDemoData: () => void;
 }
 
@@ -46,6 +48,7 @@ export function SettingsModal({
   onToggleSync,
   onLaunchOnboarding,
   onOpenBrandPoster,
+  onOpenLegalPrivacy,
   onResetDemoData,
 }: SettingsModalProps) {
   const [ownerInput, setOwnerInput] = useState(state.ownerName);
@@ -343,6 +346,25 @@ export function SettingsModal({
                   <span>{tt('Window poster', state.lang)}</span>
                 </motion.button>
               </div>
+
+              {/* Legal, Privacy & Data Usage Policy Trigger */}
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.96 }}
+                onClick={() => {
+                  onClose();
+                  onOpenLegalPrivacy();
+                }}
+                className="w-full min-h-[46px] rounded-2xl bg-[#F4F2EC] hover:bg-[#ECE8DE] text-[#13222B] text-xs font-medium px-4 py-2.5 flex items-center justify-between gap-2"
+              >
+                <span className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-[#1F5F63]" />
+                  <span>Data Usage, POPIA Privacy & Legal Terms</span>
+                </span>
+                <span className="text-[11px] font-mono text-[#78808A]">
+                  NCA · POPIA
+                </span>
+              </motion.button>
 
               <div className="flex items-center justify-between gap-2 pt-1">
                 <PWAInstallBanner />
