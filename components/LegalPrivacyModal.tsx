@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   X,
   ShieldCheck,
@@ -15,11 +15,11 @@ import {
   FileWarning,
   Printer,
   AlertTriangle,
-} from 'lucide-react';
-import { BahiState } from '@/lib/bahi-data';
-import { BahiBrandLogo } from './VisualCharts';
+} from "lucide-react";
+import { BahiState } from "@/lib/bahi-data";
+import { BahiBrandLogo } from "./VisualCharts";
 
-export type LegalSectionTab = 'privacy' | 'terms' | 'sms' | 'rights';
+export type LegalSectionTab = "privacy" | "terms" | "sms" | "rights";
 
 interface LegalPrivacyModalProps {
   isOpen: boolean;
@@ -34,14 +34,13 @@ interface LegalPrivacyModalProps {
 export function LegalPrivacyModal({
   isOpen,
   state,
-  initialSection = 'privacy',
+  initialSection = "privacy",
   onClose,
   onAcceptLegalTerms,
   onExportDataJson,
   onWipeAllData,
 }: LegalPrivacyModalProps) {
-  const [activeSection, setActiveSection] =
-    useState<LegalSectionTab>(initialSection);
+  const [activeSection, setActiveSection] = useState<LegalSectionTab>(initialSection);
   const [confirmWipe, setConfirmWipe] = useState(false);
 
   useEffect(() => {
@@ -53,19 +52,17 @@ export function LegalPrivacyModal({
 
   if (!isOpen) return null;
 
-  const consentedCustomersCount = state.customers.filter(
-    (c) => c.popiaConsent !== false
-  ).length;
+  const consentedCustomersCount = state.customers.filter((c) => c.popiaConsent !== false).length;
 
   const tabs: {
     id: LegalSectionTab;
     label: string;
     icon: React.ComponentType<{ className?: string }>;
   }[] = [
-    { id: 'privacy', label: 'Data & POPIA', icon: Lock },
-    { id: 'terms', label: 'NCA & Tax', icon: Scale },
-    { id: 'sms', label: 'SMS Rules', icon: MessageSquareWarning },
-    { id: 'rights', label: 'Data Controls', icon: Database },
+    { id: "privacy", label: "Data & POPIA", icon: Lock },
+    { id: "terms", label: "NCA & Tax", icon: Scale },
+    { id: "sms", label: "SMS Rules", icon: MessageSquareWarning },
+    { id: "rights", label: "Data Controls", icon: Database },
   ];
 
   return (
@@ -80,7 +77,7 @@ export function LegalPrivacyModal({
           initial={{ opacity: 0, y: 36, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 28, scale: 0.96 }}
-          transition={{ type: 'spring', stiffness: 360, damping: 28 }}
+          transition={{ type: "spring", stiffness: 360, damping: 28 }}
           className="bg-[#FBF8F3] text-[#13222B] rounded-t-[36px] sm:rounded-[38px] p-5 sm:p-7 max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-white space-y-5"
         >
           {/* Header */}
@@ -128,8 +125,8 @@ export function LegalPrivacyModal({
                   }}
                   className={`min-h-[42px] rounded-[16px] px-2.5 py-2 text-xs font-medium flex items-center justify-center gap-1.5 transition-all ${
                     active
-                      ? 'bg-[#13222B] text-white shadow-sm'
-                      : 'text-[#13222B]/80 hover:text-[#13222B]'
+                      ? "bg-[#13222B] text-white shadow-sm"
+                      : "text-[#13222B]/80 hover:text-[#13222B]"
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -140,7 +137,7 @@ export function LegalPrivacyModal({
           </div>
 
           {/* Tab 1: Data Usage Policy & POPIA / GDPR Privacy */}
-          {activeSection === 'privacy' && (
+          {activeSection === "privacy" && (
             <div className="space-y-4">
               <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#ECE8DE] space-y-3">
                 <div className="flex items-center justify-between gap-2">
@@ -155,42 +152,38 @@ export function LegalPrivacyModal({
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm text-[#5A6570] leading-relaxed">
-                  <b>BahiApp</b> is built with an{' '}
-                  <b>Offline-First, Device-Local Architecture</b>. All shop
-                  stock records, daily cash and credit totals, customer names,
-                  phone numbers, custom tags, and repayment histories are stored
-                  directly inside your device’s browser storage (
+                  <b>BahiApp</b> is built with an <b>Offline-First, Device-Local Architecture</b>.
+                  All shop stock records, daily cash and credit totals, customer names, phone
+                  numbers, custom tags, and repayment histories are stored directly inside your
+                  device’s browser storage (
                   <code className="font-mono text-xs bg-[#F4F2EC] px-1.5 py-0.5 rounded">
                     localStorage
-                  </code>{' '}
+                  </code>{" "}
                   and PWA cache).
                 </p>
                 <ul className="space-y-2 text-xs text-[#13222B]">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#1F5F63] shrink-0 mt-0.5" />
                     <span>
-                      <b>No Data Brokers or Credit Bureaus:</b> We never sell,
-                      rent, or transmit your customers’ credit balances or phone
-                      numbers to third-party credit bureaus, advertisers, or
-                      external debt collectors.
+                      <b>No Data Brokers or Credit Bureaus:</b> We never sell, rent, or transmit
+                      your customers’ credit balances or phone numbers to third-party credit
+                      bureaus, advertisers, or external debt collectors.
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#1F5F63] shrink-0 mt-0.5" />
                     <span>
-                      <b>Strict Data Minimization:</b> Only essential fields
-                      required to maintain an informal shop ledger (First/Last
-                      Name, Mobile Number for SMS receipts, Balance, and Promise
-                      Date) are recorded. Do not store national ID numbers,
+                      <b>Strict Data Minimization:</b> Only essential fields required to maintain an
+                      informal shop ledger (First/Last Name, Mobile Number for SMS receipts,
+                      Balance, and Promise Date) are recorded. Do not store national ID numbers,
                       SASSA card PINs, or bank passwords in customer notes.
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#1F5F63] shrink-0 mt-0.5" />
                     <span>
-                      <b>Camera & Barcode Permission:</b> Camera access is used
-                      exclusively in real time on your device for barcode
-                      scanning and is never recorded or uploaded.
+                      <b>Camera & Barcode Permission:</b> Camera access is used exclusively in real
+                      time on your device for barcode scanning and is never recorded or uploaded.
                     </span>
                   </li>
                 </ul>
@@ -201,12 +194,9 @@ export function LegalPrivacyModal({
                   2. POPIA (South Africa) & GDPR Roles
                 </h3>
                 <p className="text-xs text-[#5A6570] leading-relaxed">
-                  Under the{' '}
-                  <b>
-                    Protection of Personal Information Act, 2013 (POPIA – Act 4
-                    of 2013)
-                  </b>{' '}
-                  and the <b>EU General Data Protection Regulation (GDPR)</b>:
+                  Under the{" "}
+                  <b>Protection of Personal Information Act, 2013 (POPIA – Act 4 of 2013)</b> and
+                  the <b>EU General Data Protection Regulation (GDPR)</b>:
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                   <div className="rounded-2xl bg-[#F4F2EC] p-3.5 space-y-1">
@@ -214,10 +204,9 @@ export function LegalPrivacyModal({
                       Shopkeeper = Responsible Party
                     </div>
                     <p className="text-[11px] text-[#5A6570] leading-relaxed">
-                      As the shop owner ({state.ownerName} · {state.shopName}),
-                      you are the <b>Responsible Party / Data Controller</b> for
-                      obtaining verbal or written consent before recording a
-                      customer’s phone number or credit account.
+                      As the shop owner ({state.ownerName} · {state.shopName}), you are the{" "}
+                      <b>Responsible Party / Data Controller</b> for obtaining verbal or written
+                      consent before recording a customer’s phone number or credit account.
                     </p>
                   </div>
                   <div className="rounded-2xl bg-[#F4F2EC] p-3.5 space-y-1">
@@ -225,9 +214,9 @@ export function LegalPrivacyModal({
                       BahiApp = Software Tool / Operator
                     </div>
                     <p className="text-[11px] text-[#5A6570] leading-relaxed">
-                      BahiApp provides local ledger software on an “as-is” basis
-                      and does not independently access, profile, or monetize
-                      personal customer records entered on your device.
+                      BahiApp provides local ledger software on an “as-is” basis and does not
+                      independently access, profile, or monetize personal customer records entered
+                      on your device.
                     </p>
                   </div>
                 </div>
@@ -236,7 +225,7 @@ export function LegalPrivacyModal({
           )}
 
           {/* Tab 2: NCA Credit, Bookkeeping & Limitation of Liability */}
-          {activeSection === 'terms' && (
+          {activeSection === "terms" && (
             <div className="space-y-4">
               <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#ECE8DE] space-y-3">
                 <div className="flex items-center gap-2">
@@ -246,31 +235,27 @@ export function LegalPrivacyModal({
                   </h3>
                 </div>
                 <p className="text-xs text-[#5A6570] leading-relaxed">
-                  <b>BahiApp is NOT a bank, micro-lender, or registered credit provider</b>{' '}
-                  under the South African{' '}
-                  <b>National Credit Act, 2005 (Act 34 of 2005 – NCA)</b> or the{' '}
+                  <b>BahiApp is NOT a bank, micro-lender, or registered credit provider</b> under
+                  the South African <b>National Credit Act, 2005 (Act 34 of 2005 – NCA)</b> or the{" "}
                   <b>Financial Sector Conduct Authority (FSCA)</b>.
                 </p>
                 <div className="rounded-2xl bg-[#F4F2EC] p-3.5 space-y-2 text-xs text-[#13222B]">
                   <p>
-                    • <b>Informal Interest-Free Bookkeeping Only:</b> BahiApp is
-                    a digital replacement for a paper counter book (bahi/duka
-                    ledger) recording informal, interest-free (0% APR) store
-                    tabs between a merchant and customer.
+                    • <b>Informal Interest-Free Bookkeeping Only:</b> BahiApp is a digital
+                    replacement for a paper counter book (bahi/duka ledger) recording informal,
+                    interest-free (0% APR) store tabs between a merchant and customer.
                   </p>
                   <p>
-                    • <b>Prohibition on Unlawful Lending:</b> If you charge
-                    interest, initiation fees, or collection fees on credit, you
-                    are solely responsible for registering as a credit provider
-                    with the National Credit Regulator (NCR) and issuing
+                    • <b>Prohibition on Unlawful Lending:</b> If you charge interest, initiation
+                    fees, or collection fees on credit, you are solely responsible for registering
+                    as a credit provider with the National Credit Regulator (NCR) and issuing
                     statutory pre-agreement statements.
                   </p>
                   <p>
-                    • <b>No Illegal Collateral Retention:</b> Under South
-                    African law, it is strictly illegal for any shopkeeper to
-                    confiscate or hold a customer’s{' '}
-                    <b>SASSA grant card, Smart ID card, passport, or bank card</b>{' '}
-                    as security for a shop credit balance.
+                    • <b>No Illegal Collateral Retention:</b> Under South African law, it is
+                    strictly illegal for any shopkeeper to confiscate or hold a customer’s{" "}
+                    <b>SASSA grant card, Smart ID card, passport, or bank card</b> as security for a
+                    shop credit balance.
                   </p>
                 </div>
               </div>
@@ -283,29 +268,25 @@ export function LegalPrivacyModal({
                   </h3>
                 </div>
                 <p className="text-xs text-[#5A6570] leading-relaxed">
-                  Daily, weekly, and monthly summaries in BahiApp are operational
-                  estimates based solely on figures you type into the app. They
-                  do not constitute audited financial statements, certified tax
-                  invoices, or{' '}
-                  <b>South African Revenue Service (SARS)</b> VAT/Turnover Tax
-                  advice.
+                  Daily, weekly, and monthly summaries in BahiApp are operational estimates based
+                  solely on figures you type into the app. They do not constitute audited financial
+                  statements, certified tax invoices, or <b>South African Revenue Service (SARS)</b>{" "}
+                  VAT/Turnover Tax advice.
                 </p>
                 <p className="text-xs text-[#5A6570] leading-relaxed">
-                  <b>“As-Is” Software & Hold Harmless Clause:</b> To the maximum
-                  extent permitted by the{' '}
-                  <b>Consumer Protection Act, 2008 (CPA)</b>, BahiApp and its
-                  creators shall not be liable for any unpaid customer debts,
-                  bad credit write-offs, arithmetic entry mistakes, device
-                  loss/theft, browser cache clearing, or disputes between
-                  shopkeepers and customers. You agree to export regular JSON
-                  backups of your ledger.
+                  <b>“As-Is” Software & Hold Harmless Clause:</b> To the maximum extent permitted by
+                  the <b>Consumer Protection Act, 2008 (CPA)</b>, BahiApp and its creators shall not
+                  be liable for any unpaid customer debts, bad credit write-offs, arithmetic entry
+                  mistakes, device loss/theft, browser cache clearing, or disputes between
+                  shopkeepers and customers. You agree to export regular JSON backups of your
+                  ledger.
                 </p>
               </div>
             </div>
           )}
 
           {/* Tab 3: SMS Fair Collection & Anti-Harassment Policy */}
-          {activeSection === 'sms' && (
+          {activeSection === "sms" && (
             <div className="space-y-4">
               <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#ECE8DE] space-y-3">
                 <div className="flex items-center gap-2">
@@ -315,37 +296,32 @@ export function LegalPrivacyModal({
                   </h3>
                 </div>
                 <p className="text-xs text-[#5A6570] leading-relaxed">
-                  To protect your shop from complaints under{' '}
-                  <b>POPIA Section 69 (Direct Marketing)</b>, the{' '}
-                  <b>WASPA Code of Conduct</b>, and the{' '}
-                  <b>Debt Collectors Act (Act 114 of 1998)</b>, all SMS
-                  reminders generated through BahiApp must follow these mandatory
-                  rules:
+                  To protect your shop from complaints under{" "}
+                  <b>POPIA Section 69 (Direct Marketing)</b>, the <b>WASPA Code of Conduct</b>, and
+                  the <b>Debt Collectors Act (Act 114 of 1998)</b>, all SMS reminders generated
+                  through BahiApp must follow these mandatory rules:
                 </p>
                 <div className="space-y-2 text-xs text-[#13222B]">
                   <div className="rounded-2xl bg-[#F4F2EC] p-3">
-                    <b>1. Transactional Account Notices Only:</b> SMS messages
-                    may only be sent to customers who explicitly provided their
-                    phone number to receive balance updates for an active shop
-                    account. Never send unsolicited promotional spam.
+                    <b>1. Transactional Account Notices Only:</b> SMS messages may only be sent to
+                    customers who explicitly provided their phone number to receive balance updates
+                    for an active shop account. Never send unsolicited promotional spam.
                   </div>
                   <div className="rounded-2xl bg-[#F4F2EC] p-3">
-                    <b>2. Respectful Contact Hours (08:00 – 19:00):</b> Do not
-                    send payment reminders late at night, before 08:00, or on
-                    Sundays/public holidays, and avoid excessive daily messaging.
+                    <b>2. Respectful Contact Hours (08:00 – 19:00):</b> Do not send payment
+                    reminders late at night, before 08:00, or on Sundays/public holidays, and avoid
+                    excessive daily messaging.
                   </div>
                   <div className="rounded-2xl bg-[#F4F2EC] p-3">
-                    <b>3. No Threats, Defamation, or Public Shaming:</b> Never
-                    threaten customers, impersonate court sheriffs or lawyers,
-                    or post customer debt lists publicly on shop windows or
-                    community WhatsApp groups (which violates POPIA and
-                    defamation law).
+                    <b>3. No Threats, Defamation, or Public Shaming:</b> Never threaten customers,
+                    impersonate court sheriffs or lawyers, or post customer debt lists publicly on
+                    shop windows or community WhatsApp groups (which violates POPIA and defamation
+                    law).
                   </div>
                   <div className="rounded-2xl bg-[#F4F2EC] p-3">
-                    <b>4. Immediate Opt-Out & Dispute Handling:</b> If a
-                    customer replies <b>STOP</b> or disputes a balance, pause
-                    automated SMS reminders immediately and review the
-                    item-by-item counter book together in store.
+                    <b>4. Immediate Opt-Out & Dispute Handling:</b> If a customer replies{" "}
+                    <b>STOP</b> or disputes a balance, pause automated SMS reminders immediately and
+                    review the item-by-item counter book together in store.
                   </div>
                 </div>
               </div>
@@ -353,7 +329,7 @@ export function LegalPrivacyModal({
           )}
 
           {/* Tab 4: Data Subject Rights, Audit & Export/Wipe Controls */}
-          {activeSection === 'rights' && (
+          {activeSection === "rights" && (
             <div className="space-y-4">
               <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#ECE8DE] space-y-3">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -364,16 +340,14 @@ export function LegalPrivacyModal({
                     </h3>
                   </div>
                   <span className="text-xs font-mono tabular-nums text-[#1F5F63]">
-                    {consentedCustomersCount}/{state.customers.length} customers
-                    consented
+                    {consentedCustomersCount}/{state.customers.length} customers consented
                   </span>
                 </div>
 
                 <p className="text-xs text-[#5A6570] leading-relaxed">
-                  Under <b>POPIA Sections 23 & 24</b>, customers have the right
-                  to ask what balance and personal information your shop holds
-                  about them, request corrections, or ask for their record to be
-                  deleted once their balance is settled (`R0`).
+                  Under <b>POPIA Sections 23 & 24</b>, customers have the right to ask what balance
+                  and personal information your shop holds about them, request corrections, or ask
+                  for their record to be deleted once their balance is settled (`R0`).
                 </p>
 
                 <div className="rounded-2xl bg-[#F4F2EC] p-3.5 flex items-center justify-between gap-3 flex-wrap">
@@ -384,7 +358,7 @@ export function LegalPrivacyModal({
                     <div className="text-[11px] font-mono tabular-nums text-[#78808A]">
                       {state.legalAcceptedAt
                         ? `Accepted: ${state.legalAcceptedAt}`
-                        : 'Pending shopkeeper acknowledgement'}
+                        : "Pending shopkeeper acknowledgement"}
                     </div>
                   </div>
                   <motion.button
@@ -430,10 +404,9 @@ export function LegalPrivacyModal({
                   </h3>
                 </div>
                 <p className="text-xs text-[#5A6570] leading-relaxed">
-                  If you are handing this phone to another person or closing
-                  your shop, use this control to permanently erase all customer
-                  records, phone numbers, and transaction histories stored on
-                  this device.
+                  If you are handing this phone to another person or closing your shop, use this
+                  control to permanently erase all customer records, phone numbers, and transaction
+                  histories stored on this device.
                 </p>
 
                 {!confirmWipe ? (
@@ -448,9 +421,8 @@ export function LegalPrivacyModal({
                 ) : (
                   <div className="rounded-2xl bg-[#F6C4C0]/35 p-3.5 space-y-2.5 border border-[#E8453C]/40">
                     <p className="text-xs font-semibold text-[#8F1D14]">
-                      Are you sure? This will clear all customer profiles and
-                      reset the device ledger. Download a JSON backup first if
-                      needed.
+                      Are you sure? This will clear all customer profiles and reset the device
+                      ledger. Download a JSON backup first if needed.
                     </p>
                     <div className="flex items-center gap-2">
                       <button
@@ -481,8 +453,7 @@ export function LegalPrivacyModal({
           {/* Footer Action Bar */}
           <div className="pt-2 border-t border-[#ECE8DE] flex flex-col sm:flex-row items-center justify-between gap-2.5">
             <span className="text-[11px] text-[#78808A] text-center sm:text-left">
-              Protected by local-only storage · POPIA, NCA & CPA Disclaimers
-              active
+              Protected by local-only storage · POPIA, NCA & CPA Disclaimers active
             </span>
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <button

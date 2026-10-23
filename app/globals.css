@@ -2,27 +2,27 @@
 @import "tw-animate-css";
 
 :root {
-  --bg: #FBF8F3;
-  --card: #FFFFFF;
-  --in: #F4F2EC;
-  --ink: #13222B;
-  --mut: #68737D;
-  --ln: #ECE8DE;
-  --lime: #DDF24E;
-  --teal: #1F5F63;
+  --bg: #fbf8f3;
+  --card: #ffffff;
+  --in: #f4f2ec;
+  --ink: #13222b;
+  --mut: #68737d;
+  --ln: #ece8de;
+  --lime: #ddf24e;
+  --teal: #1f5f63;
   --ao: 0.55;
   color-scheme: light;
 }
 
 :root[data-theme="dark"] {
-  --bg: #07191C;
-  --card: #0F2C31;
-  --in: #173D44;
-  --ink: #F2FAF6;
-  --mut: #9CC0BE;
-  --ln: #23535C;
-  --lime: #DDF24E;
-  --teal: #5CD6D0;
+  --bg: #07191c;
+  --card: #0f2c31;
+  --in: #173d44;
+  --ink: #f2faf6;
+  --mut: #9cc0be;
+  --ln: #23535c;
+  --lime: #ddf24e;
+  --teal: #5cd6d0;
   --ao: 0.22;
   color-scheme: dark;
 }
@@ -33,16 +33,20 @@
     color: var(--ink);
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
   }
 
   body {
     background-color: var(--bg);
     color: var(--ink);
-    font-family: 'Lexend', system-ui, -apple-system, sans-serif;
+    font-family: "Lexend", system-ui, -apple-system, sans-serif;
     min-height: 100dvh;
     overflow-x: hidden;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
   }
 }
 
@@ -62,7 +66,7 @@ html[data-theme="dark"] .bg-\[\#F4F2EC\] {
 }
 
 html[data-theme="dark"] .hover\:bg-\[\#ECE8DE\]:hover {
-  background-color: #21515A !important;
+  background-color: #21515a !important;
 }
 
 html[data-theme="dark"] .border-white,
@@ -79,12 +83,12 @@ html[data-theme="dark"] .text-\[\#78808A\] {
 }
 
 html[data-theme="dark"] .text-\[\#1F5F63\] {
-  color: #6CE5DF !important;
+  color: #6ce5df !important;
 }
 
 html[data-theme="dark"] input::placeholder,
 html[data-theme="dark"] textarea::placeholder {
-  color: #82ACA9 !important;
+  color: #82aca9 !important;
 }
 
 /* Keep dark ink on high-luminance lime buttons, pastel badges, avatars, and active nav pills */
@@ -103,15 +107,15 @@ html[data-theme="dark"] [style*="background-color"].text-\[\#13222B\],
 html[data-theme="dark"] [style*="background-color"].text-\[\#13222B\] *,
 html[data-theme="dark"] [data-active-nav="true"],
 html[data-theme="dark"] [data-active-nav="true"] * {
-  color: #0B191E !important;
+  color: #0b191e !important;
 }
 
 /* Ensure primary action buttons & active filter pills in dark mode have high-contrast surfaces */
 html[data-theme="dark"] button.bg-\[\#13222B\],
 html[data-theme="dark"] button.bg-\[\#0B0B0C\] {
-  background-color: #21565E !important;
-  color: #FFFFFF !important;
-  border: 1px solid #357E89;
+  background-color: #21565e !important;
+  color: #ffffff !important;
+  border: 1px solid #357e89;
 }
 
 html[data-theme="dark"] i.bg-\[\#13222B\] {
@@ -121,39 +125,39 @@ html[data-theme="dark"] i.bg-\[\#13222B\] {
 
 /* Keep printable A4 poster crisp paper white even when previewed in dark mode */
 html[data-theme="dark"] #pz {
-  background-color: #FFFFFF !important;
-  color: #0B0B0C !important;
-  border-color: #23535C !important;
+  background-color: #ffffff !important;
+  color: #0b0b0c !important;
+  border-color: #23535c !important;
 }
 
 html[data-theme="dark"] #pz h3,
 html[data-theme="dark"] #pz p {
-  color: #13222B !important;
+  color: #13222b !important;
 }
 
 html[data-theme="dark"] #pz h4 {
-  color: #1F5F63 !important;
+  color: #1f5f63 !important;
 }
 
 .font-doto,
 .font-mono {
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
 
 input[type="number"],
 input[type="tel"] {
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-variant-numeric: tabular-nums;
 }
 
 .font-fraunces {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: "Fraunces", Georgia, serif;
 }
 
 .font-lexend {
-  font-family: 'Lexend', system-ui, sans-serif;
+  font-family: "Lexend", system-ui, sans-serif;
 }
 
 @keyframes driftAurora {

@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import React, { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 
 interface ThreeOnboardingSceneProps {
   step: number;
-  theme?: 'light' | 'dark';
+  theme?: "light" | "dark";
   className?: string;
   compact?: boolean;
 }
 
 export function ThreeOnboardingScene({
   step,
-  theme = 'light',
-  className = '',
+  theme = "light",
+  className = "",
   compact = false,
 }: ThreeOnboardingSceneProps) {
   const mountRef = useRef<HTMLDivElement | null>(null);
@@ -33,7 +33,7 @@ export function ThreeOnboardingScene({
   }, [step]);
 
   useEffect(() => {
-    const isDark = theme === 'dark';
+    const isDark = theme === "dark";
     if (dotMatRef.current) {
       // High-contrast luminous cyan/lime dots in dark mode; deep till ink in light mode
       dotMatRef.current.color.setHex(isDark ? 0xddf24e : 0x13222b);
@@ -62,27 +62,25 @@ export function ThreeOnboardingScene({
     let handleResize: (() => void) | null = null;
     let handlePointerMove: ((e: PointerEvent) => void) | null = null;
 
-    const isDarkInitial = theme === 'dark';
+    const isDarkInitial = theme === "dark";
 
     try {
       const isHeadless =
-        typeof navigator !== 'undefined' &&
+        typeof navigator !== "undefined" &&
         (navigator.webdriver || /HeadlessChrome/i.test(navigator.userAgent));
 
       renderer = new THREE.WebGLRenderer({
         alpha: true,
         antialias: true,
-        powerPreference: 'high-performance',
+        powerPreference: "high-performance",
       });
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = isDarkInitial ? 1.28 : 1.1;
-      renderer.setPixelRatio(
-        isHeadless ? 1 : Math.min(window.devicePixelRatio || 1, 2)
-      );
+      renderer.setPixelRatio(isHeadless ? 1 : Math.min(window.devicePixelRatio || 1, 2));
       rendererRef.current = renderer;
 
-      container.innerHTML = '';
+      container.innerHTML = "";
       container.appendChild(renderer.domElement);
 
       const scene = new THREE.Scene();
@@ -123,7 +121,7 @@ export function ThreeOnboardingScene({
         y: number,
         z: number,
         metalness = 0.15,
-        roughness = 0.45
+        roughness = 0.45,
       ) => {
         const geo = new THREE.BoxGeometry(w, h, d);
         geometries.push(geo);
@@ -160,7 +158,7 @@ export function ThreeOnboardingScene({
         0.08,
         0,
         0.3,
-        0.3
+        0.3,
       );
       stemMatRef.current = spineStemObj.mat;
       coinGroup.add(coinBody, rimFront, rimBack, spineStemObj.mesh);
@@ -181,7 +179,7 @@ export function ThreeOnboardingScene({
         0,
         0,
         0.2,
-        0.4
+        0.4,
       );
       spineMatRef.current = bookSpine.mat;
       const bookPages = addBox(1.24, 1.76, 0.34, 0xffffff, 0.06, 0, 0, 0.02, 0.85);
@@ -192,7 +190,7 @@ export function ThreeOnboardingScene({
         coverBack.mesh,
         bookSpine.mesh,
         bookPages.mesh,
-        bookRibbon.mesh
+        bookRibbon.mesh,
       );
       bookGroup.rotation.z = 0.28;
       rootGroup.add(bookGroup);
@@ -218,7 +216,7 @@ export function ThreeOnboardingScene({
         dummy.position.set(
           Math.cos(theta) * radius * 1.08,
           y * 1.08,
-          Math.sin(theta) * radius * 1.08
+          Math.sin(theta) * radius * 1.08,
         );
         dummy.updateMatrix();
         globeInstanced.setMatrixAt(i, dummy.matrix);
@@ -267,13 +265,13 @@ export function ThreeOnboardingScene({
       };
 
       handleResize();
-      window.addEventListener('resize', handleResize);
+      window.addEventListener("resize", handleResize);
 
       handlePointerMove = (e: PointerEvent) => {
         pointerRef.current.x = e.clientX / window.innerWidth - 0.5;
         pointerRef.current.y = e.clientY / window.innerHeight - 0.5;
       };
-      window.addEventListener('pointermove', handlePointerMove, {
+      window.addEventListener("pointermove", handlePointerMove, {
         passive: true,
       });
 
@@ -287,24 +285,13 @@ export function ThreeOnboardingScene({
         const targetRotY = stepRef.current * 0.92 + pointerRef.current.x * 0.85;
         const targetRotX = pointerRef.current.y * 0.42;
 
-        rootGroup.rotation.y = THREE.MathUtils.damp(
-          rootGroup.rotation.y,
-          targetRotY,
-          4.5,
-          delta
-        );
-        rootGroup.rotation.x = THREE.MathUtils.damp(
-          rootGroup.rotation.x,
-          targetRotX,
-          4.5,
-          delta
-        );
+        rootGroup.rotation.y = THREE.MathUtils.damp(rootGroup.rotation.y, targetRotY, 4.5, delta);
+        rootGroup.rotation.x = THREE.MathUtils.damp(rootGroup.rotation.x, targetRotX, 4.5, delta);
 
         for (let i = 0; i < rootGroup.children.length; i++) {
           const child = rootGroup.children[i];
           const baseY = child.userData.baseY ?? 0;
-          child.position.y =
-            baseY + Math.sin(elapsed * 1.15 + i * 1.1) * 0.11;
+          child.position.y = baseY + Math.sin(elapsed * 1.15 + i * 1.1) * 0.11;
         }
 
         coinGroup.rotation.y = elapsed * 0.75;
@@ -324,9 +311,8 @@ export function ThreeOnboardingScene({
 
     return () => {
       if (frameId) cancelAnimationFrame(frameId);
-      if (handleResize) window.removeEventListener('resize', handleResize);
-      if (handlePointerMove)
-        window.removeEventListener('pointermove', handlePointerMove);
+      if (handleResize) window.removeEventListener("resize", handleResize);
+      if (handlePointerMove) window.removeEventListener("pointermove", handlePointerMove);
       geometries.forEach((g) => g.dispose());
       materials.forEach((m) => m.dispose());
       if (envTexture) envTexture.dispose();
@@ -338,7 +324,7 @@ export function ThreeOnboardingScene({
       }
       rendererRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [compact]);
 
   return (

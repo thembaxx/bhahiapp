@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Download, Smartphone, X, Share } from 'lucide-react';
-import { usePWAInstall } from '@/hooks/use-pwa-install';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Download, Smartphone, X, Share } from "lucide-react";
+import { usePWAInstall } from "@/hooks/use-pwa-install";
 
 export function PWAInstallBanner() {
   const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
@@ -81,17 +81,19 @@ export function PWAInstallBanner() {
                     2. Scroll down and select <strong>Add to Home Screen</strong>.
                   </p>
                   <p>
-                    3. Open <strong>BahiApp</strong> from your home screen anytime, even with zero data.
+                    3. Open <strong>BahiApp</strong> from your home screen anytime, even with zero
+                    data.
                   </p>
                 </div>
               ) : (
                 <div className="bg-[#F4F2EC] rounded-2xl p-4 text-xs text-[#13222B] space-y-2 leading-relaxed">
                   <p>
-                    1. Open your browser menu (<strong>⋮</strong> or address bar icon) and tap{' '}
+                    1. Open your browser menu (<strong>⋮</strong> or address bar icon) and tap{" "}
                     <strong>Install app</strong> or <strong>Add to Home screen</strong>.
                   </p>
                   <p>
-                    2. BahiApp caches its ledger shell and local database on your device so you can record sales offline.
+                    2. BahiApp caches its ledger shell and local database on your device so you can
+                    record sales offline.
                   </p>
                 </div>
               )}

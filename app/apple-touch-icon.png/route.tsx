@@ -1,6 +1,6 @@
-import { renderBahiBrandIcon } from '../brand-pwa-icon';
+import { renderBahiBrandIcon } from "../brand-pwa-icon";
 
-export const dynamic = 'force-static';
+export const dynamic = "force-static";
 
 export function GET() {
   return renderBahiBrandIcon(180);
