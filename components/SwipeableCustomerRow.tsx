@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from "react";
 import {
   motion,
   AnimatePresence,
@@ -8,17 +8,10 @@ import {
   useTransform,
   animate,
   PanInfo,
-} from 'motion/react';
-import {
-  ChevronRight,
-  Edit3,
-  Trash2,
-  Zap,
-  CheckCircle2,
-  Plus,
-} from 'lucide-react';
-import { Customer, LanguageCode, formatRand0, tt } from '@/lib/bahi-data';
-import { StatusRing } from './VisualCharts';
+} from "motion/react";
+import { ChevronRight, Edit3, Trash2, Zap, CheckCircle2, Plus } from "lucide-react";
+import { Customer, LanguageCode, formatRand0, tt } from "@/lib/bahi-data";
+import { StatusRing } from "./VisualCharts";
 
 interface SwipeableCustomerRowProps {
   customer: Customer;
@@ -26,11 +19,7 @@ interface SwipeableCustomerRowProps {
   onOpenProfile: (customerId: number) => void;
   onSwipeEdit: (customer: Customer) => void;
   onSwipeDelete: (customer: Customer) => void;
-  onQuickPay?: (
-    customerId: number,
-    amount: number,
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => void;
+  onQuickPay?: (customerId: number, amount: number, e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export function SwipeableCustomerRow({
@@ -43,9 +32,7 @@ export function SwipeableCustomerRow({
 }: SwipeableCustomerRowProps) {
   const x = useMotionValue(0);
   const isDraggingRef = useRef(false);
-  const [snapState, setSnapState] = useState<'closed' | 'left' | 'right'>(
-    'closed'
-  );
+  const [snapState, setSnapState] = useState<"closed" | "left" | "right">("closed");
   const [showMoreAmounts, setShowMoreAmounts] = useState(false);
   const [recentPaid, setRecentPaid] = useState<number | null>(null);
 
@@ -55,10 +42,10 @@ export function SwipeableCustomerRow({
   const rightActionScale = useTransform(x, [0, -50, -140], [0.75, 0.95, 1.04]);
   const rightActionOpacity = useTransform(x, [0, -24, -80], [0, 0.85, 1]);
 
-  const springTo = (target: number, nextState: 'closed' | 'left' | 'right') => {
+  const springTo = (target: number, nextState: "closed" | "left" | "right") => {
     setSnapState(nextState);
     animate(x, target, {
-      type: 'spring',
+      type: "spring",
       stiffness: 420,
       damping: 34,
     });
@@ -68,10 +55,7 @@ export function SwipeableCustomerRow({
     isDraggingRef.current = true;
   };
 
-  const handleDragEnd = (
-    _event: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo
-  ) => {
+  const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
     const currentX = x.get();
@@ -82,46 +66,43 @@ export function SwipeableCustomerRow({
 
     // Full swipe right -> Immediate Edit trigger
     if (currentX > 82 || (offset > 55 && velocity > 420)) {
-      springTo(0, 'closed');
+      springTo(0, "closed");
       onSwipeEdit(customer);
       return;
     }
 
     // Half swipe right -> Snap open left Edit button
     if (currentX > 36) {
-      springTo(84, 'right');
+      springTo(84, "right");
       return;
     }
 
     // Full swipe left -> Immediate Delete trigger
     if (currentX < -138 || (offset < -95 && velocity < -520)) {
-      springTo(0, 'closed');
+      springTo(0, "closed");
       onSwipeDelete(customer);
       return;
     }
 
     // Half swipe left -> Snap open right Edit + Delete action tray
     if (currentX < -38) {
-      springTo(-148, 'left');
+      springTo(-148, "left");
       return;
     }
 
-    springTo(0, 'closed');
+    springTo(0, "closed");
   };
 
   const handleRowClick = () => {
     if (isDraggingRef.current) return;
-    if (snapState !== 'closed') {
-      springTo(0, 'closed');
+    if (snapState !== "closed") {
+      springTo(0, "closed");
       return;
     }
     onOpenProfile(customer.id);
   };
 
-  const triggerQuickPayment = (
-    amount: number,
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const triggerQuickPayment = (amount: number, e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     if (!onQuickPay || customer.owed <= 0) return;
     const effectiveAmount = Math.min(amount, customer.owed);
@@ -134,11 +115,7 @@ export function SwipeableCustomerRow({
 
   const p = Math.min(100, (customer.daysOverdue / 14) * 100);
   const ringColor =
-    customer.daysOverdue >= 7
-      ? '#E8453C'
-      : customer.daysOverdue >= 3
-      ? '#F4C84E'
-      : '#74C2F6';
+    customer.daysOverdue >= 7 ? "#E8453C" : customer.daysOverdue >= 3 ? "#F4C84E" : "#74C2F6";
 
   return (
     <motion.div
@@ -146,7 +123,7 @@ export function SwipeableCustomerRow({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -120, scale: 0.95 }}
-      transition={{ type: 'spring', stiffness: 340, damping: 28 }}
+      transition={{ type: "spring", stiffness: 340, damping: 28 }}
       className="relative rounded-[28px] overflow-hidden select-none"
     >
       {/* Underlying Swipe Action Track */}
@@ -157,7 +134,7 @@ export function SwipeableCustomerRow({
           style={{ scale: leftActionScale, opacity: leftActionOpacity }}
           onClick={(e) => {
             e.stopPropagation();
-            springTo(0, 'closed');
+            springTo(0, "closed");
             onSwipeEdit(customer);
           }}
           aria-label={`Edit ${customer.name}`}
@@ -176,7 +153,7 @@ export function SwipeableCustomerRow({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              springTo(0, 'closed');
+              springTo(0, "closed");
               onSwipeEdit(customer);
             }}
             aria-label={`Edit ${customer.name}`}
@@ -190,7 +167,7 @@ export function SwipeableCustomerRow({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              springTo(0, 'closed');
+              springTo(0, "closed");
               onSwipeDelete(customer);
             }}
             aria-label={`Delete ${customer.name}`}
@@ -204,7 +181,7 @@ export function SwipeableCustomerRow({
 
       {/* Draggable Foreground Customer Card */}
       <motion.div
-        style={{ x, touchAction: 'pan-y' }}
+        style={{ x, touchAction: "pan-y" }}
         drag="x"
         dragDirectionLock
         dragConstraints={{ left: -156, right: 96 }}
@@ -215,12 +192,12 @@ export function SwipeableCustomerRow({
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === "Enter") {
             onOpenProfile(customer.id);
-          } else if (e.key === 'ArrowLeft') {
-            springTo(-148, 'left');
-          } else if (e.key === 'ArrowRight') {
-            springTo(0, 'closed');
+          } else if (e.key === "ArrowLeft") {
+            springTo(-148, "left");
+          } else if (e.key === "ArrowRight") {
+            springTo(0, "closed");
           }
         }}
         className="relative z-10 bg-[#F4F2EC] hover:bg-[#ECE8DE] rounded-[28px] p-3.5 cursor-grab active:cursor-grabbing transition-colors group"
@@ -231,13 +208,11 @@ export function SwipeableCustomerRow({
             <StatusRing
               percent={customer.owed > 0 ? p : 0}
               color={ringColor}
-              label={customer.owed > 0 ? `${customer.daysOverdue}d` : '✓'}
+              label={customer.owed > 0 ? `${customer.daysOverdue}d` : "✓"}
             />
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <b className="text-base font-medium text-[#13222B] truncate">
-                  {customer.name}
-                </b>
+                <b className="text-base font-medium text-[#13222B] truncate">{customer.name}</b>
                 {customer.tags &&
                   customer.tags.slice(0, 2).map((tag) => (
                     <span
@@ -254,8 +229,8 @@ export function SwipeableCustomerRow({
                   ? customer.daysOverdue >= 7
                     ? tt(`Late · ${customer.daysOverdue} days`, appLang)
                     : tt(`Owing · ${customer.daysOverdue} days`, appLang)
-                  : tt('Settled', appLang)}{' '}
-                · <span className="capitalize">{customer.category}</span> ·{' '}
+                  : tt("Settled", appLang)}{" "}
+                · <span className="capitalize">{customer.category}</span> ·{" "}
                 <span className="font-mono tabular-nums">{customer.phone}</span>
               </small>
             </div>
@@ -267,7 +242,7 @@ export function SwipeableCustomerRow({
                 {formatRand0(customer.owed)}
               </b>
               <small className="text-[11px] text-[#78808A]">
-                Total:{' '}
+                Total:{" "}
                 <span className="font-mono tabular-nums">
                   {formatRand0(customer.totalCreditExtended)}
                 </span>
@@ -298,7 +273,7 @@ export function SwipeableCustomerRow({
                     className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#1F5F63] hover:underline px-1.5 py-1 rounded-lg"
                   >
                     <Zap className="w-3.5 h-3.5 fill-current shrink-0" />
-                    <span>{tt('Quick Pay', appLang)}</span>
+                    <span>{tt("Quick Pay", appLang)}</span>
                   </motion.button>
 
                   <AnimatePresence>
@@ -389,7 +364,7 @@ export function SwipeableCustomerRow({
                       aria-label={`Settle full ${formatRand0(customer.owed)} for ${customer.name}`}
                       className="min-h-[34px] px-3 py-1 rounded-full bg-[#13222B] text-white text-xs font-medium transition-all flex items-center gap-1"
                     >
-                      <span>{tt('Settle all', appLang)}</span>
+                      <span>{tt("Settle all", appLang)}</span>
                       <span className="font-mono font-bold tabular-nums">
                         ({formatRand0(customer.owed)})
                       </span>
@@ -408,13 +383,13 @@ export function SwipeableCustomerRow({
                     title="More Quick Pay amounts (R20, R200)"
                     className={`w-[34px] h-[34px] rounded-full border border-[#ECE8DE] grid place-items-center text-xs transition-colors ${
                       showMoreAmounts
-                        ? 'bg-[#13222B] text-white'
-                        : 'bg-white text-[#78808A] hover:text-[#13222B]'
+                        ? "bg-[#13222B] text-white"
+                        : "bg-white text-[#78808A] hover:text-[#13222B]"
                     }`}
                   >
                     <Plus
                       className={`w-3.5 h-3.5 transition-transform ${
-                        showMoreAmounts ? 'rotate-45' : ''
+                        showMoreAmounts ? "rotate-45" : ""
                       }`}
                     />
                   </motion.button>
@@ -424,7 +399,7 @@ export function SwipeableCustomerRow({
               <div className="flex items-center justify-between w-full text-xs text-[#78808A]">
                 <span className="inline-flex items-center gap-1.5 text-[#1F5F63] font-medium">
                   <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                  <span>{tt('Settled', appLang)} · R0 owing</span>
+                  <span>{tt("Settled", appLang)} · R0 owing</span>
                 </span>
                 <button
                   type="button"

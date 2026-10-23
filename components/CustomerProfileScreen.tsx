@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowLeft,
   Phone,
@@ -21,7 +21,7 @@ import {
   Tag,
   Plus,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   Customer,
   CustomerCategory,
@@ -34,8 +34,8 @@ import {
   formatRand0,
   generateSMSText,
   tt,
-} from '@/lib/bahi-data';
-import { DotMatrixCounter, StatusRing } from './VisualCharts';
+} from "@/lib/bahi-data";
+import { DotMatrixCounter, StatusRing } from "./VisualCharts";
 
 interface CustomerProfileScreenProps {
   customer: Customer;
@@ -45,16 +45,11 @@ interface CustomerProfileScreenProps {
   onBack: () => void;
   onRecordTransaction: (
     customerId: number,
-    type: 'credit_sale' | 'payment',
+    type: "credit_sale" | "payment",
     amount: number,
-    productNote: string
+    productNote: string,
   ) => void;
-  onSendSMS: (
-    customer: Customer,
-    lang: LanguageCode,
-    tone: SMSTone,
-    message: string
-  ) => void;
+  onSendSMS: (customer: Customer, lang: LanguageCode, tone: SMSTone, message: string) => void;
   onUpdateCustomer: (data: {
     id: number;
     name: string;
@@ -77,13 +72,13 @@ export function CustomerProfileScreen({
   onUpdateCustomer,
 }: CustomerProfileScreenProps) {
   // Quick Ledger Transaction State
-  const [amountStr, setAmountStr] = useState('');
-  const [itemNote, setItemNote] = useState('');
+  const [amountStr, setAmountStr] = useState("");
+  const [itemNote, setItemNote] = useState("");
 
   // History Filter State
   const [historyFilter, setHistoryFilter] = useState<
-    'all' | 'credit_sale' | 'payment' | 'sms_reminder'
-  >('all');
+    "all" | "credit_sale" | "payment" | "sms_reminder"
+  >("all");
 
   // Edit Details & Custom Tags State
   const [isEditing, setIsEditing] = useState(initialEditing);
@@ -92,26 +87,20 @@ export function CustomerProfileScreen({
   const nameInputRef = useRef<HTMLInputElement>(null);
   const [editName, setEditName] = useState(customer.name);
   const [editPhone, setEditPhone] = useState(customer.phone);
-  const [editCategory, setEditCategory] = useState<CustomerCategory>(
-    customer.category
-  );
+  const [editCategory, setEditCategory] = useState<CustomerCategory>(customer.category);
   const [editPreferredLang, setEditPreferredLang] = useState<LanguageCode>(
-    customer.preferredLang || appLang
+    customer.preferredLang || appLang,
   );
-  const [editNotes, setEditNotes] = useState(customer.notes || '');
+  const [editNotes, setEditNotes] = useState(customer.notes || "");
   const [editTags, setEditTags] = useState<CustomerTag[]>(customer.tags || []);
-  const [customTagLabel, setCustomTagLabel] = useState('');
-  const [customTagColor, setCustomTagColor] = useState<string>(
-    TAG_COLOR_SWATCHES[0].hex
-  );
+  const [customTagLabel, setCustomTagLabel] = useState("");
+  const [customTagColor, setCustomTagColor] = useState<string>(TAG_COLOR_SWATCHES[0].hex);
   const [savedBanner, setSavedBanner] = useState(false);
 
   // SMS Composer State
-  const [smsLang, setSmsLang] = useState<LanguageCode>(
-    customer.preferredLang || appLang
-  );
+  const [smsLang, setSmsLang] = useState<LanguageCode>(customer.preferredLang || appLang);
   const [smsTone, setSmsTone] = useState<SMSTone>(
-    customer.daysOverdue >= 7 ? 'urgent' : 'standard'
+    customer.daysOverdue >= 7 ? "urgent" : "standard",
   );
   const [copiedSms, setCopiedSms] = useState(false);
 
@@ -120,10 +109,10 @@ export function CustomerProfileScreen({
     setEditPhone(customer.phone);
     setEditCategory(customer.category);
     setEditPreferredLang(customer.preferredLang || appLang);
-    setEditNotes(customer.notes || '');
+    setEditNotes(customer.notes || "");
     setEditTags(customer.tags || []);
     setSmsLang(customer.preferredLang || appLang);
-    setSmsTone(customer.daysOverdue >= 7 ? 'urgent' : 'standard');
+    setSmsTone(customer.daysOverdue >= 7 ? "urgent" : "standard");
   }, [customer, appLang]);
 
   useEffect(() => {
@@ -131,8 +120,8 @@ export function CustomerProfileScreen({
       setIsEditing(true);
       const timer = setTimeout(() => {
         editCardRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
+          behavior: "smooth",
+          block: "center",
         });
         nameInputRef.current?.focus();
       }, 180);
@@ -142,18 +131,12 @@ export function CustomerProfileScreen({
 
   const repaymentRate = Math.min(
     100,
-    Math.round(
-      (customer.totalPaid / Math.max(1, customer.totalCreditExtended)) * 100
-    )
+    Math.round((customer.totalPaid / Math.max(1, customer.totalCreditExtended)) * 100),
   );
 
   const overduePct = Math.min(100, (customer.daysOverdue / 14) * 100);
   const statusColor =
-    customer.daysOverdue >= 7
-      ? '#E8453C'
-      : customer.daysOverdue >= 3
-      ? '#F4C84E'
-      : '#74C2F6';
+    customer.daysOverdue >= 7 ? "#E8453C" : customer.daysOverdue >= 3 ? "#F4C84E" : "#74C2F6";
 
   const smsPreview = generateSMSText({
     customerName: customer.name,
@@ -165,7 +148,7 @@ export function CustomerProfileScreen({
   });
 
   const filteredHistory = customer.history.filter((tx) => {
-    if (historyFilter === 'all') return true;
+    if (historyFilter === "all") return true;
     return tx.type === historyFilter;
   });
 
@@ -184,17 +167,13 @@ export function CustomerProfileScreen({
   };
 
   const handleTogglePresetTag = (preset: { label: string; color: string }) => {
-    const exists = editTags.some(
-      (t) => t.label.toLowerCase() === preset.label.toLowerCase()
-    );
+    const exists = editTags.some((t) => t.label.toLowerCase() === preset.label.toLowerCase());
     const nextTags = exists
-      ? editTags.filter(
-          (t) => t.label.toLowerCase() !== preset.label.toLowerCase()
-        )
+      ? editTags.filter((t) => t.label.toLowerCase() !== preset.label.toLowerCase())
       : [
           ...editTags,
           {
-            id: `tag-${preset.label.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
+            id: `tag-${preset.label.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`,
             label: preset.label,
             color: preset.color,
           },
@@ -206,11 +185,9 @@ export function CustomerProfileScreen({
     if (e) e.preventDefault();
     const clean = customTagLabel.trim();
     if (!clean) return;
-    const duplicate = editTags.some(
-      (t) => t.label.toLowerCase() === clean.toLowerCase()
-    );
+    const duplicate = editTags.some((t) => t.label.toLowerCase() === clean.toLowerCase());
     if (duplicate) {
-      setCustomTagLabel('');
+      setCustomTagLabel("");
       return;
     }
     const newTag: CustomerTag = {
@@ -219,7 +196,7 @@ export function CustomerProfileScreen({
       color: customTagColor,
     };
     syncCustomerTags([...editTags, newTag]);
-    setCustomTagLabel('');
+    setCustomTagLabel("");
   };
 
   const handleRemoveTag = (tagId: string) => {
@@ -232,7 +209,7 @@ export function CustomerProfileScreen({
     onUpdateCustomer({
       id: customer.id,
       name: editName.trim(),
-      phone: editPhone.trim() || '+27 72 000 0000',
+      phone: editPhone.trim() || "+27 72 000 0000",
       category: editCategory,
       preferredLang: editPreferredLang,
       notes: editNotes.trim(),
@@ -254,7 +231,7 @@ export function CustomerProfileScreen({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 16 }}
-      transition={{ type: 'spring', stiffness: 280, damping: 26 }}
+      transition={{ type: "spring", stiffness: 280, damping: 26 }}
       className="space-y-4"
     >
       {/* Top Profile Navigation, Identity & Color-Coded Tags Card */}
@@ -272,7 +249,7 @@ export function CustomerProfileScreen({
             className="min-h-[42px] px-4 rounded-full bg-[#F4F2EC] hover:bg-[#ECE8DE] text-xs font-medium text-[#13222B] flex items-center gap-2 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to {tt('Customers', appLang)}</span>
+            <span>Back to {tt("Customers", appLang)}</span>
           </motion.button>
 
           <div className="flex items-center gap-2">
@@ -282,8 +259,8 @@ export function CustomerProfileScreen({
               onClick={() => setShowTagDrawer((prev) => !prev)}
               className={`min-h-[42px] px-4 rounded-full text-xs font-medium flex items-center gap-1.5 transition-colors ${
                 showTagDrawer
-                  ? 'bg-[#DDF24E] text-[#13222B] font-semibold'
-                  : 'bg-[#F4F2EC] hover:bg-[#ECE8DE] text-[#13222B]'
+                  ? "bg-[#DDF24E] text-[#13222B] font-semibold"
+                  : "bg-[#F4F2EC] hover:bg-[#ECE8DE] text-[#13222B]"
               }`}
             >
               <Tag className="w-3.5 h-3.5 text-[#1F5F63]" />
@@ -299,8 +276,8 @@ export function CustomerProfileScreen({
                   if (next) {
                     setTimeout(() => {
                       editCardRef.current?.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center',
+                        behavior: "smooth",
+                        block: "center",
                       });
                       nameInputRef.current?.focus();
                     }, 80);
@@ -309,13 +286,11 @@ export function CustomerProfileScreen({
                 });
               }}
               className={`min-h-[42px] px-4 rounded-full text-xs font-medium flex items-center gap-2 transition-colors ${
-                isEditing
-                  ? 'bg-[#DDF24E] text-[#13222B] font-semibold'
-                  : 'bg-[#13222B] text-white'
+                isEditing ? "bg-[#DDF24E] text-[#13222B] font-semibold" : "bg-[#13222B] text-white"
               }`}
             >
               <Edit3 className="w-3.5 h-3.5" />
-              <span>{tt('Edit details', appLang)}</span>
+              <span>{tt("Edit details", appLang)}</span>
             </motion.button>
           </div>
         </div>
@@ -326,7 +301,7 @@ export function CustomerProfileScreen({
             <motion.div
               initial={{ scale: 0.85 }}
               animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 360, damping: 22 }}
+              transition={{ type: "spring", stiffness: 360, damping: 22 }}
               className="w-14 h-14 sm:w-16 sm:h-16 rounded-full grid place-items-center font-fraunces font-semibold text-2xl text-[#13222B] shrink-0 shadow-sm"
               style={{ backgroundColor: customer.avatarColor }}
             >
@@ -345,7 +320,7 @@ export function CustomerProfileScreen({
                   {customer.category}
                 </span>
                 <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#F4F2EC] text-[#78808A]">
-                  SMS: {LANGUAGE_NAMES[customer.preferredLang || 'en'].label}
+                  SMS: {LANGUAGE_NAMES[customer.preferredLang || "en"].label}
                 </span>
               </div>
               {customer.notes && (
@@ -360,7 +335,7 @@ export function CustomerProfileScreen({
           <StatusRing
             percent={customer.owed > 0 ? overduePct : 0}
             color={statusColor}
-            label={customer.owed > 0 ? `${customer.daysOverdue}d` : '✓'}
+            label={customer.owed > 0 ? `${customer.daysOverdue}d` : "✓"}
           />
         </div>
 
@@ -378,7 +353,7 @@ export function CustomerProfileScreen({
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.75, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 380, damping: 24 }}
+                transition={{ type: "spring", stiffness: 380, damping: 24 }}
                 style={{ backgroundColor: tag.color }}
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-[#13222B] shadow-2xs"
               >
@@ -402,7 +377,7 @@ export function CustomerProfileScreen({
             className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#F4F2EC] hover:bg-[#ECE8DE] text-xs font-medium text-[#13222B] transition-colors"
           >
             <Plus className="w-3.5 h-3.5 text-[#1F5F63]" />
-            <span>{showTagDrawer ? 'Done' : 'Add tag'}</span>
+            <span>{showTagDrawer ? "Done" : "Add tag"}</span>
           </motion.button>
         </div>
 
@@ -411,9 +386,9 @@ export function CustomerProfileScreen({
           {showTagDrawer && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
               className="overflow-hidden"
             >
               <div className="mt-3.5 bg-[#F4F2EC] rounded-[28px] p-4 space-y-3.5">
@@ -421,17 +396,14 @@ export function CustomerProfileScreen({
                   <span className="text-xs font-medium text-[#13222B]">
                     Quick Preset Tags (Tap to toggle)
                   </span>
-                  <span className="text-[11px] text-[#78808A]">
-                    Saved automatically
-                  </span>
+                  <span className="text-[11px] text-[#78808A]">Saved automatically</span>
                 </div>
 
                 {/* Preset Color-Coded Tag Pills */}
                 <div className="flex flex-wrap gap-2">
                   {PRESET_CUSTOMER_TAGS.map((preset) => {
                     const isApplied = editTags.some(
-                      (t) =>
-                        t.label.toLowerCase() === preset.label.toLowerCase()
+                      (t) => t.label.toLowerCase() === preset.label.toLowerCase(),
                     );
                     return (
                       <motion.button
@@ -444,8 +416,8 @@ export function CustomerProfileScreen({
                         }}
                         className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all ${
                           isApplied
-                            ? 'text-[#13222B] font-semibold ring-2 ring-[#13222B]/30 shadow-xs'
-                            : 'bg-white text-[#13222B] hover:bg-[#ECE8DE]'
+                            ? "text-[#13222B] font-semibold ring-2 ring-[#13222B]/30 shadow-xs"
+                            : "bg-white text-[#13222B] hover:bg-[#ECE8DE]"
                         }`}
                       >
                         <span
@@ -489,8 +461,8 @@ export function CustomerProfileScreen({
                               style={{ backgroundColor: swatch.hex }}
                               className={`w-6 h-6 rounded-full transition-transform ${
                                 selected
-                                  ? 'scale-115 ring-2 ring-[#13222B]'
-                                  : 'opacity-80 hover:opacity-100'
+                                  ? "scale-115 ring-2 ring-[#13222B]"
+                                  : "opacity-80 hover:opacity-100"
                               }`}
                             />
                           );
@@ -526,7 +498,7 @@ export function CustomerProfileScreen({
           >
             <div>
               <div className="text-sm text-[#78808A]">
-                {tt('Owes you', appLang)} (Current Balance)
+                {tt("Owes you", appLang)} (Current Balance)
               </div>
               <div className="text-4xl sm:text-5xl text-[#13222B] my-1.5">
                 <DotMatrixCounter value={customer.owed} decimals={2} />
@@ -536,7 +508,7 @@ export function CustomerProfileScreen({
                   ? customer.daysOverdue >= 7
                     ? tt(`Late · ${customer.daysOverdue} days`, appLang)
                     : tt(`Owing · ${customer.daysOverdue} days`, appLang)
-                  : tt('Settled', appLang)}{' '}
+                  : tt("Settled", appLang)}{" "}
                 · Last active {customer.lastPurchaseDate}
               </div>
             </div>
@@ -544,25 +516,19 @@ export function CustomerProfileScreen({
             {/* 3-Metric Breakdown: Total Credit Extended, Total Paid, Visits */}
             <div className="grid grid-cols-3 gap-2 sm:gap-2.5 mt-5 pt-4 border-t border-[#ECE8DE]">
               <div className="bg-[#F4F2EC] rounded-2xl sm:rounded-3xl p-3">
-                <small className="text-[11px] text-[#78808A] block truncate">
-                  Total credit
-                </small>
+                <small className="text-[11px] text-[#78808A] block truncate">Total credit</small>
                 <div className="font-mono font-bold tabular-nums text-base sm:text-lg text-[#13222B] mt-0.5">
                   {formatRand0(customer.totalCreditExtended)}
                 </div>
               </div>
               <div className="bg-[#F4F2EC] rounded-2xl sm:rounded-3xl p-3">
-                <small className="text-[11px] text-[#78808A] block truncate">
-                  Total paid
-                </small>
+                <small className="text-[11px] text-[#78808A] block truncate">Total paid</small>
                 <div className="font-mono font-bold tabular-nums text-base sm:text-lg text-[#1F5F63] mt-0.5">
                   {formatRand0(customer.totalPaid)}
                 </div>
               </div>
               <div className="bg-[#F4F2EC] rounded-2xl sm:rounded-3xl p-3">
-                <small className="text-[11px] text-[#78808A] block truncate">
-                  Purchases
-                </small>
+                <small className="text-[11px] text-[#78808A] block truncate">Purchases</small>
                 <div className="font-mono font-bold tabular-nums text-base sm:text-lg text-[#13222B] mt-0.5">
                   {customer.purchaseCount}x
                 </div>
@@ -575,17 +541,17 @@ export function CustomerProfileScreen({
                 <motion.i
                   initial={{ width: 0 }}
                   animate={{ width: `${repaymentRate}%` }}
-                  transition={{ type: 'spring', stiffness: 140, damping: 20 }}
+                  transition={{ type: "spring", stiffness: 140, damping: 20 }}
                   className="absolute inset-y-0 left-0 rounded-full block"
                   style={{
                     background:
-                      'linear-gradient(90deg, #DDF24E, #74C2F6 30%, #F5B83D 62%, #E8453C)',
+                      "linear-gradient(90deg, #DDF24E, #74C2F6 30%, #F5B83D 62%, #E8453C)",
                   }}
                 />
                 <motion.span
-                  initial={{ left: '0%' }}
+                  initial={{ left: "0%" }}
                   animate={{ left: `${repaymentRate}%` }}
-                  transition={{ type: 'spring', stiffness: 140, damping: 20 }}
+                  transition={{ type: "spring", stiffness: 140, damping: 20 }}
                   className="absolute -top-7 -translate-x-1/2 bg-[#0B0B0C] text-white rounded-full px-2.5 py-0.5 text-[11px] font-mono tabular-nums font-semibold whitespace-nowrap"
                 >
                   {repaymentRate}% repaid
@@ -601,16 +567,14 @@ export function CustomerProfileScreen({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className={`bg-white/85 rounded-[38px] sm:rounded-[44px] p-5 sm:p-6 shadow-[0_18px_50px_-28px_rgba(19,60,60,0.45)] border transition-all ${
-              isEditing
-                ? 'border-[#2997FF] ring-2 ring-[#2997FF]/35'
-                : 'border-white'
+              isEditing ? "border-[#2997FF] ring-2 ring-[#2997FF]/35" : "border-white"
             }`}
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <UserCheck className="w-5 h-5 text-[#1F5F63]" />
                 <h3 className="font-fraunces text-xl font-medium text-[#13222B]">
-                  {tt('Edit details', appLang)}
+                  {tt("Edit details", appLang)}
                 </h3>
               </div>
               {savedBanner && (
@@ -622,9 +586,7 @@ export function CustomerProfileScreen({
 
             <form onSubmit={handleSaveDetailsSubmit} className="space-y-3.5">
               <div>
-                <label className="block text-xs text-[#78808A] mb-1">
-                  Customer Full Name
-                </label>
+                <label className="block text-xs text-[#78808A] mb-1">Customer Full Name</label>
                 <input
                   ref={nameInputRef}
                   type="text"
@@ -656,35 +618,29 @@ export function CustomerProfileScreen({
               {/* Stacked on mobile so 6 buttons never squash horizontally */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-[#78808A] mb-1.5">
-                    Customer Category
-                  </label>
+                  <label className="block text-xs text-[#78808A] mb-1.5">Customer Category</label>
                   <div className="grid grid-cols-3 gap-1.5 bg-[#F4F2EC] p-1 rounded-2xl">
-                    {(['regular', 'new', 'vip'] as CustomerCategory[]).map(
-                      (cat) => (
-                        <button
-                          key={cat}
-                          type="button"
-                          onClick={() => setEditCategory(cat)}
-                          className={`min-h-[38px] rounded-xl text-xs font-medium capitalize transition-colors ${
-                            editCategory === cat
-                              ? 'bg-[#13222B] text-white'
-                              : 'text-[#78808A] hover:text-[#13222B]'
-                          }`}
-                        >
-                          {cat}
-                        </button>
-                      )
-                    )}
+                    {(["regular", "new", "vip"] as CustomerCategory[]).map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setEditCategory(cat)}
+                        className={`min-h-[38px] rounded-xl text-xs font-medium capitalize transition-colors ${
+                          editCategory === cat
+                            ? "bg-[#13222B] text-white"
+                            : "text-[#78808A] hover:text-[#13222B]"
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs text-[#78808A] mb-1.5">
-                    SMS Language
-                  </label>
+                  <label className="block text-xs text-[#78808A] mb-1.5">SMS Language</label>
                   <div className="grid grid-cols-3 gap-1.5 bg-[#F4F2EC] p-1 rounded-2xl">
-                    {(['en', 'zu', 'st'] as LanguageCode[]).map((l) => (
+                    {(["en", "zu", "st"] as LanguageCode[]).map((l) => (
                       <button
                         key={l}
                         type="button"
@@ -694,8 +650,8 @@ export function CustomerProfileScreen({
                         }}
                         className={`min-h-[38px] rounded-xl text-xs font-mono font-semibold uppercase transition-colors ${
                           editPreferredLang === l
-                            ? 'bg-[#DDF24E] text-[#13222B]'
-                            : 'text-[#78808A] hover:text-[#13222B]'
+                            ? "bg-[#DDF24E] text-[#13222B]"
+                            : "text-[#78808A] hover:text-[#13222B]"
                         }`}
                       >
                         {l}
@@ -721,8 +677,7 @@ export function CustomerProfileScreen({
                 <div className="flex flex-wrap gap-1.5">
                   {PRESET_CUSTOMER_TAGS.map((preset) => {
                     const isApplied = editTags.some(
-                      (t) =>
-                        t.label.toLowerCase() === preset.label.toLowerCase()
+                      (t) => t.label.toLowerCase() === preset.label.toLowerCase(),
                     );
                     return (
                       <button
@@ -734,8 +689,8 @@ export function CustomerProfileScreen({
                         }}
                         className={`px-2.5 py-1 rounded-full text-[11px] font-medium flex items-center gap-1 transition-all ${
                           isApplied
-                            ? 'text-[#13222B] font-semibold ring-1 ring-[#13222B]/30'
-                            : 'bg-white text-[#78808A] hover:text-[#13222B]'
+                            ? "text-[#13222B] font-semibold ring-1 ring-[#13222B]/30"
+                            : "bg-white text-[#78808A] hover:text-[#13222B]"
                         }`}
                       >
                         <span
@@ -756,7 +711,7 @@ export function CustomerProfileScreen({
                       value={customTagLabel}
                       onChange={(e) => setCustomTagLabel(e.target.value)}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           e.preventDefault();
                           handleAddCustomTag();
                         }
@@ -774,9 +729,7 @@ export function CustomerProfileScreen({
                     </button>
                   </div>
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] text-[#78808A]">
-                      Tag color:
-                    </span>
+                    <span className="text-[11px] text-[#78808A]">Tag color:</span>
                     <div className="flex items-center gap-1.5">
                       {TAG_COLOR_SWATCHES.map((swatch) => {
                         const selected = customTagColor === swatch.hex;
@@ -789,8 +742,8 @@ export function CustomerProfileScreen({
                             style={{ backgroundColor: swatch.hex }}
                             className={`w-5 h-5 rounded-full transition-transform ${
                               selected
-                                ? 'scale-115 ring-2 ring-[#13222B]'
-                                : 'opacity-75 hover:opacity-100'
+                                ? "scale-115 ring-2 ring-[#13222B]"
+                                : "opacity-75 hover:opacity-100"
                             }`}
                           />
                         );
@@ -801,9 +754,7 @@ export function CustomerProfileScreen({
               </div>
 
               <div>
-                <label className="block text-xs text-[#78808A] mb-1">
-                  Shopkeeper Trust Notes
-                </label>
+                <label className="block text-xs text-[#78808A] mb-1">Shopkeeper Trust Notes</label>
                 <input
                   type="text"
                   value={editNotes}
@@ -844,7 +795,7 @@ export function CustomerProfileScreen({
                 inputMode="decimal"
                 value={amountStr}
                 onChange={(e) => setAmountStr(e.target.value)}
-                placeholder={tt('Amount in rand', appLang)}
+                placeholder={tt("Amount in rand", appLang)}
                 className="w-full bg-[#F4F2EC] rounded-2xl px-4 py-3.5 font-mono tabular-nums text-xl font-bold text-[#13222B] focus:outline-2 focus:outline-[#74C2F6]"
               />
               <input
@@ -875,10 +826,8 @@ export function CustomerProfileScreen({
                   onClick={() => setAmountStr(String(customer.owed))}
                   className="px-3.5 py-2 rounded-full bg-[#DDF24E] text-xs font-semibold text-[#13222B]"
                 >
-                  Settle Full{' '}
-                  <span className="font-mono tabular-nums">
-                    {formatRand0(customer.owed)}
-                  </span>
+                  Settle Full{" "}
+                  <span className="font-mono tabular-nums">{formatRand0(customer.owed)}</span>
                 </motion.button>
               )}
             </div>
@@ -892,18 +841,18 @@ export function CustomerProfileScreen({
                   if (val > 0) {
                     onRecordTransaction(
                       customer.id,
-                      'credit_sale',
+                      "credit_sale",
                       val,
-                      itemNote.trim() || 'Shop credit purchase'
+                      itemNote.trim() || "Shop credit purchase",
                     );
-                    setAmountStr('');
-                    setItemNote('');
+                    setAmountStr("");
+                    setItemNote("");
                   }
                 }}
                 className="min-h-[48px] rounded-2xl bg-[#13222B] text-white text-sm font-medium px-4 py-3 flex items-center justify-center gap-2"
               >
                 <PlusCircle className="w-4 h-4 text-[#DDF24E] shrink-0" />
-                <span>{tt('Add credit sale', appLang)}</span>
+                <span>{tt("Add credit sale", appLang)}</span>
               </motion.button>
 
               <motion.button
@@ -914,18 +863,18 @@ export function CustomerProfileScreen({
                   if (val > 0) {
                     onRecordTransaction(
                       customer.id,
-                      'payment',
+                      "payment",
                       val,
-                      itemNote.trim() || 'Cash payment received'
+                      itemNote.trim() || "Cash payment received",
                     );
-                    setAmountStr('');
-                    setItemNote('');
+                    setAmountStr("");
+                    setItemNote("");
                   }
                 }}
                 className="min-h-[48px] rounded-2xl bg-[#1F5F63] text-white text-sm font-medium px-4 py-3 flex items-center justify-center gap-2"
               >
                 <CheckCircle2 className="w-4 h-4 text-[#DDF24E] shrink-0" />
-                <span>{tt('Record payment', appLang)}</span>
+                <span>{tt("Record payment", appLang)}</span>
               </motion.button>
             </div>
           </motion.div>
@@ -941,17 +890,17 @@ export function CustomerProfileScreen({
               <div className="flex items-center gap-2">
                 <History className="w-5 h-5 text-[#1F5F63]" />
                 <h3 className="font-fraunces text-xl font-medium text-[#13222B]">
-                  {tt('Purchase history', appLang)}
+                  {tt("Purchase history", appLang)}
                 </h3>
               </div>
 
               <div className="grid grid-cols-4 sm:flex items-center gap-1 bg-[#F4F2EC] p-1 rounded-full w-full sm:w-auto">
                 {(
                   [
-                    { id: 'all', label: 'All' },
-                    { id: 'credit_sale', label: 'Credit' },
-                    { id: 'payment', label: 'Paid' },
-                    { id: 'sms_reminder', label: 'SMS' },
+                    { id: "all", label: "All" },
+                    { id: "credit_sale", label: "Credit" },
+                    { id: "payment", label: "Paid" },
+                    { id: "sms_reminder", label: "SMS" },
                   ] as const
                 ).map((f) => (
                   <button
@@ -960,8 +909,8 @@ export function CustomerProfileScreen({
                     onClick={() => setHistoryFilter(f.id)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors text-center ${
                       historyFilter === f.id
-                        ? 'bg-[#13222B] text-white'
-                        : 'text-[#78808A] hover:text-[#13222B]'
+                        ? "bg-[#13222B] text-white"
+                        : "text-[#78808A] hover:text-[#13222B]"
                     }`}
                   >
                     {f.label}
@@ -978,8 +927,8 @@ export function CustomerProfileScreen({
                   </p>
                 ) : (
                   filteredHistory.map((tx) => {
-                    const isPayment = tx.type === 'payment';
-                    const isSms = tx.type === 'sms_reminder';
+                    const isPayment = tx.type === "payment";
+                    const isSms = tx.type === "sms_reminder";
                     return (
                       <motion.div
                         key={tx.id}
@@ -993,10 +942,10 @@ export function CustomerProfileScreen({
                           <div
                             className={`w-10 h-10 rounded-full grid place-items-center shrink-0 ${
                               isPayment
-                                ? 'bg-[#BDEBE3] text-[#13222B]'
+                                ? "bg-[#BDEBE3] text-[#13222B]"
                                 : isSms
-                                ? 'bg-[#DDF24E] text-[#13222B]'
-                                : 'bg-[#F6C4C0] text-[#13222B]'
+                                  ? "bg-[#DDF24E] text-[#13222B]"
+                                  : "bg-[#F6C4C0] text-[#13222B]"
                             }`}
                           >
                             {isPayment ? (
@@ -1010,18 +959,14 @@ export function CustomerProfileScreen({
                           <div className="min-w-0">
                             <b className="text-sm font-medium text-[#13222B] block truncate">
                               {isPayment
-                                ? 'Payment received'
+                                ? "Payment received"
                                 : isSms
-                                ? `SMS Reminder (${(
-                                    tx.langUsed || 'en'
-                                  ).toUpperCase()})`
-                                : tx.productName || 'Credit purchase'}
+                                  ? `SMS Reminder (${(tx.langUsed || "en").toUpperCase()})`
+                                  : tx.productName || "Credit purchase"}
                             </b>
                             <small className="text-xs text-[#78808A] block truncate">
                               {tx.date}
-                              {tx.notes && tx.notes !== tx.productName
-                                ? ` · ${tx.notes}`
-                                : ''}
+                              {tx.notes && tx.notes !== tx.productName ? ` · ${tx.notes}` : ""}
                             </small>
                           </div>
                         </div>
@@ -1029,10 +974,10 @@ export function CustomerProfileScreen({
                         {!isSms && (
                           <span
                             className={`font-mono font-extrabold tabular-nums text-base shrink-0 ${
-                              isPayment ? 'text-[#1F5F63]' : 'text-[#E8453C]'
+                              isPayment ? "text-[#1F5F63]" : "text-[#E8453C]"
                             }`}
                           >
-                            {isPayment ? '-' : '+'}
+                            {isPayment ? "-" : "+"}
                             {formatRand0(tx.amount)}
                           </span>
                         )}
@@ -1055,19 +1000,19 @@ export function CustomerProfileScreen({
               <div className="flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-[#1F5F63]" />
                 <h3 className="font-fraunces text-xl font-medium text-[#13222B]">
-                  {tt('Send reminder SMS', appLang)}
+                  {tt("Send reminder SMS", appLang)}
                 </h3>
               </div>
               <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-[#F4F2EC] p-1 rounded-full w-full sm:w-auto">
-                {(['en', 'zu', 'st'] as LanguageCode[]).map((l) => (
+                {(["en", "zu", "st"] as LanguageCode[]).map((l) => (
                   <button
                     key={l}
                     type="button"
                     onClick={() => setSmsLang(l)}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors text-center ${
                       smsLang === l
-                        ? 'bg-[#13222B] text-white'
-                        : 'text-[#78808A] hover:text-[#13222B]'
+                        ? "bg-[#13222B] text-white"
+                        : "text-[#78808A] hover:text-[#13222B]"
                     }`}
                   >
                     {LANGUAGE_NAMES[l].label}
@@ -1079,9 +1024,9 @@ export function CustomerProfileScreen({
             <div className="grid grid-cols-3 gap-2">
               {(
                 [
-                  { id: 'friendly', label: 'Warm & Polite' },
-                  { id: 'standard', label: 'Standard' },
-                  { id: 'urgent', label: 'Firm / Late' },
+                  { id: "friendly", label: "Warm & Polite" },
+                  { id: "standard", label: "Standard" },
+                  { id: "urgent", label: "Firm / Late" },
                 ] as const
               ).map((t) => (
                 <button
@@ -1090,8 +1035,8 @@ export function CustomerProfileScreen({
                   onClick={() => setSmsTone(t.id)}
                   className={`min-h-[40px] rounded-xl text-xs font-medium px-2 transition-colors ${
                     smsTone === t.id
-                      ? 'bg-[#DDF24E] text-[#13222B] font-semibold'
-                      : 'bg-[#F4F2EC] text-[#78808A] hover:text-[#13222B]'
+                      ? "bg-[#DDF24E] text-[#13222B] font-semibold"
+                      : "bg-[#F4F2EC] text-[#78808A] hover:text-[#13222B]"
                   }`}
                 >
                   {t.label}
@@ -1102,19 +1047,14 @@ export function CustomerProfileScreen({
             <div className="bg-[#F4F2EC] rounded-[24px] p-4 space-y-2">
               <div className="flex items-center justify-between text-xs text-[#78808A] flex-wrap gap-1">
                 <span>
-                  Recipient:{' '}
-                  <span className="font-mono tabular-nums">
-                    {customer.phone}
-                  </span>
+                  Recipient: <span className="font-mono tabular-nums">{customer.phone}</span>
                 </span>
                 <span className="flex items-center gap-1 text-[#1F5F63]">
                   <Sparkles className="w-3.5 h-3.5" />
                   {LANGUAGE_NAMES[smsLang].label}
                 </span>
               </div>
-              <p className="text-sm text-[#13222B] leading-relaxed">
-                “{smsPreview}”
-              </p>
+              <p className="text-sm text-[#13222B] leading-relaxed">“{smsPreview}”</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -1125,18 +1065,16 @@ export function CustomerProfileScreen({
                 className="min-h-[48px] rounded-full bg-[#F4F2EC] text-[#13222B] text-sm font-medium flex items-center justify-center gap-2"
               >
                 <Copy className="w-4 h-4" />
-                <span>{copiedSms ? 'Copied!' : 'Copy SMS'}</span>
+                <span>{copiedSms ? "Copied!" : "Copy SMS"}</span>
               </motion.button>
               <motion.button
                 type="button"
                 whileTap={{ scale: 0.94 }}
-                onClick={() =>
-                  onSendSMS(customer, smsLang, smsTone, smsPreview)
-                }
+                onClick={() => onSendSMS(customer, smsLang, smsTone, smsPreview)}
                 className="min-h-[48px] rounded-full bg-[#DDF24E] text-[#13222B] text-sm font-semibold flex items-center justify-center gap-2 shadow-sm"
               >
                 <Send className="w-4 h-4" />
-                <span>{tt('Send reminder SMS', appLang)}</span>
+                <span>{tt("Send reminder SMS", appLang)}</span>
               </motion.button>
             </div>
           </motion.div>

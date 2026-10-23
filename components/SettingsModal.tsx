@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   X,
   Store,
@@ -18,15 +18,10 @@ import {
   Volume2,
   VolumeX,
   Smartphone,
-} from 'lucide-react';
-import {
-  BahiState,
-  LanguageCode,
-  LANGUAGE_NAMES,
-  tt,
-} from '@/lib/bahi-data';
-import { HapticAudioCueType } from '@/lib/haptic-audio';
-import { PWAInstallBanner } from './PWAInstallBanner';
+} from "lucide-react";
+import { BahiState, LanguageCode, LANGUAGE_NAMES, tt } from "@/lib/bahi-data";
+import { HapticAudioCueType } from "@/lib/haptic-audio";
+import { PWAInstallBanner } from "./PWAInstallBanner";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -34,7 +29,7 @@ interface SettingsModalProps {
   onClose: () => void;
   onUpdateShopDetails: (ownerName: string, shopName: string) => void;
   onSelectLanguage: (lang: LanguageCode) => void;
-  onToggleTheme: (theme: 'light' | 'dark') => void;
+  onToggleTheme: (theme: "light" | "dark") => void;
   onToggleSound: () => void;
   onToggleHaptics: () => void;
   onPreviewCue: (cue: HapticAudioCueType) => void;
@@ -72,16 +67,13 @@ export function SettingsModal({
 
   if (!isOpen) return null;
 
-  const currentTheme = state.theme || 'light';
+  const currentTheme = state.theme || "light";
   const soundOn = state.soundEnabled !== false;
   const hapticsOn = state.hapticsEnabled !== false;
 
   const handleSaveShop = (e: React.FormEvent) => {
     e.preventDefault();
-    onUpdateShopDetails(
-      ownerInput.trim() || 'Thandi',
-      shopInput.trim() || 'Thandi’s Spaza'
-    );
+    onUpdateShopDetails(ownerInput.trim() || "Thandi", shopInput.trim() || "Thandi’s Spaza");
     setSavedShop(true);
     setTimeout(() => setSavedShop(false), 1800);
   };
@@ -99,10 +91,10 @@ export function SettingsModal({
           }}
         >
           <motion.div
-            initial={{ y: '100%', scale: 0.96 }}
+            initial={{ y: "100%", scale: 0.96 }}
             animate={{ y: 0, scale: 1 }}
-            exit={{ y: '100%', scale: 0.96 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+            exit={{ y: "100%", scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 320, damping: 28 }}
             className="bg-white w-full max-w-[480px] rounded-t-[42px] sm:rounded-[42px] p-6 pb-8 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4"
           >
             <div className="w-10 h-1.5 bg-[#ECE8DE] rounded-full mx-auto mb-1 sm:hidden" />
@@ -110,9 +102,7 @@ export function SettingsModal({
             {/* Modal Header */}
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-fraunces text-2xl font-medium text-[#13222B]">
-                  Shop Settings
-                </h2>
+                <h2 className="font-fraunces text-2xl font-medium text-[#13222B]">Shop Settings</h2>
                 <p className="text-xs text-[#78808A]">
                   Theme, haptic audio cues, language & offline sync
                 </p>
@@ -132,26 +122,24 @@ export function SettingsModal({
             <div className="bg-[#F4F2EC] rounded-[28px] p-4 space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-[#13222B] flex items-center gap-1.5">
-                  {currentTheme === 'dark' ? (
+                  {currentTheme === "dark" ? (
                     <Moon className="w-4 h-4 text-[#DDF24E]" />
                   ) : (
                     <Sun className="w-4 h-4 text-[#1F5F63]" />
                   )}
                   Appearance & Contrast
                 </span>
-                <span className="text-[11px] text-[#78808A]">
-                  Daylight or Night Till
-                </span>
+                <span className="text-[11px] text-[#78808A]">Daylight or Night Till</span>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <motion.button
                   type="button"
                   whileTap={{ scale: 0.96 }}
-                  onClick={() => onToggleTheme('light')}
+                  onClick={() => onToggleTheme("light")}
                   className={`min-h-[44px] rounded-2xl px-4 py-2.5 flex items-center justify-center gap-2 text-xs font-semibold transition-all ${
-                    currentTheme === 'light'
-                      ? 'bg-[#13222B] text-white shadow-sm'
-                      : 'bg-white text-[#13222B] hover:bg-[#ECE8DE]'
+                    currentTheme === "light"
+                      ? "bg-[#13222B] text-white shadow-sm"
+                      : "bg-white text-[#13222B] hover:bg-[#ECE8DE]"
                   }`}
                 >
                   <Sun className="w-4 h-4" />
@@ -160,11 +148,11 @@ export function SettingsModal({
                 <motion.button
                   type="button"
                   whileTap={{ scale: 0.96 }}
-                  onClick={() => onToggleTheme('dark')}
+                  onClick={() => onToggleTheme("dark")}
                   className={`min-h-[44px] rounded-2xl px-4 py-2.5 flex items-center justify-center gap-2 text-xs font-semibold transition-all ${
-                    currentTheme === 'dark'
-                      ? 'bg-[#DDF24E] text-[#13222B] shadow-sm'
-                      : 'bg-white text-[#13222B] hover:bg-[#ECE8DE]'
+                    currentTheme === "dark"
+                      ? "bg-[#DDF24E] text-[#13222B] shadow-sm"
+                      : "bg-white text-[#13222B] hover:bg-[#ECE8DE]"
                   }`}
                 >
                   <Moon className="w-4 h-4" />
@@ -196,8 +184,8 @@ export function SettingsModal({
                   onClick={onToggleSound}
                   className={`min-h-[44px] rounded-2xl px-3.5 py-2 flex items-center justify-between gap-2 text-xs font-semibold transition-all ${
                     soundOn
-                      ? 'bg-[#13222B] text-white shadow-sm'
-                      : 'bg-white text-[#78808A] hover:bg-[#ECE8DE]'
+                      ? "bg-[#13222B] text-white shadow-sm"
+                      : "bg-white text-[#78808A] hover:bg-[#ECE8DE]"
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
@@ -210,12 +198,10 @@ export function SettingsModal({
                   </span>
                   <span
                     className={`font-mono text-[10px] px-1.5 py-0.5 rounded-full ${
-                      soundOn
-                        ? 'bg-[#DDF24E] text-[#13222B]'
-                        : 'bg-[#F4F2EC] text-[#78808A]'
+                      soundOn ? "bg-[#DDF24E] text-[#13222B]" : "bg-[#F4F2EC] text-[#78808A]"
                     }`}
                   >
-                    {soundOn ? 'ON' : 'OFF'}
+                    {soundOn ? "ON" : "OFF"}
                   </span>
                 </motion.button>
 
@@ -225,26 +211,20 @@ export function SettingsModal({
                   onClick={onToggleHaptics}
                   className={`min-h-[44px] rounded-2xl px-3.5 py-2 flex items-center justify-between gap-2 text-xs font-semibold transition-all ${
                     hapticsOn
-                      ? 'bg-[#13222B] text-white shadow-sm'
-                      : 'bg-white text-[#78808A] hover:bg-[#ECE8DE]'
+                      ? "bg-[#13222B] text-white shadow-sm"
+                      : "bg-white text-[#78808A] hover:bg-[#ECE8DE]"
                   }`}
                 >
                   <span className="flex items-center gap-1.5">
-                    <Smartphone
-                      className={`w-4 h-4 ${
-                        hapticsOn ? 'text-[#DDF24E]' : ''
-                      }`}
-                    />
+                    <Smartphone className={`w-4 h-4 ${hapticsOn ? "text-[#DDF24E]" : ""}`} />
                     <span>Haptic Pulse</span>
                   </span>
                   <span
                     className={`font-mono text-[10px] px-1.5 py-0.5 rounded-full ${
-                      hapticsOn
-                        ? 'bg-[#DDF24E] text-[#13222B]'
-                        : 'bg-[#F4F2EC] text-[#78808A]'
+                      hapticsOn ? "bg-[#DDF24E] text-[#13222B]" : "bg-[#F4F2EC] text-[#78808A]"
                     }`}
                   >
-                    {hapticsOn ? 'ON' : 'OFF'}
+                    {hapticsOn ? "ON" : "OFF"}
                   </span>
                 </motion.button>
               </div>
@@ -257,7 +237,7 @@ export function SettingsModal({
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.93 }}
-                    onClick={() => onPreviewCue('cha_ching')}
+                    onClick={() => onPreviewCue("cha_ching")}
                     className="min-h-[38px] rounded-xl bg-white hover:bg-[#ECE8DE] text-[#13222B] text-[11px] font-semibold px-2 py-1.5 flex items-center justify-center gap-1 shadow-2xs"
                   >
                     <span className="text-[#1F5F63] font-mono">♪</span>
@@ -266,7 +246,7 @@ export function SettingsModal({
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.93 }}
-                    onClick={() => onPreviewCue('credit_logged')}
+                    onClick={() => onPreviewCue("credit_logged")}
                     className="min-h-[38px] rounded-xl bg-white hover:bg-[#ECE8DE] text-[#13222B] text-[11px] font-semibold px-2 py-1.5 flex items-center justify-center gap-1 shadow-2xs"
                   >
                     <span className="text-[#F5B83D] font-mono">♪</span>
@@ -275,7 +255,7 @@ export function SettingsModal({
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.93 }}
-                    onClick={() => onPreviewCue('account_settled')}
+                    onClick={() => onPreviewCue("account_settled")}
                     className="min-h-[38px] rounded-xl bg-white hover:bg-[#ECE8DE] text-[#13222B] text-[11px] font-semibold px-2 py-1.5 flex items-center justify-center gap-1 shadow-2xs"
                   >
                     <span className="text-[#4CB944] font-mono">♪</span>
@@ -290,14 +270,12 @@ export function SettingsModal({
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-[#13222B] flex items-center gap-1.5">
                   <Globe className="w-4 h-4 text-[#1F5F63]" />
-                  {tt('Choose your language', state.lang)}
+                  {tt("Choose your language", state.lang)}
                 </span>
-                <span className="text-[11px] text-[#78808A]">
-                  UI & SMS Reminders
-                </span>
+                <span className="text-[11px] text-[#78808A]">UI & SMS Reminders</span>
               </div>
               <div className="grid grid-cols-3 gap-2">
-                {(['en', 'zu', 'st'] as LanguageCode[]).map((l) => {
+                {(["en", "zu", "st"] as LanguageCode[]).map((l) => {
                   const active = state.lang === l;
                   return (
                     <motion.button
@@ -307,20 +285,18 @@ export function SettingsModal({
                       onClick={() => onSelectLanguage(l)}
                       className={`p-3 rounded-2xl text-left transition-all ${
                         active
-                          ? 'bg-[#13222B] text-white shadow-sm'
-                          : 'bg-white text-[#13222B] hover:bg-[#ECE8DE]'
+                          ? "bg-[#13222B] text-white shadow-sm"
+                          : "bg-white text-[#13222B] hover:bg-[#ECE8DE]"
                       }`}
                     >
                       <div
                         className={`font-doto font-bold text-xs ${
-                          active ? 'text-[#DDF24E]' : 'text-[#78808A]'
+                          active ? "text-[#DDF24E]" : "text-[#78808A]"
                         }`}
                       >
                         {l.toUpperCase()}
                       </div>
-                      <div className="font-medium text-sm mt-0.5">
-                        {LANGUAGE_NAMES[l].label}
-                      </div>
+                      <div className="font-medium text-sm mt-0.5">{LANGUAGE_NAMES[l].label}</div>
                     </motion.button>
                   );
                 })}
@@ -333,29 +309,22 @@ export function SettingsModal({
                 <div
                   className={`w-11 h-11 rounded-full grid place-items-center shrink-0 ${
                     state.online
-                      ? 'bg-[#5BD16B]/20 text-[#1F5F63]'
-                      : 'bg-[#F4C84E]/30 text-[#13222B]'
+                      ? "bg-[#5BD16B]/20 text-[#1F5F63]"
+                      : "bg-[#F4C84E]/30 text-[#13222B]"
                   }`}
                 >
-                  {state.online ? (
-                    <Wifi className="w-5 h-5" />
-                  ) : (
-                    <WifiOff className="w-5 h-5" />
-                  )}
+                  {state.online ? <Wifi className="w-5 h-5" /> : <WifiOff className="w-5 h-5" />}
                 </div>
                 <div className="min-w-0">
                   <b className="text-sm font-medium text-[#13222B] block">
                     {state.online
-                      ? tt('Synced', state.lang)
-                      : tt(
-                          `Offline · ${state.syncQueue} queued`,
-                          state.lang
-                        )}
+                      ? tt("Synced", state.lang)
+                      : tt(`Offline · ${state.syncQueue} queued`, state.lang)}
                   </b>
                   <small className="text-xs text-[#78808A] block">
                     {state.online
-                      ? 'Connected · Tap to simulate offline mode'
-                      : 'Saving locally on device · Tap to reconnect & sync'}
+                      ? "Connected · Tap to simulate offline mode"
+                      : "Saving locally on device · Tap to reconnect & sync"}
                   </small>
                 </div>
               </div>
@@ -364,24 +333,19 @@ export function SettingsModal({
                 whileTap={{ scale: 0.94 }}
                 onClick={onToggleSync}
                 className={`min-h-[42px] px-4 rounded-full text-xs font-semibold shrink-0 ${
-                  state.online
-                    ? 'bg-white text-[#13222B]'
-                    : 'bg-[#DDF24E] text-[#13222B]'
+                  state.online ? "bg-white text-[#13222B]" : "bg-[#DDF24E] text-[#13222B]"
                 }`}
               >
-                {state.online ? 'Go Offline' : 'Sync Now'}
+                {state.online ? "Go Offline" : "Sync Now"}
               </motion.button>
             </div>
 
             {/* 4. Shop & Owner Profile Form */}
-            <form
-              onSubmit={handleSaveShop}
-              className="bg-[#F4F2EC] rounded-[28px] p-4 space-y-3"
-            >
+            <form onSubmit={handleSaveShop} className="bg-[#F4F2EC] rounded-[28px] p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-[#13222B] flex items-center gap-1.5">
                   <Store className="w-4 h-4 text-[#1F5F63]" />
-                  {tt('Tell us about your shop', state.lang)}
+                  {tt("Tell us about your shop", state.lang)}
                 </span>
                 {savedShop && (
                   <span className="text-xs font-medium text-[#1F5F63] flex items-center gap-1">
@@ -393,7 +357,7 @@ export function SettingsModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div>
                   <label className="block text-[11px] text-[#78808A] mb-1">
-                    {tt('Your name', state.lang)}
+                    {tt("Your name", state.lang)}
                   </label>
                   <input
                     type="text"
@@ -405,7 +369,7 @@ export function SettingsModal({
                 </div>
                 <div>
                   <label className="block text-[11px] text-[#78808A] mb-1">
-                    {tt('Shop name', state.lang)}
+                    {tt("Shop name", state.lang)}
                   </label>
                   <input
                     type="text"
@@ -418,18 +382,16 @@ export function SettingsModal({
               </div>
 
               <div className="flex flex-wrap gap-1.5">
-                {['Thandi’s Spaza', 'Mama’s Duka', 'Corner Tuck Shop'].map(
-                  (preset) => (
-                    <button
-                      key={preset}
-                      type="button"
-                      onClick={() => setShopInput(preset)}
-                      className="px-3 py-1 rounded-full bg-white text-[11px] text-[#78808A] hover:text-[#13222B]"
-                    >
-                      {preset}
-                    </button>
-                  )
-                )}
+                {["Thandi’s Spaza", "Mama’s Duka", "Corner Tuck Shop"].map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => setShopInput(preset)}
+                    className="px-3 py-1 rounded-full bg-white text-[11px] text-[#78808A] hover:text-[#13222B]"
+                  >
+                    {preset}
+                  </button>
+                ))}
               </div>
 
               <motion.button
@@ -467,7 +429,7 @@ export function SettingsModal({
                   className="min-h-[48px] rounded-2xl bg-[#F4F2EC] hover:bg-[#ECE8DE] text-[#13222B] text-xs font-medium px-3.5 py-2.5 flex items-center justify-center gap-2"
                 >
                   <Printer className="w-4 h-4 text-[#1F5F63]" />
-                  <span>{tt('Window poster', state.lang)}</span>
+                  <span>{tt("Window poster", state.lang)}</span>
                 </motion.button>
               </div>
 
@@ -485,9 +447,7 @@ export function SettingsModal({
                   <ShieldCheck className="w-4 h-4 text-[#1F5F63]" />
                   <span>Data Usage, POPIA Privacy & Legal Terms</span>
                 </span>
-                <span className="text-[11px] font-mono text-[#78808A]">
-                  NCA · POPIA
-                </span>
+                <span className="text-[11px] font-mono text-[#78808A]">NCA · POPIA</span>
               </motion.button>
 
               <div className="flex items-center justify-between gap-2 pt-1">

@@ -1,42 +1,42 @@
-import type { Metadata, Viewport } from 'next';
-import { Analytics } from '@vercel/analytics/next';
-import './globals.css';
+import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import "./globals.css";
 
-const appUrl = process.env.APP_URL || 'https://bahiapp.local';
+const appUrl = process.env.APP_URL || "https://bahiapp.local";
 
 export const viewport: Viewport = {
-  themeColor: '#FBF8F3',
-  width: 'device-width',
+  themeColor: "#FBF8F3",
+  width: "device-width",
   initialScale: 1,
-  viewportFit: 'cover',
+  viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
-  title: 'BahiApp – Offline Spaza Shop Book, CRM & SMS Ledger',
+  title: "BahiApp – Offline Spaza Shop Book, CRM & SMS Ledger",
   description:
-    'Track spaza shop stock, record buy-now-pay-later customer credit offline, view analytics, and send automated SMS reminders in English, isiZulu & Sesotho.',
-  applicationName: 'BahiApp',
+    "Track spaza shop stock, record buy-now-pay-later customer credit offline, view analytics, and send automated SMS reminders in English, isiZulu & Sesotho.",
+  applicationName: "BahiApp",
   keywords: [
-    'BahiApp',
-    'spaza shop',
-    'duka',
-    'credit book',
-    'bahi-khata',
-    'ibhuku',
-    'offline POS',
-    'micro-ERP',
-    'informal retail CRM',
-    'isiZulu SMS reminder',
-    'Sesotho SMS reminder',
-    'South Africa spaza',
+    "BahiApp",
+    "spaza shop",
+    "duka",
+    "credit book",
+    "bahi-khata",
+    "ibhuku",
+    "offline POS",
+    "micro-ERP",
+    "informal retail CRM",
+    "isiZulu SMS reminder",
+    "Sesotho SMS reminder",
+    "South Africa spaza",
   ],
-  authors: [{ name: 'BahiApp' }],
-  creator: 'BahiApp',
-  publisher: 'BahiApp',
-  manifest: '/manifest.webmanifest',
+  authors: [{ name: "BahiApp" }],
+  creator: "BahiApp",
+  publisher: "BahiApp",
+  manifest: "/manifest.webmanifest",
   alternates: {
-    canonical: '/',
+    canonical: "/",
   },
   robots: {
     index: true,
@@ -44,78 +44,78 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
-    title: 'BahiApp',
+    statusBarStyle: "default",
+    title: "BahiApp",
   },
   icons: {
     icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
-      { url: '/pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/pwa-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/pwa-512x512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   openGraph: {
-    type: 'website',
+    type: "website",
     url: appUrl,
-    siteName: 'BahiApp',
-    title: 'BahiApp – Offline Spaza Shop Book, CRM & SMS Ledger',
+    siteName: "BahiApp",
+    title: "BahiApp – Offline Spaza Shop Book, CRM & SMS Ledger",
     description:
-      'Track spaza shop stock, record buy-now-pay-later customer credit offline, view analytics, and send automated SMS reminders in English, isiZulu & Sesotho.',
-    locale: 'en_ZA',
+      "Track spaza shop stock, record buy-now-pay-later customer credit offline, view analytics, and send automated SMS reminders in English, isiZulu & Sesotho.",
+    locale: "en_ZA",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'BahiApp – Offline Spaza Shop Book, CRM & SMS Ledger',
+    card: "summary_large_image",
+    title: "BahiApp – Offline Spaza Shop Book, CRM & SMS Ledger",
     description:
-      'Track spaza shop stock, record buy-now-pay-later customer credit offline, view analytics, and send automated SMS reminders in English, isiZulu & Sesotho.',
+      "Track spaza shop stock, record buy-now-pay-later customer credit offline, view analytics, and send automated SMS reminders in English, isiZulu & Sesotho.",
   },
 };
 
 const jsonLdSchema = {
-  '@context': 'https://schema.org',
-  '@graph': [
+  "@context": "https://schema.org",
+  "@graph": [
     {
-      '@type': 'WebApplication',
-      name: 'BahiApp',
-      alternateName: ['BahiApp Spaza Ledger', 'Bhuku Shop Book'],
+      "@type": "WebApplication",
+      name: "BahiApp",
+      alternateName: ["BahiApp Spaza Ledger", "Bhuku Shop Book"],
       url: appUrl,
-      applicationCategory: 'BusinessApplication',
-      operatingSystem: 'All',
-      inLanguage: ['en', 'zu', 'st'],
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "All",
+      inLanguage: ["en", "zu", "st"],
       description:
-        'Offline-first micro-ERP, digital credit book (bahi-khata), CRM, barcode inventory scanner, and multi-language SMS reminder web application for spaza shops and informal retailers.',
+        "Offline-first micro-ERP, digital credit book (bahi-khata), CRM, barcode inventory scanner, and multi-language SMS reminder web application for spaza shops and informal retailers.",
       featureList: [
-        'Offline-first local ledger synchronization',
-        'Customer Relationship Management (CRM) with full purchase history',
-        'Multi-language SMS reminders in English, isiZulu, and Sesotho',
-        'Daily, weekly, and monthly sales and credit analytics',
-        'Camera barcode scanner and stock alerts',
-        'Printable A4 shop window credit poster',
+        "Offline-first local ledger synchronization",
+        "Customer Relationship Management (CRM) with full purchase history",
+        "Multi-language SMS reminders in English, isiZulu, and Sesotho",
+        "Daily, weekly, and monthly sales and credit analytics",
+        "Camera barcode scanner and stock alerts",
+        "Printable A4 shop window credit poster",
       ],
       offers: {
-        '@type': 'Offer',
-        price: '0',
-        priceCurrency: 'ZAR',
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "ZAR",
       },
     },
     {
-      '@type': 'FAQPage',
+      "@type": "FAQPage",
       mainEntity: [
         {
-          '@type': 'Question',
-          name: 'Does BahiApp work without mobile data or internet?',
+          "@type": "Question",
+          name: "Does BahiApp work without mobile data or internet?",
           acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Yes. BahiApp is an offline-first Progressive Web App (PWA). Sales, customer credit entries, and SMS reminders are stored locally on your phone and queued to sync automatically when connectivity returns.',
+            "@type": "Answer",
+            text: "Yes. BahiApp is an offline-first Progressive Web App (PWA). Sales, customer credit entries, and SMS reminders are stored locally on your phone and queued to sync automatically when connectivity returns.",
           },
         },
         {
-          '@type': 'Question',
-          name: 'Which languages are supported for SMS payment reminders?',
+          "@type": "Question",
+          name: "Which languages are supported for SMS payment reminders?",
           acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'BahiApp generates culturally appropriate, grammatically verified SMS reminders in English, isiZulu, and Sesotho across Friendly, Standard, and Urgent tones.',
+            "@type": "Answer",
+            text: "BahiApp generates culturally appropriate, grammatically verified SMS reminders in English, isiZulu, and Sesotho across Friendly, Standard, and Urgent tones.",
           },
         },
       ],

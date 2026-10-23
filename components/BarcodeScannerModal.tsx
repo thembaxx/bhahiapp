@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, Camera, Barcode, Sparkles, Plus } from 'lucide-react';
-import { LanguageCode, ProductItem, formatRand0, tt } from '@/lib/bahi-data';
+import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { X, Camera, Barcode, Sparkles, Plus } from "lucide-react";
+import { LanguageCode, ProductItem, formatRand0, tt } from "@/lib/bahi-data";
 
 interface BarcodeScannerModalProps {
   isOpen: boolean;
@@ -14,7 +14,7 @@ interface BarcodeScannerModalProps {
   onAddNewItem: (item: {
     name: string;
     price: number;
-    category: ProductItem['category'];
+    category: ProductItem["category"];
     barcode: string;
     qty: number;
   }) => void;
@@ -30,15 +30,15 @@ export function BarcodeScannerModal({
 }: BarcodeScannerModalProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
-  const [statusMessage, setStatusMessage] = useState('Point the camera at a barcode');
-  const [manualCode, setManualCode] = useState('');
+  const [statusMessage, setStatusMessage] = useState("Point the camera at a barcode");
+  const [manualCode, setManualCode] = useState("");
   const [unknownBarcode, setUnknownBarcode] = useState<string | null>(null);
 
   // New item fields
-  const [newName, setNewName] = useState('');
-  const [newPrice, setNewPrice] = useState('');
-  const [newQty, setNewQty] = useState('12');
-  const [newCategory, setNewCategory] = useState<ProductItem['category']>('Staples');
+  const [newName, setNewName] = useState("");
+  const [newPrice, setNewPrice] = useState("");
+  const [newQty, setNewQty] = useState("12");
+  const [newCategory, setNewCategory] = useState<ProductItem["category"]>("Staples");
 
   const handleDetectedBarcode = (code: string) => {
     const clean = code.trim();
@@ -46,11 +46,11 @@ export function BarcodeScannerModal({
     const found = items.find((i) => i.barcode === clean);
     if (found) {
       if (found.qty <= 0) {
-        setStatusMessage(`${found.name}: ${tt('Out of stock. Restock first', appLang)}`);
+        setStatusMessage(`${found.name}: ${tt("Out of stock. Restock first", appLang)}`);
         return;
       }
       onSellItem(found.id);
-      setStatusMessage(`${tt('Sold', appLang)}: ${found.name} (${formatRand0(found.price)})`);
+      setStatusMessage(`${tt("Sold", appLang)}: ${found.name} (${formatRand0(found.price)})`);
     } else {
       setUnknownBarcode(clean);
     }
@@ -59,19 +59,19 @@ export function BarcodeScannerModal({
   useEffect(() => {
     if (!isOpen) return;
     setUnknownBarcode(null);
-    setManualCode('');
-    setStatusMessage(tt('Point the camera at a barcode', appLang));
+    setManualCode("");
+    setStatusMessage(tt("Point the camera at a barcode", appLang));
 
     let stream: MediaStream | null = null;
     let intervalId: ReturnType<typeof setInterval> | null = null;
-    let lastCode = '';
+    let lastCode = "";
     let lastTime = 0;
 
     const startCamera = async () => {
       try {
-        if (!navigator.mediaDevices?.getUserMedia) throw new Error('No camera API');
+        if (!navigator.mediaDevices?.getUserMedia) throw new Error("No camera API");
         stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' },
+          video: { facingMode: "environment" },
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -108,7 +108,7 @@ export function BarcodeScannerModal({
         }
       } catch {
         setCameraActive(false);
-        setStatusMessage(tt('Camera unavailable. Type the barcode instead.', appLang));
+        setStatusMessage(tt("Camera unavailable. Type the barcode instead.", appLang));
       }
     };
 
@@ -120,7 +120,7 @@ export function BarcodeScannerModal({
         stream.getTracks().forEach((t) => t.stop());
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   const handleCreateItem = (e: React.FormEvent) => {
@@ -134,8 +134,8 @@ export function BarcodeScannerModal({
       barcode: unknownBarcode || `6001234509${items.length}`,
       qty: parseInt(newQty, 10) || 10,
     });
-    setNewName('');
-    setNewPrice('');
+    setNewName("");
+    setNewPrice("");
     setUnknownBarcode(null);
     onClose();
   };
@@ -154,15 +154,15 @@ export function BarcodeScannerModal({
         }}
       >
         <motion.div
-          initial={{ y: '100%' }}
+          initial={{ y: "100%" }}
           animate={{ y: 0 }}
-          exit={{ y: '100%' }}
-          transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+          exit={{ y: "100%" }}
+          transition={{ type: "spring", stiffness: 320, damping: 28 }}
           className="bg-white w-full max-w-[440px] rounded-t-[42px] sm:rounded-[42px] p-6 pb-8 shadow-2xl"
         >
           <div className="flex items-center justify-between">
             <h2 className="font-fraunces text-2xl font-medium text-[#13222B]">
-              {unknownBarcode ? tt('Add item', appLang) : tt('Scan barcode', appLang)}
+              {unknownBarcode ? tt("Add item", appLang) : tt("Scan barcode", appLang)}
             </h2>
             <motion.button
               whileTap={{ scale: 0.92 }}
@@ -180,7 +180,7 @@ export function BarcodeScannerModal({
                   ref={videoRef}
                   playsInline
                   muted
-                  className={`w-full h-full object-cover ${cameraActive ? 'block' : 'hidden'}`}
+                  className={`w-full h-full object-cover ${cameraActive ? "block" : "hidden"}`}
                 />
                 {!cameraActive && (
                   <div className="text-center px-6 text-white/80 space-y-2">
@@ -191,7 +191,7 @@ export function BarcodeScannerModal({
                 {/* Animated Laser Guide */}
                 <motion.div
                   animate={{ y: [-50, 50, -50] }}
-                  transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+                  transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
                   className="absolute inset-x-6 h-0.5 bg-[#DDF24E] shadow-[0_0_12px_#DDF24E]"
                 />
               </div>
@@ -206,7 +206,7 @@ export function BarcodeScannerModal({
                 inputMode="numeric"
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
-                placeholder={tt('Or type the barcode', appLang)}
+                placeholder={tt("Or type the barcode", appLang)}
                 className="w-full bg-[#F4F2EC] rounded-2xl px-4 py-3.5 font-doto text-lg text-[#13222B]"
               />
 
@@ -217,7 +217,7 @@ export function BarcodeScannerModal({
                   onClick={() => handleDetectedBarcode(manualCode)}
                   className="min-h-[48px] rounded-2xl bg-[#13222B] text-white text-sm font-medium"
                 >
-                  {tt('Use code', appLang)}
+                  {tt("Use code", appLang)}
                 </motion.button>
                 <motion.button
                   type="button"
@@ -229,7 +229,7 @@ export function BarcodeScannerModal({
                   className="min-h-[48px] rounded-2xl bg-[#DDF24E] text-[#13222B] text-sm font-semibold flex items-center justify-center gap-1.5"
                 >
                   <Sparkles className="w-4 h-4" />
-                  <span>{tt('Try demo code', appLang)}</span>
+                  <span>{tt("Try demo code", appLang)}</span>
                 </motion.button>
               </div>
 
@@ -245,7 +245,7 @@ export function BarcodeScannerModal({
           ) : (
             <form onSubmit={handleCreateItem} className="mt-4 space-y-3">
               <div className="bg-[#F4F2EC] rounded-2xl p-3 text-xs text-[#78808A]">
-                {tt('Unknown barcode. Add this item', appLang)}:{' '}
+                {tt("Unknown barcode. Add this item", appLang)}:{" "}
                 <strong className="font-doto text-[#13222B]">{unknownBarcode}</strong>
               </div>
               <input
@@ -253,7 +253,7 @@ export function BarcodeScannerModal({
                 required
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder={tt('Item name', appLang)}
+                placeholder={tt("Item name", appLang)}
                 className="w-full bg-[#F4F2EC] rounded-2xl px-4 py-3.5 text-sm text-[#13222B]"
               />
               <div className="grid grid-cols-2 gap-2.5">
@@ -263,7 +263,7 @@ export function BarcodeScannerModal({
                   required
                   value={newPrice}
                   onChange={(e) => setNewPrice(e.target.value)}
-                  placeholder={tt('Price in rand', appLang)}
+                  placeholder={tt("Price in rand", appLang)}
                   className="w-full bg-[#F4F2EC] rounded-2xl px-4 py-3.5 font-doto text-base font-bold text-[#13222B]"
                 />
                 <input
@@ -275,15 +275,15 @@ export function BarcodeScannerModal({
                 />
               </div>
               <div className="grid grid-cols-4 gap-1.5 bg-[#F4F2EC] p-1 rounded-2xl">
-                {(['Staples', 'Pantry', 'Fresh', 'Household'] as const).map((cat) => (
+                {(["Staples", "Pantry", "Fresh", "Household"] as const).map((cat) => (
                   <button
                     key={cat}
                     type="button"
                     onClick={() => setNewCategory(cat)}
                     className={`min-h-[38px] rounded-xl text-xs font-medium transition-colors ${
                       newCategory === cat
-                        ? 'bg-[#13222B] text-white'
-                        : 'text-[#78808A] hover:text-[#13222B]'
+                        ? "bg-[#13222B] text-white"
+                        : "text-[#78808A] hover:text-[#13222B]"
                     }`}
                   >
                     {cat}
@@ -295,7 +295,7 @@ export function BarcodeScannerModal({
                 whileTap={{ scale: 0.95 }}
                 className="w-full min-h-[50px] rounded-full bg-[#DDF24E] text-[#13222B] font-semibold text-sm mt-2"
               >
-                {tt('Add item', appLang)}
+                {tt("Add item", appLang)}
               </motion.button>
             </form>
           )}

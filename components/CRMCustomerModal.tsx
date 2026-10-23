@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   X,
   Phone,
@@ -17,7 +17,7 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   ShieldCheck,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   Customer,
   CustomerCategory,
@@ -27,8 +27,8 @@ import {
   formatRand0,
   generateSMSText,
   tt,
-} from '@/lib/bahi-data';
-import { DotMatrixCounter } from './VisualCharts';
+} from "@/lib/bahi-data";
+import { DotMatrixCounter } from "./VisualCharts";
 
 interface CRMCustomerModalProps {
   customer: Customer | null;
@@ -39,9 +39,9 @@ interface CRMCustomerModalProps {
   onClose: () => void;
   onRecordTransaction: (
     customerId: number,
-    type: 'credit_sale' | 'payment',
+    type: "credit_sale" | "payment",
     amount: number,
-    productNote: string
+    productNote: string,
   ) => void;
   onSendSMS: (customer: Customer, lang: LanguageCode, tone: SMSTone, message: string) => void;
   onSaveCustomer: (
@@ -54,7 +54,7 @@ interface CRMCustomerModalProps {
       notes: string;
       popiaConsent?: boolean;
     },
-    initialCredit?: number
+    initialCredit?: number,
   ) => void;
 }
 
@@ -69,43 +69,43 @@ export function CRMCustomerModal({
   onSendSMS,
   onSaveCustomer,
 }: CRMCustomerModalProps) {
-  const [subTab, setSubTab] = useState<'ledger' | 'history' | 'sms' | 'edit'>('ledger');
-  const [amountStr, setAmountStr] = useState('');
-  const [itemNote, setItemNote] = useState('');
-  const [smsLang, setSmsLang] = useState<LanguageCode>('en');
-  const [smsTone, setSmsTone] = useState<SMSTone>('standard');
+  const [subTab, setSubTab] = useState<"ledger" | "history" | "sms" | "edit">("ledger");
+  const [amountStr, setAmountStr] = useState("");
+  const [itemNote, setItemNote] = useState("");
+  const [smsLang, setSmsLang] = useState<LanguageCode>("en");
+  const [smsTone, setSmsTone] = useState<SMSTone>("standard");
   const [copied, setCopied] = useState(false);
 
   // Edit / Create fields
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [category, setCategory] = useState<CustomerCategory>('regular');
-  const [preferredLang, setPreferredLang] = useState<LanguageCode>('en');
-  const [notes, setNotes] = useState('');
-  const [initialCreditStr, setInitialCreditStr] = useState('');
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [category, setCategory] = useState<CustomerCategory>("regular");
+  const [preferredLang, setPreferredLang] = useState<LanguageCode>("en");
+  const [notes, setNotes] = useState("");
+  const [initialCreditStr, setInitialCreditStr] = useState("");
   const [popiaConsent, setPopiaConsent] = useState(true);
 
   useEffect(() => {
     if (isCreatingNew) {
-      setSubTab('edit');
-      setName('');
-      setPhone('+27 ');
-      setCategory('new');
+      setSubTab("edit");
+      setName("");
+      setPhone("+27 ");
+      setCategory("new");
       setPreferredLang(appLang);
-      setNotes('');
-      setInitialCreditStr('');
+      setNotes("");
+      setInitialCreditStr("");
       setPopiaConsent(true);
     } else if (customer) {
-      setSubTab('ledger');
-      setAmountStr('');
-      setItemNote('');
+      setSubTab("ledger");
+      setAmountStr("");
+      setItemNote("");
       setSmsLang(customer.preferredLang || appLang);
-      setSmsTone(customer.daysOverdue >= 7 ? 'urgent' : 'standard');
+      setSmsTone(customer.daysOverdue >= 7 ? "urgent" : "standard");
       setName(customer.name);
       setPhone(customer.phone);
       setCategory(customer.category);
       setPreferredLang(customer.preferredLang || appLang);
-      setNotes(customer.notes || '');
+      setNotes(customer.notes || "");
       setPopiaConsent(customer.popiaConsent ?? true);
     }
   }, [customer, isCreatingNew, appLang, isOpen]);
@@ -121,7 +121,7 @@ export function CRMCustomerModal({
         lang: smsLang,
         tone: smsTone,
       })
-    : '';
+    : "";
 
   const handleCopySMS = () => {
     if (!smsPreview) return;
@@ -137,13 +137,13 @@ export function CRMCustomerModal({
       {
         id: customer?.id,
         name: name.trim(),
-        phone: phone.trim() || '+27 72 000 0000',
+        phone: phone.trim() || "+27 72 000 0000",
         category,
         preferredLang,
         notes: notes.trim(),
         popiaConsent,
       },
-      isCreatingNew ? parseFloat(initialCreditStr) || 0 : undefined
+      isCreatingNew ? parseFloat(initialCreditStr) || 0 : undefined,
     );
   };
 
@@ -160,10 +160,10 @@ export function CRMCustomerModal({
           }}
         >
           <motion.div
-            initial={{ y: '100%', scale: 0.96 }}
+            initial={{ y: "100%", scale: 0.96 }}
             animate={{ y: 0, scale: 1 }}
-            exit={{ y: '100%', scale: 0.96 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+            exit={{ y: "100%", scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 320, damping: 28 }}
             className="bg-white w-full max-w-[480px] rounded-t-[42px] sm:rounded-[42px] p-6 pb-8 shadow-2xl max-h-[90vh] overflow-y-auto"
           >
             <div className="w-10 h-1.5 bg-[#ECE8DE] rounded-full mx-auto mb-4 sm:hidden" />
@@ -181,7 +181,7 @@ export function CRMCustomerModal({
                 )}
                 <div className="min-w-0">
                   <h2 className="font-fraunces text-2xl font-medium text-[#13222B] truncate">
-                    {isCreatingNew ? tt('Add customer', appLang) : customer?.name}
+                    {isCreatingNew ? tt("Add customer", appLang) : customer?.name}
                   </h2>
                   {!isCreatingNew && customer && (
                     <div className="flex items-center gap-2 text-xs text-[#78808A] mt-0.5 flex-wrap">
@@ -192,7 +192,8 @@ export function CRMCustomerModal({
                       </span>
                       <span aria-hidden="true">·</span>
                       <span>
-                        <span className="font-mono tabular-nums">{customer.purchaseCount}</span> visits
+                        <span className="font-mono tabular-nums">{customer.purchaseCount}</span>{" "}
+                        visits
                       </span>
                     </div>
                   )}
@@ -213,10 +214,10 @@ export function CRMCustomerModal({
               <div className="grid grid-cols-4 gap-1.5 bg-[#F4F2EC] p-1.5 rounded-2xl mt-4">
                 {(
                   [
-                    { id: 'ledger', label: 'Account', icon: UserCheck },
-                    { id: 'history', label: 'History', icon: History },
-                    { id: 'sms', label: 'SMS', icon: MessageSquare },
-                    { id: 'edit', label: 'Profile', icon: Edit3 },
+                    { id: "ledger", label: "Account", icon: UserCheck },
+                    { id: "history", label: "History", icon: History },
+                    { id: "sms", label: "SMS", icon: MessageSquare },
+                    { id: "edit", label: "Profile", icon: Edit3 },
                   ] as const
                 ).map((item) => {
                   const Icon = item.icon;
@@ -228,8 +229,8 @@ export function CRMCustomerModal({
                       onClick={() => setSubTab(item.id)}
                       className={`min-h-[42px] rounded-xl flex items-center justify-center gap-1.5 text-xs font-medium transition-all whitespace-nowrap ${
                         active
-                          ? 'bg-[#13222B] text-white shadow-sm'
-                          : 'text-[#78808A] hover:text-[#13222B]'
+                          ? "bg-[#13222B] text-white shadow-sm"
+                          : "text-[#78808A] hover:text-[#13222B]"
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -241,29 +242,29 @@ export function CRMCustomerModal({
             )}
 
             {/* TAB 1: LEDGER (Credit / Payment / Quick Summary) */}
-            {!isCreatingNew && customer && subTab === 'ledger' && (
+            {!isCreatingNew && customer && subTab === "ledger" && (
               <div className="mt-5 space-y-4">
                 <div className="bg-[#F4F2EC] rounded-[28px] p-4 flex items-center justify-between gap-4 flex-wrap">
                   <div>
-                    <div className="text-xs text-[#78808A]">{tt('Owes you', appLang)}</div>
+                    <div className="text-xs text-[#78808A]">{tt("Owes you", appLang)}</div>
                     <div className="text-4xl mt-0.5 text-[#13222B]">
                       <DotMatrixCounter value={customer.owed} decimals={2} />
                     </div>
                     <div className="text-xs text-[#78808A] mt-1">
                       {customer.owed > 0
                         ? `${customer.daysOverdue} days open · Last active ${customer.lastPurchaseDate}`
-                        : 'Account fully settled'}
+                        : "Account fully settled"}
                     </div>
                   </div>
                   <div className="text-right text-xs text-[#78808A] space-y-1">
                     <div>
-                      Total credit:{' '}
+                      Total credit:{" "}
                       <strong className="font-doto text-[#13222B]">
                         {formatRand0(customer.totalCreditExtended)}
                       </strong>
                     </div>
                     <div>
-                      Total paid:{' '}
+                      Total paid:{" "}
                       <strong className="font-doto text-[#2C8C8A]">
                         {formatRand0(customer.totalPaid)}
                       </strong>
@@ -274,7 +275,7 @@ export function CRMCustomerModal({
                 {/* Amount Input + Quick Chips */}
                 <div>
                   <label className="block text-xs text-[#78808A] mb-1.5">
-                    {tt('Amount in rand', appLang)}
+                    {tt("Amount in rand", appLang)}
                   </label>
                   <input
                     type="number"
@@ -303,7 +304,10 @@ export function CRMCustomerModal({
                         onClick={() => setAmountStr(String(customer.owed))}
                         className="px-3.5 py-2 rounded-full bg-[#DDF24E] text-xs font-medium text-[#13222B]"
                       >
-                        Full <span className="font-mono font-bold tabular-nums">{formatRand0(customer.owed)}</span>
+                        Full{" "}
+                        <span className="font-mono font-bold tabular-nums">
+                          {formatRand0(customer.owed)}
+                        </span>
                       </motion.button>
                     )}
                   </div>
@@ -328,18 +332,18 @@ export function CRMCustomerModal({
                       if (val > 0) {
                         onRecordTransaction(
                           customer.id,
-                          'credit_sale',
+                          "credit_sale",
                           val,
-                          itemNote.trim() || 'Shop credit purchase'
+                          itemNote.trim() || "Shop credit purchase",
                         );
-                        setAmountStr('');
-                        setItemNote('');
+                        setAmountStr("");
+                        setItemNote("");
                       }
                     }}
                     className="min-h-[48px] rounded-2xl bg-[#13222B] text-white text-sm font-medium px-4 py-3 flex items-center justify-center gap-2"
                   >
                     <PlusCircle className="w-4 h-4 shrink-0" />
-                    <span>{tt('Add credit sale', appLang)}</span>
+                    <span>{tt("Add credit sale", appLang)}</span>
                   </motion.button>
                   <motion.button
                     type="button"
@@ -349,18 +353,18 @@ export function CRMCustomerModal({
                       if (val > 0) {
                         onRecordTransaction(
                           customer.id,
-                          'payment',
+                          "payment",
                           val,
-                          itemNote.trim() || 'Cash payment received'
+                          itemNote.trim() || "Cash payment received",
                         );
-                        setAmountStr('');
-                        setItemNote('');
+                        setAmountStr("");
+                        setItemNote("");
                       }
                     }}
                     className="min-h-[48px] rounded-2xl bg-[#2C8C8A] text-white text-sm font-medium px-4 py-3 flex items-center justify-center gap-2"
                   >
                     <CheckCircle2 className="w-4 h-4 shrink-0" />
-                    <span>{tt('Record payment', appLang)}</span>
+                    <span>{tt("Record payment", appLang)}</span>
                   </motion.button>
                 </div>
 
@@ -371,15 +375,15 @@ export function CRMCustomerModal({
                       SMS Reminder ({LANGUAGE_NAMES[smsLang].label})
                     </span>
                     <div className="flex items-center gap-1">
-                      {(['en', 'zu', 'st'] as LanguageCode[]).map((l) => (
+                      {(["en", "zu", "st"] as LanguageCode[]).map((l) => (
                         <button
                           key={l}
                           type="button"
                           onClick={() => setSmsLang(l)}
                           className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${
                             smsLang === l
-                              ? 'bg-[#13222B] text-white'
-                              : 'bg-white text-[#78808A] hover:text-[#13222B]'
+                              ? "bg-[#13222B] text-white"
+                              : "bg-white text-[#78808A] hover:text-[#13222B]"
                           }`}
                         >
                           {l.toUpperCase()}
@@ -395,17 +399,17 @@ export function CRMCustomerModal({
                     className="w-full min-h-[48px] rounded-full bg-[#DDF24E] text-[#13222B] font-semibold text-sm flex items-center justify-center gap-2 shadow-sm"
                   >
                     <Send className="w-4 h-4" />
-                    <span>{tt('Send reminder SMS', appLang)}</span>
+                    <span>{tt("Send reminder SMS", appLang)}</span>
                   </motion.button>
                 </div>
               </div>
             )}
 
             {/* TAB 2: COMPLETE PURCHASE & PAYMENT HISTORY */}
-            {!isCreatingNew && customer && subTab === 'history' && (
+            {!isCreatingNew && customer && subTab === "history" && (
               <div className="mt-5 space-y-3">
                 <div className="flex items-center justify-between text-xs text-[#78808A] px-1">
-                  <span>{tt('Purchase history', appLang)}</span>
+                  <span>{tt("Purchase history", appLang)}</span>
                   <span>{customer.history.length} entries recorded</span>
                 </div>
                 <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
@@ -415,8 +419,8 @@ export function CRMCustomerModal({
                     </p>
                   ) : (
                     customer.history.map((tx) => {
-                      const isPayment = tx.type === 'payment';
-                      const isSms = tx.type === 'sms_reminder';
+                      const isPayment = tx.type === "payment";
+                      const isSms = tx.type === "sms_reminder";
                       return (
                         <div
                           key={tx.id}
@@ -426,10 +430,10 @@ export function CRMCustomerModal({
                             <div
                               className={`w-10 h-10 rounded-full grid place-items-center shrink-0 ${
                                 isPayment
-                                  ? 'bg-[#BDEBE3] text-[#13222B]'
+                                  ? "bg-[#BDEBE3] text-[#13222B]"
                                   : isSms
-                                  ? 'bg-[#DDF24E] text-[#13222B]'
-                                  : 'bg-[#F6C4C0] text-[#13222B]'
+                                    ? "bg-[#DDF24E] text-[#13222B]"
+                                    : "bg-[#F6C4C0] text-[#13222B]"
                               }`}
                             >
                               {isPayment ? (
@@ -443,24 +447,24 @@ export function CRMCustomerModal({
                             <div className="min-w-0">
                               <b className="text-sm font-medium text-[#13222B] block truncate">
                                 {isPayment
-                                  ? 'Payment received'
+                                  ? "Payment received"
                                   : isSms
-                                  ? `SMS Reminder (${(tx.langUsed || 'en').toUpperCase()})`
-                                  : tx.productName || 'Credit purchase'}
+                                    ? `SMS Reminder (${(tx.langUsed || "en").toUpperCase()})`
+                                    : tx.productName || "Credit purchase"}
                               </b>
                               <small className="text-xs text-[#78808A] block truncate">
                                 {tx.date}
-                                {tx.notes ? ` · ${tx.notes}` : ''}
+                                {tx.notes ? ` · ${tx.notes}` : ""}
                               </small>
                             </div>
                           </div>
                           {!isSms && (
                             <span
                               className={`font-doto font-bold text-base shrink-0 ${
-                                isPayment ? 'text-[#1F5F63]' : 'text-[#E8453C]'
+                                isPayment ? "text-[#1F5F63]" : "text-[#E8453C]"
                               }`}
                             >
-                              {isPayment ? '-' : '+'}
+                              {isPayment ? "-" : "+"}
                               {formatRand0(tx.amount)}
                             </span>
                           )}
@@ -473,14 +477,14 @@ export function CRMCustomerModal({
             )}
 
             {/* TAB 3: MULTI-LANGUAGE SMS COMPOSER */}
-            {!isCreatingNew && customer && subTab === 'sms' && (
+            {!isCreatingNew && customer && subTab === "sms" && (
               <div className="mt-5 space-y-4">
                 <div>
                   <label className="block text-xs text-[#78808A] mb-2">
                     Select SMS Reminder Language
                   </label>
                   <div className="grid grid-cols-3 gap-2">
-                    {(['en', 'zu', 'st'] as LanguageCode[]).map((langKey) => (
+                    {(["en", "zu", "st"] as LanguageCode[]).map((langKey) => (
                       <motion.button
                         key={langKey}
                         type="button"
@@ -488,8 +492,8 @@ export function CRMCustomerModal({
                         onClick={() => setSmsLang(langKey)}
                         className={`p-3 rounded-2xl text-left border transition-all ${
                           smsLang === langKey
-                            ? 'bg-[#13222B] text-white border-[#13222B]'
-                            : 'bg-[#F4F2EC] text-[#13222B] border-transparent'
+                            ? "bg-[#13222B] text-white border-[#13222B]"
+                            : "bg-[#F4F2EC] text-[#13222B] border-transparent"
                         }`}
                       >
                         <div className="font-doto font-bold text-xs opacity-75">
@@ -510,9 +514,9 @@ export function CRMCustomerModal({
                   <div className="grid grid-cols-3 gap-2">
                     {(
                       [
-                        { id: 'friendly', label: 'Warm & Polite' },
-                        { id: 'standard', label: 'Standard' },
-                        { id: 'urgent', label: 'Firm / Overdue' },
+                        { id: "friendly", label: "Warm & Polite" },
+                        { id: "standard", label: "Standard" },
+                        { id: "urgent", label: "Firm / Overdue" },
                       ] as const
                     ).map((t) => (
                       <button
@@ -521,8 +525,8 @@ export function CRMCustomerModal({
                         onClick={() => setSmsTone(t.id)}
                         className={`min-h-[42px] rounded-xl text-xs font-medium px-3 py-2 transition-colors ${
                           smsTone === t.id
-                            ? 'bg-[#DDF24E] text-[#13222B] font-semibold'
-                            : 'bg-[#F4F2EC] text-[#78808A] hover:text-[#13222B]'
+                            ? "bg-[#DDF24E] text-[#13222B] font-semibold"
+                            : "bg-[#F4F2EC] text-[#78808A] hover:text-[#13222B]"
                         }`}
                       >
                         {t.label}
@@ -554,7 +558,7 @@ export function CRMCustomerModal({
                     className="min-h-[48px] rounded-full bg-[#F4F2EC] text-[#13222B] text-sm font-medium flex items-center justify-center gap-2"
                   >
                     <Copy className="w-4 h-4" />
-                    <span>{copied ? 'Copied!' : 'Copy text'}</span>
+                    <span>{copied ? "Copied!" : "Copy text"}</span>
                   </motion.button>
                   <motion.button
                     type="button"
@@ -570,7 +574,7 @@ export function CRMCustomerModal({
             )}
 
             {/* TAB 4: EDIT OR ADD CUSTOMER PROFILE */}
-            {(isCreatingNew || subTab === 'edit') && (
+            {(isCreatingNew || subTab === "edit") && (
               <form onSubmit={handleSaveDetails} className="mt-5 space-y-3.5">
                 <div>
                   <label className="block text-xs text-[#78808A] mb-1">Full Name</label>
@@ -602,15 +606,15 @@ export function CRMCustomerModal({
                   <div>
                     <label className="block text-xs text-[#78808A] mb-1.5">Customer Category</label>
                     <div className="grid grid-cols-3 gap-1.5 bg-[#F4F2EC] p-1 rounded-2xl">
-                      {(['regular', 'new', 'vip'] as CustomerCategory[]).map((cat) => (
+                      {(["regular", "new", "vip"] as CustomerCategory[]).map((cat) => (
                         <button
                           key={cat}
                           type="button"
                           onClick={() => setCategory(cat)}
                           className={`min-h-[38px] rounded-xl text-xs font-medium capitalize transition-colors ${
                             category === cat
-                              ? 'bg-[#13222B] text-white'
-                              : 'text-[#78808A] hover:text-[#13222B]'
+                              ? "bg-[#13222B] text-white"
+                              : "text-[#78808A] hover:text-[#13222B]"
                           }`}
                         >
                           {cat}
@@ -620,17 +624,19 @@ export function CRMCustomerModal({
                   </div>
 
                   <div>
-                    <label className="block text-xs text-[#78808A] mb-1.5">Preferred SMS Lang</label>
+                    <label className="block text-xs text-[#78808A] mb-1.5">
+                      Preferred SMS Lang
+                    </label>
                     <div className="grid grid-cols-3 gap-1.5 bg-[#F4F2EC] p-1 rounded-2xl">
-                      {(['en', 'zu', 'st'] as LanguageCode[]).map((l) => (
+                      {(["en", "zu", "st"] as LanguageCode[]).map((l) => (
                         <button
                           key={l}
                           type="button"
                           onClick={() => setPreferredLang(l)}
                           className={`min-h-[38px] rounded-xl text-xs font-mono font-semibold uppercase transition-colors ${
                             preferredLang === l
-                              ? 'bg-[#DDF24E] text-[#13222B]'
-                              : 'text-[#78808A] hover:text-[#13222B]'
+                              ? "bg-[#DDF24E] text-[#13222B]"
+                              : "text-[#78808A] hover:text-[#13222B]"
                           }`}
                         >
                           {l}
@@ -682,10 +688,10 @@ export function CRMCustomerModal({
                     <b className="text-[#13222B] inline-flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5 text-[#1F5F63] inline" />
                       POPIA & SMS Consent:
-                    </b>{' '}
-                    Customer consented to store their name & mobile number on
-                    this device and receive transactional SMS balance reminders
-                    (interest-free informal bookkeeping under NCA).
+                    </b>{" "}
+                    Customer consented to store their name & mobile number on this device and
+                    receive transactional SMS balance reminders (interest-free informal bookkeeping
+                    under NCA).
                   </span>
                 </label>
 
@@ -694,7 +700,7 @@ export function CRMCustomerModal({
                   whileTap={{ scale: 0.95 }}
                   className="w-full min-h-[50px] rounded-full bg-[#DDF24E] text-[#13222B] font-semibold text-sm shadow-sm mt-2"
                 >
-                  {isCreatingNew ? 'Save new customer' : 'Save customer profile'}
+                  {isCreatingNew ? "Save new customer" : "Save customer profile"}
                 </motion.button>
               </form>
             )}
