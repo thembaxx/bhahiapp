@@ -1,5 +1,6 @@
 "use client";
 
+import { useModalDialog } from "@/hooks/use-modal-dialog";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -56,6 +57,7 @@ export function SettingsModal({
   onOpenLegalPrivacy,
   onResetDemoData,
 }: SettingsModalProps) {
+  const dialogRef = useModalDialog(isOpen);
   const [ownerInput, setOwnerInput] = useState(state.ownerName);
   const [shopInput, setShopInput] = useState(state.shopName);
   const [savedShop, setSavedShop] = useState(false);
@@ -81,11 +83,17 @@ export function SettingsModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
+        <motion.dialog
+          ref={dialogRef}
+          aria-labelledby="shop-settings-title"
+          onCancel={(event) => {
+            event.preventDefault();
+            onClose();
+          }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none border-0 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4 [&::backdrop]:bg-transparent"
           onClick={(e) => {
             if (e.target === e.currentTarget) onClose();
           }}
@@ -95,14 +103,19 @@ export function SettingsModal({
             animate={{ y: 0, scale: 1 }}
             exit={{ y: "100%", scale: 0.96 }}
             transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="bg-white w-full max-w-[480px] rounded-t-[42px] sm:rounded-[42px] p-6 pb-8 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4"
+            className="bg-white w-full max-w-[480px] rounded-t-[42px] sm:rounded-[42px] p-6 pb-8 shadow-2xl max-h-[90dvh] overflow-y-auto space-y-4"
           >
             <div className="w-10 h-1.5 bg-[#ECE8DE] rounded-full mx-auto mb-1 sm:hidden" />
 
             {/* Modal Header */}
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-fraunces text-2xl font-medium text-[#13222B]">Shop Settings</h2>
+                <h2
+                  id="shop-settings-title"
+                  className="font-fraunces text-2xl font-medium text-[#13222B]"
+                >
+                  Shop Settings
+                </h2>
                 <p className="text-xs text-[#78808A]">
                   Theme, haptic audio cues, language & offline sync
                 </p>
@@ -467,7 +480,7 @@ export function SettingsModal({
               </div>
             </div>
           </motion.div>
-        </motion.div>
+        </motion.dialog>
       )}
     </AnimatePresence>
   );
