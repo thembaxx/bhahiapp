@@ -1,5 +1,6 @@
 "use client";
 
+import { useModalDialog } from "@/hooks/use-modal-dialog";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { LanguageCode, LANGUAGE_NAMES, tt } from "@/lib/bahi-data";
@@ -25,6 +26,7 @@ export function OnboardingModal({
   onSelectLanguage,
   onComplete,
 }: OnboardingModalProps) {
+  const dialogRef = useModalDialog(isOpen);
   const [step, setStep] = useState<number>(0);
   const [nameInput, setNameInput] = useState(ownerName);
   const [shopInput, setShopInput] = useState(shopName);
@@ -35,8 +37,14 @@ export function OnboardingModal({
   const shopSuggestions = ["Thandi’s Spaza", "Mama’s Duka", "Corner Tuck Shop", "Ubuntu General"];
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex flex-col justify-end overflow-hidden"
+    <dialog
+      ref={dialogRef}
+      aria-label="BahiApp shop setup"
+      onCancel={(event) => {
+        event.preventDefault();
+        onComplete(nameInput.trim() || ownerName, shopInput.trim() || shopName);
+      }}
+      className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none border-0 p-0 flex flex-col justify-end overflow-hidden [&::backdrop]:bg-transparent"
       style={{
         background: isDark
           ? "linear-gradient(165deg, #07191C 0%, #123A3F 55%, #1E4E56 100%)"
@@ -54,7 +62,7 @@ export function OnboardingModal({
       />
 
       {/* Top Progress Pill Indicator & Skip Button */}
-      <div className="absolute top-6 inset-x-0 z-30 flex items-center justify-center px-5">
+      <div className="absolute top-[max(1.5rem,env(safe-area-inset-top))] inset-x-0 z-30 flex items-center justify-center px-5">
         <div className="flex items-center gap-2">
           {[0, 1, 2].map((i) => (
             <button
@@ -91,7 +99,7 @@ export function OnboardingModal({
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 30, opacity: 0, scale: 0.96 }}
           transition={{ type: "spring", stiffness: 320, damping: 28 }}
-          className="relative z-20 w-full max-w-[520px] mx-auto bg-white rounded-t-[44px] p-7 pb-9 shadow-[0_-20px_60px_-30px_rgba(19,60,60,0.5)]"
+          className="relative z-20 max-h-[85dvh] overflow-y-auto w-full max-w-[520px] mx-auto bg-white rounded-t-[44px] p-7 pb-[max(2.25rem,env(safe-area-inset-bottom))] shadow-[0_-20px_60px_-30px_rgba(19,60,60,0.5)]"
         >
           {step === 0 && (
             <div className="space-y-3">
@@ -140,6 +148,7 @@ export function OnboardingModal({
                   type="text"
                   value={nameInput}
                   onChange={(e) => setNameInput(e.target.value)}
+                  aria-label={tt("Your name", lang)}
                   placeholder={tt("Your name", lang)}
                   className="w-full bg-[#F4F2EC] rounded-2xl px-4 py-4 text-base text-[#13222B] focus:outline-2 focus:outline-[#74C2F6]"
                 />
@@ -147,6 +156,7 @@ export function OnboardingModal({
                   type="text"
                   value={shopInput}
                   onChange={(e) => setShopInput(e.target.value)}
+                  aria-label={tt("Shop name", lang)}
                   placeholder={tt("Shop name", lang)}
                   className="w-full bg-[#F4F2EC] rounded-2xl px-4 py-4 text-base text-[#13222B] focus:outline-2 focus:outline-[#74C2F6]"
                 />
@@ -235,6 +245,6 @@ export function OnboardingModal({
           )}
         </motion.div>
       </AnimatePresence>
-    </div>
+    </dialog>
   );
 }

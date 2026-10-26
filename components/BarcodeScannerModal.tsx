@@ -1,5 +1,6 @@
 "use client";
 
+import { useModalDialog } from "@/hooks/use-modal-dialog";
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Camera, Barcode, Sparkles, Plus } from "lucide-react";
@@ -28,6 +29,7 @@ export function BarcodeScannerModal({
   onSellItem,
   onAddNewItem,
 }: BarcodeScannerModalProps) {
+  const dialogRef = useModalDialog(isOpen);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [statusMessage, setStatusMessage] = useState("Point the camera at a barcode");
@@ -144,11 +146,17 @@ export function BarcodeScannerModal({
 
   return (
     <AnimatePresence>
-      <motion.div
+      <motion.dialog
+        ref={dialogRef}
+        aria-labelledby="barcode-scanner-title"
+        onCancel={(event) => {
+          event.preventDefault();
+          onClose();
+        }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+        className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none border-0 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4 [&::backdrop]:bg-transparent"
         onClick={(e) => {
           if (e.target === e.currentTarget) onClose();
         }}
@@ -158,13 +166,18 @@ export function BarcodeScannerModal({
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
           transition={{ type: "spring", stiffness: 320, damping: 28 }}
-          className="bg-white w-full max-w-[440px] rounded-t-[42px] sm:rounded-[42px] p-6 pb-8 shadow-2xl"
+          className="bg-white w-full max-w-[440px] max-h-[90dvh] overflow-y-auto rounded-t-[42px] sm:rounded-[42px] p-6 pb-8 shadow-2xl"
         >
           <div className="flex items-center justify-between">
-            <h2 className="font-fraunces text-2xl font-medium text-[#13222B]">
+            <h2
+              id="barcode-scanner-title"
+              className="font-fraunces text-2xl font-medium text-[#13222B]"
+            >
               {unknownBarcode ? tt("Add item", appLang) : tt("Scan barcode", appLang)}
             </h2>
             <motion.button
+              type="button"
+              aria-label={tt("Close scanner", appLang)}
               whileTap={{ scale: 0.92 }}
               onClick={onClose}
               className="min-h-[44px] min-w-[44px] rounded-full bg-[#F4F2EC] grid place-items-center text-[#13222B]"
@@ -300,7 +313,7 @@ export function BarcodeScannerModal({
             </form>
           )}
         </motion.div>
-      </motion.div>
+      </motion.dialog>
     </AnimatePresence>
   );
 }

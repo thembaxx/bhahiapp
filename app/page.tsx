@@ -2056,7 +2056,7 @@ export default function BahiAppPage() {
       {/* Responsive Floating iOS Bottom Navigation Pill with Spring Indicator */}
       <nav
         aria-label="Primary Navigation"
-        className="fixed left-1/2 -translate-x-1/2 bottom-4 z-30 w-[calc(100vw-24px)] max-w-[440px] sm:max-w-[460px] bg-[#13222B]/95 backdrop-blur-xl border border-white/15 rounded-[30px] p-1.5 flex items-center justify-between gap-1 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.55)]"
+        className="fixed left-1/2 -translate-x-1/2 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-30 w-[calc(100vw-24px)] max-w-[440px] sm:max-w-[460px] bg-[#13222B]/95 backdrop-blur-xl border border-white/15 rounded-[30px] p-1.5 flex items-center justify-between gap-1 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.55)]"
       >
         {navItems.map((item) => {
           const Icon = item.icon;
