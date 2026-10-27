@@ -961,7 +961,7 @@ export function CustomerProfileScreen({
                               {isPayment
                                 ? "Payment received"
                                 : isSms
-                                  ? `SMS Reminder (${(tx.langUsed || "en").toUpperCase()})`
+                                  ? `Reminder draft / delivery unverified (${(tx.langUsed || "en").toUpperCase()})`
                                   : tx.productName || "Credit purchase"}
                             </b>
                             <small className="text-xs text-[#78808A] block truncate">
@@ -1000,7 +1000,7 @@ export function CustomerProfileScreen({
               <div className="flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-[#1F5F63]" />
                 <h3 className="font-fraunces text-xl font-medium text-[#13222B]">
-                  {tt("Send reminder SMS", appLang)}
+                  {tt("Review reminder draft", appLang)}
                 </h3>
               </div>
               <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-[#F4F2EC] p-1 rounded-full w-full sm:w-auto">
@@ -1074,7 +1074,7 @@ export function CustomerProfileScreen({
                 className="min-h-[48px] rounded-full bg-[#DDF24E] text-[#13222B] text-sm font-semibold flex items-center justify-center gap-2 shadow-sm"
               >
                 <Send className="w-4 h-4" />
-                <span>{tt("Send reminder SMS", appLang)}</span>
+                <span>{tt("Review reminder draft", appLang)}</span>
               </motion.button>
             </div>
           </motion.div>

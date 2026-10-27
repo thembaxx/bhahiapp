@@ -330,14 +330,12 @@ export function SettingsModal({
                 </div>
                 <div className="min-w-0">
                   <b className="text-sm font-medium text-[#13222B] block">
-                    {state.online
-                      ? tt("Synced", state.lang)
-                      : tt(`Offline · ${state.syncQueue} queued`, state.lang)}
+                    {state.online ? "Device-local ledger" : "Offline preview · device-local"}
                   </b>
                   <small className="text-xs text-[#78808A] block">
                     {state.online
-                      ? "Connected · Tap to simulate offline mode"
-                      : "Saving locally on device · Tap to reconnect & sync"}
+                      ? "No cloud backup or remote sync. Toggle previews connectivity."
+                      : "Records stay on this device. Export a backup for recovery."}
                   </small>
                 </div>
               </div>
@@ -349,7 +347,7 @@ export function SettingsModal({
                   state.online ? "bg-white text-[#13222B]" : "bg-[#DDF24E] text-[#13222B]"
                 }`}
               >
-                {state.online ? "Go Offline" : "Sync Now"}
+                {state.online ? "Preview offline" : "End preview"}
               </motion.button>
             </div>
 

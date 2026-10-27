@@ -372,7 +372,7 @@ export function CRMCustomerModal({
                 <div className="bg-[#F4F2EC] rounded-[24px] p-4 space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-medium text-[#13222B]">
-                      SMS Reminder ({LANGUAGE_NAMES[smsLang].label})
+                      Reminder draft / delivery unverified ({LANGUAGE_NAMES[smsLang].label})
                     </span>
                     <div className="flex items-center gap-1">
                       {(["en", "zu", "st"] as LanguageCode[]).map((l) => (
@@ -399,7 +399,7 @@ export function CRMCustomerModal({
                     className="w-full min-h-[48px] rounded-full bg-[#DDF24E] text-[#13222B] font-semibold text-sm flex items-center justify-center gap-2 shadow-sm"
                   >
                     <Send className="w-4 h-4" />
-                    <span>{tt("Send reminder SMS", appLang)}</span>
+                    <span>{tt("Review reminder draft", appLang)}</span>
                   </motion.button>
                 </div>
               </div>
@@ -449,7 +449,7 @@ export function CRMCustomerModal({
                                 {isPayment
                                   ? "Payment received"
                                   : isSms
-                                    ? `SMS Reminder (${(tx.langUsed || "en").toUpperCase()})`
+                                    ? `Reminder draft / delivery unverified (${(tx.langUsed || "en").toUpperCase()})`
                                     : tx.productName || "Credit purchase"}
                               </b>
                               <small className="text-xs text-[#78808A] block truncate">
@@ -567,7 +567,7 @@ export function CRMCustomerModal({
                     className="min-h-[48px] rounded-full bg-[#DDF24E] text-[#13222B] text-sm font-semibold flex items-center justify-center gap-2 shadow-sm"
                   >
                     <Send className="w-4 h-4" />
-                    <span>Send SMS</span>
+                    <span>Review draft</span>
                   </motion.button>
                 </div>
               </div>

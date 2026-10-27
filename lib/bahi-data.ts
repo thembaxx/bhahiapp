@@ -118,7 +118,7 @@ export const INITIAL_STATE: BahiState = {
   hapticsEnabled: true,
   ownerName: "Thandi",
   shopName: "Thandi’s Spaza",
-  legalAcceptedAt: "2026-10-19 · v1.4 (POPIA & NCA Compliant)",
+  legalAcceptedAt: "",
   today: {
     cash: 1920.5,
     credit: 925.0,

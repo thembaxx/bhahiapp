@@ -28,3 +28,9 @@ Node 24 is used by the lightweight CI. Unit tests cover rand formatting and the 
 - Before real use, verify access control, at-rest protection, backup and recovery, and any external AI/SMS provider disclosure.
 - Do not assume that a demo, local persistence or simulated analytics proves production readiness.
 - Never commit real customer data, access tokens or service credentials.
+
+## Daily cash reconciliation
+
+Reports include an explicit end-of-day cash reconciliation. Enter the SAST date, opening float, counted cash and any cash paid out (with an explanation). Expected cash uses recorded cash sales plus debt payments; credit sales remain separate and stock restocks do not imply cash expenditure. Duplicate ledger/customer-history entries count once; conflicting IDs block saving. Current customer balances are labelled separately from historical closing balances. Reports use recorded transactions rather than sample sales curves.
+
+Reconciliations are saved separately in this browser, bounded to 50 records without silently evicting history. Download them to retain a copy; they are not included in the workspace backup. Invalid history is preserved and blocks overwrites. Reminder actions save/review drafts or open another app; they do not prove delivery. Connectivity is a simulation, not server synchronisation. New visits begin with an empty personal workspace; example data requires an explicit reset in Settings.

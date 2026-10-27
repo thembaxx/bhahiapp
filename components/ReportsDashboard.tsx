@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import {
   TrendingUp,
@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Package,
 } from "lucide-react";
+import { DayReconciliation } from "./DayReconciliation";
 import { BahiState, LanguageCode, ReportPeriod, formatRand0, tt } from "@/lib/bahi-data";
 import { DotMatrixCounter, PixelBlockChart, SalesWaveChart } from "./VisualCharts";
 
@@ -23,51 +24,44 @@ export function ReportsDashboard({ state, appLang, onQuickSell }: ReportsDashboa
   const [period, setPeriod] = useState<ReportPeriod>("weekly");
   const [productSort, setProductSort] = useState<"quantity" | "revenue">("revenue");
 
-  const todayTotal = state.today.cash + state.today.credit;
-  const outstandingTotal = Math.max(
-    0,
-    state.customers.reduce((acc, c) => acc + c.owed, 0),
+  const [reportNow, setReportNow] = useState(0);
+  useEffect(() => {
+    setReportNow(Date.now());
+    const timer = setInterval(() => setReportNow(Date.now()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+  const today = new Date(reportNow + 7_200_000).toISOString().slice(0, 10);
+  const days = period === "daily" ? 1 : period === "weekly" ? 7 : 30;
+  const dayKeys = Array.from({ length: days }, (_, index) =>
+    new Date(Date.parse(today + "T12:00:00Z") - (days - 1 - index) * 86_400_000)
+      .toISOString()
+      .slice(0, 10),
   );
-
-  // Compute period-specific metrics
-  const periodMetrics = (() => {
-    if (period === "daily") {
-      return {
-        totalSales: todayTotal,
-        creditExtended: state.today.credit,
-        paymentsReceived: 680,
-        outstanding: outstandingTotal,
-        growthLabel: "R410 more than yesterday",
-        waveValues: [310, 480, 620, 510, 790, 940, todayTotal],
-        waveLabels: ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "Now"],
-      };
-    }
-    if (period === "weekly") {
-      const weekWave = [2380, 3120, 2760, 3480, 2910, 4150, todayTotal];
-      const weekSum = weekWave.reduce((a, b) => a + b, 0);
-      return {
-        totalSales: weekSum,
-        creditExtended: 2490 + state.today.credit,
-        paymentsReceived: 1940,
-        outstanding: outstandingTotal,
-        growthLabel: "Sales up 12% on last week",
-        waveValues: weekWave,
-        waveLabels: ["Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Today"],
-      };
-    }
-    // monthly
-    const monthWave = [16400, 19200, 18750, 21665.5 + todayTotal];
-    const monthSum = monthWave.reduce((a, b) => a + b, 0);
-    return {
-      totalSales: monthSum,
-      creditExtended: state.month.given,
-      paymentsReceived: state.month.collected,
-      outstanding: outstandingTotal,
-      growthLabel: "Sales up 18% vs September",
-      waveValues: [14200, 16800, 15900, 18400, 19600, 21100, 22450],
-      waveLabels: ["W1", "W2", "W3", "W4", "W5", "W6", "Now"],
-    };
-  })();
+  const transactions = [...new Map(state.transactions.map((tx) => [tx.id, tx])).values()].filter(
+    (tx) =>
+      Number.isFinite(tx.timestamp) &&
+      tx.timestamp <= reportNow &&
+      dayKeys.includes(new Date(tx.timestamp + 7_200_000).toISOString().slice(0, 10)),
+  );
+  const sum = (type: string) =>
+    transactions.filter((tx) => tx.type === type).reduce((total, tx) => total + tx.amount, 0);
+  const periodMetrics = {
+    totalSales: sum("cash_sale") + sum("credit_sale"),
+    creditExtended: sum("credit_sale"),
+    paymentsReceived: sum("payment"),
+    outstanding: state.customers.reduce((total, customer) => total + customer.owed, 0),
+    growthLabel: "Recorded transactions only · SAST · debt repayments are separate from sales",
+    waveValues: dayKeys.map((day) =>
+      transactions
+        .filter(
+          (tx) =>
+            new Date(tx.timestamp + 7_200_000).toISOString().slice(0, 10) === day &&
+            (tx.type === "cash_sale" || tx.type === "credit_sale"),
+        )
+        .reduce((total, tx) => total + tx.amount, 0),
+    ),
+    waveLabels: dayKeys.map((day) => day.slice(5)),
+  };
 
   const collectionRate = Math.min(
     100,
@@ -151,6 +145,7 @@ export function ReportsDashboard({ state, appLang, onQuickSell }: ReportsDashboa
         </div>
       </motion.div>
 
+      <DayReconciliation state={state} />
       {/* Main Responsive Grid for Reports */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Left Column: Core Financial Metrics & Trend Wave */}
@@ -426,7 +421,11 @@ export function ReportsDashboard({ state, appLang, onQuickSell }: ReportsDashboa
                         <b className="text-xs sm:text-sm font-medium text-[#13222B] block truncate">
                           {tx.customerName
                             ? `${tx.customerName} · ${
-                                isPayment ? "Payment" : isSms ? "SMS Sent" : "Credit"
+                                isPayment
+                                  ? "Payment"
+                                  : isSms
+                                    ? "Reminder / delivery unverified"
+                                    : "Credit"
                               }`
                             : tx.productName || "Cash Sale"}
                         </b>

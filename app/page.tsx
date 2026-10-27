@@ -63,6 +63,9 @@ import { LegalPrivacyModal } from "@/components/LegalPrivacyModal";
 import { ThreeOnboardingScene } from "@/components/ThreeOnboardingScene";
 import { CueMetadata, HapticAudioCueType, triggerHapticAudio } from "@/lib/haptic-audio";
 
+import { hydrateWorkspace, createEmptyWorkspace } from "@/lib/workspace-storage";
+import { ReminderDraft, type ReminderDraftData } from "@/components/ReminderDraft";
+
 const STORAGE_KEY = "bahiapp.v3.state";
 
 type TabId = "home" | "stock" | "credit" | "reports" | "brand";
@@ -76,8 +79,15 @@ interface FlyingChip {
 }
 
 export default function BahiAppPage() {
-  const [state, setState] = useState<BahiState>(INITIAL_STATE);
+  const [state, setState] = useState<BahiState>(() =>
+    createEmptyWorkspace({ ownerName: "Shop owner", shopName: "My shop" }),
+  );
   const [hydrated, setHydrated] = useState(false);
+  const [storageError, setStorageError] = useState<string | null>(null);
+  const [writeBlocked, setWriteBlocked] = useState(false);
+  const [reminderDraft, setReminderDraft] = useState<
+    (ReminderDraftData & { customerId: number; lang: LanguageCode; tone: SMSTone }) | null
+  >(null);
   const [activeTab, setActiveTab] = useState<TabId>("home");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [activeAudioCue, setActiveAudioCue] = useState<CueMetadata | null>(null);
@@ -111,43 +121,34 @@ export default function BahiAppPage() {
   const [assistantSmsLang, setAssistantSmsLang] = useState<LanguageCode>("en");
   const [assistantSmsTone, setAssistantSmsTone] = useState<SMSTone>("friendly");
 
-  // Load saved state from localStorage while ensuring demo data is always populated
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setState((prev) => ({
-          ...prev,
-          ...parsed,
-          onboarded: true,
-          items: parsed.items?.length ? parsed.items : prev.items,
-          customers: parsed.customers?.length
-            ? parsed.customers.map((c: Customer) => {
-                const fallback = prev.customers.find((pc) => pc.id === c.id);
-                return {
-                  ...c,
-                  tags: c.tags !== undefined ? c.tags : fallback?.tags || [],
-                };
-              })
-            : prev.customers,
-          transactions: parsed.transactions?.length ? parsed.transactions : prev.transactions,
-        }));
+      const result = hydrateWorkspace(localStorage.getItem(STORAGE_KEY));
+      if (result.state) setState(result.state);
+      else {
+        setWriteBlocked(true);
+        setStorageError(result.error);
       }
     } catch {
-      // ignore storage errors
+      setWriteBlocked(true);
+      setStorageError(
+        "Saved shop data is unavailable. Existing browser data has not been replaced.",
+      );
     }
     setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || writeBlocked) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      setStorageError(null);
     } catch {
-      // ignore storage errors
+      setStorageError(
+        "Changes could not be saved on this device. Export your ledger before closing this page.",
+      );
     }
-  }, [state, hydrated]);
+  }, [state, hydrated, writeBlocked]);
 
   useEffect(() => {
     setAssistantSmsLang(state.lang);
@@ -239,20 +240,13 @@ export default function BahiAppPage() {
     setToastMsg(`Restored ${restored.name}`);
   };
 
-  // Toggle Online / Offline simulation
+  // Connectivity simulation never represents server synchronisation.
   const handleToggleSync = () => {
     vibrate();
-    setState((prev) => {
-      const nextOnline = !prev.online;
-      if (nextOnline && prev.syncQueue > 0) {
-        showToast(`Back online · ${prev.syncQueue} changes synced`);
-        return { ...prev, online: true, syncQueue: 0 };
-      } else if (!nextOnline) {
-        showToast("Offline · changes save on this phone");
-        return { ...prev, online: false };
-      }
-      return { ...prev, online: nextOnline };
-    });
+    setState((prev) => ({ ...prev, online: !prev.online }));
+    showToast(
+      "Connectivity preview changed. Your ledger remains on this device; no cloud sync exists.",
+    );
   };
 
   // Toggle between Light Theme and High-Contrast Dark Mode
@@ -540,80 +534,76 @@ export default function BahiAppPage() {
     );
   };
 
-  // Send single SMS reminder
   const handleSendCustomerSMS = (
     customer: Customer,
     lang: LanguageCode,
     tone: SMSTone,
     message: string,
   ) => {
-    playCue("sms_sent");
-    const tx: TransactionRecord = {
-      id: `sms-${Date.now()}`,
+    setReminderDraft({
+      recipient: customer.name,
+      phone: customer.phone,
+      message,
       customerId: customer.id,
-      customerName: customer.name,
+      lang,
+      tone,
+    });
+  };
+
+  const saveReminderDraft = (message: string) => {
+    if (!reminderDraft) return;
+    const tx: TransactionRecord = {
+      id: crypto.randomUUID(),
+      customerId: reminderDraft.customerId,
+      customerName: reminderDraft.recipient,
       type: "sms_reminder",
-      amount: customer.owed,
+      amount: 0,
       date: "Just now",
       timestamp: Date.now(),
-      langUsed: lang,
-      notes: `${LANGUAGE_NAMES[lang].label} (${tone}): "${message.slice(0, 48)}..."`,
+      langUsed: reminderDraft.lang,
+      notes: `Draft only; delivery unverified: ${message}`,
     };
-
     setState((prev) => ({
       ...prev,
-      syncQueue: prev.online ? prev.syncQueue : prev.syncQueue + 1,
-      customers: prev.customers.map((c) =>
-        c.id === customer.id ? { ...c, preferredLang: lang, history: [tx, ...c.history] } : c,
+      customers: prev.customers.map((customer) =>
+        customer.id === tx.customerId
+          ? { ...customer, history: [tx, ...customer.history] }
+          : customer,
       ),
       transactions: [tx, ...prev.transactions],
     }));
-
-    showToast(
-      state.online
-        ? `SMS sent: 1 (${LANGUAGE_NAMES[lang].label})`
-        : `SMS queued: 1 · sends when online`,
-    );
   };
 
-  // Send bulk SMS reminders to all overdue accounts
   const handleSendBulkLateSMS = () => {
-    const lateCustomers = state.customers.filter((c) => c.owed > 0 && c.daysOverdue >= 7);
-    if (lateCustomers.length === 0) {
-      showToast("No late accounts", "warning");
+    const customers = state.customers.filter((c) => c.owed > 0 && c.daysOverdue >= 7);
+    if (!customers.length) {
+      showToast("No late accounts");
       return;
     }
-
-    playCue("sms_sent");
-
-    const nowTs = Date.now();
-    const newTxList: TransactionRecord[] = lateCustomers.map((c, idx) => ({
-      id: `sms-bulk-${nowTs}-${idx}`,
-      customerId: c.id,
-      customerName: c.name,
-      type: "sms_reminder",
-      amount: c.owed,
-      date: "Just now",
-      timestamp: nowTs,
-      langUsed: assistantSmsLang,
-      notes: `Bulk ${LANGUAGE_NAMES[assistantSmsLang].label} (${assistantSmsTone}) reminder`,
-    }));
-
-    setState((prev) => ({
-      ...prev,
-      syncQueue: prev.online ? prev.syncQueue : prev.syncQueue + lateCustomers.length,
-      customers: prev.customers.map((c) => {
-        const matchingTx = newTxList.find((tx) => tx.customerId === c.id);
-        return matchingTx ? { ...c, history: [matchingTx, ...c.history] } : c;
+    const text = customers
+      .map(
+        (customer) =>
+          `${customer.name} (${customer.phone})\n${generateSMSText({
+            customerName: customer.name,
+            shopName: state.shopName,
+            amountOwed: customer.owed,
+            daysOverdue: customer.daysOverdue,
+            lang: assistantSmsLang,
+            tone: assistantSmsTone,
+          })}`,
+      )
+      .join("\n\n");
+    const url = URL.createObjectURL(
+      new Blob(["Reminder drafts — review before sending. Delivery is unverified.\n\n" + text], {
+        type: "text/plain;charset=utf-8",
       }),
-      transactions: [...newTxList, ...prev.transactions],
-    }));
-
-    showToast(
-      state.online
-        ? `SMS sent: ${lateCustomers.length}`
-        : `SMS queued: ${lateCustomers.length} · sends when online`,
     );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "reminder-drafts.txt";
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast(`${customers.length} drafts downloaded. No messages were sent.`);
   };
 
   // Save edited or new customer profile (including custom color-coded tags)
@@ -714,8 +704,8 @@ export default function BahiAppPage() {
 
   const handleResetDemoData = () => {
     vibrate();
-    localStorage.removeItem(STORAGE_KEY);
-    setState(INITIAL_STATE);
+    setWriteBlocked(false);
+    setState(structuredClone(INITIAL_STATE));
     setProfileCustomerId(null);
     showToast("Demo data restored");
   };
@@ -728,7 +718,7 @@ export default function BahiAppPage() {
 
   const handleAcceptLegalTerms = () => {
     vibrate();
-    const stamp = `${new Date().toISOString().slice(0, 10)} · v1.4 (POPIA & NCA Compliant)`;
+    const stamp = `${new Date().toISOString().slice(0, 10)} · terms v1.4`;
     setState((prev) => ({
       ...prev,
       legalAcceptedAt: stamp,
@@ -757,14 +747,8 @@ export default function BahiAppPage() {
 
   const handleWipeAllData = () => {
     vibrate();
-    localStorage.removeItem(STORAGE_KEY);
-    setState({
-      ...INITIAL_STATE,
-      today: { cash: 0, credit: 0 },
-      month: { given: 0, collected: 0 },
-      customers: [],
-      transactions: [],
-    });
+    setWriteBlocked(false);
+    setState(createEmptyWorkspace(state));
     setProfileCustomerId(null);
     showToast("All local customer & transaction data wiped");
   };
@@ -900,11 +884,6 @@ export default function BahiAppPage() {
             aria-label="Open Shop Settings"
           >
             <Settings className="w-5 h-5 text-[#1F5F63]" />
-            {!state.online && state.syncQueue > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#DDF24E] text-[#13222B] font-mono text-[10px] font-bold grid place-items-center">
-                {state.syncQueue}
-              </span>
-            )}
           </motion.button>
         </header>
 
@@ -1147,7 +1126,7 @@ export default function BahiAppPage() {
                 >
                   <Send className="w-4 h-4 shrink-0" />
                   <span className="truncate">
-                    {tt(`Send ${lateAccounts.length} SMS reminders`, state.lang)} (
+                    {tt(`Download ${lateAccounts.length} reminder drafts`, state.lang)} (
                     {LANGUAGE_NAMES[assistantSmsLang].label})
                   </span>
                 </motion.button>
@@ -2168,6 +2147,43 @@ export default function BahiAppPage() {
         )}
       </AnimatePresence>
 
+      {storageError && (
+        <aside
+          role="alert"
+          className="fixed left-3 right-3 top-3 z-50 rounded-2xl bg-[#13222B] p-4 text-white"
+        >
+          <p>{storageError}</p>
+          <button
+            type="button"
+            className="mt-2 underline"
+            onClick={() => {
+              try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                const url = URL.createObjectURL(new Blob([raw ?? ""], { type: "text/plain" }));
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "bahiapp-recovery.txt";
+                a.click();
+                window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+              } catch {
+                setStorageError(
+                  "Browser storage is unavailable. Export the current ledger through Settings.",
+                );
+              }
+            }}
+          >
+            Download original saved data
+          </button>
+        </aside>
+      )}
+      {reminderDraft && (
+        <ReminderDraft
+          key={reminderDraft.customerId}
+          draft={reminderDraft}
+          onClose={() => setReminderDraft(null)}
+          onSave={saveReminderDraft}
+        />
+      )}
       {/* Header Settings Modal */}
       <SettingsModal
         isOpen={settingsOpen}
