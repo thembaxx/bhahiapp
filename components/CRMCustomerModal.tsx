@@ -164,7 +164,7 @@ export function CRMCustomerModal({
             animate={{ y: 0, scale: 1 }}
             exit={{ y: "100%", scale: 0.96 }}
             transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="bg-white w-full max-w-[480px] rounded-t-[42px] sm:rounded-[42px] p-6 pb-8 shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="bg-white w-full max-w-[480px] rounded-t-[42px] sm:rounded-[42px] p-6 pb-8 shadow-2xl max-h-[90vh] supports-[height:100dvh]:max-h-[90dvh] overflow-y-auto"
           >
             <div className="w-10 h-1.5 bg-[#ECE8DE] rounded-full mx-auto mb-4 sm:hidden" />
 
