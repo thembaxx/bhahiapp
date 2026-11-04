@@ -38,7 +38,11 @@ export function ReminderDraft({
         <textarea
           value={message}
           maxLength={2000}
-          onChange={(e) => { setMessage(e.target.value); setSaved(false); setStatus("Edited draft. Save again to record these changes."); }}
+          onChange={(e) => {
+            setMessage(e.target.value);
+            setSaved(false);
+            setStatus("Edited draft. Save again to record these changes.");
+          }}
           rows={6}
           className="mt-2 w-full rounded-xl border border-[#78808A] bg-white p-3 text-base"
         />
