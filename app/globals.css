@@ -65,8 +65,10 @@ html[data-theme="dark"] .bg-\[\#F4F2EC\] {
   background-color: var(--in) !important;
 }
 
-html[data-theme="dark"] .hover\:bg-\[\#ECE8DE\]:hover {
-  background-color: #21515a !important;
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="dark"] .hover\:bg-\[\#ECE8DE\]:hover {
+    background-color: #21515a !important;
+  }
 }
 
 html[data-theme="dark"] .border-white,
