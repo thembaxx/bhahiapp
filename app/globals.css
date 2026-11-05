@@ -241,6 +241,6 @@ input[type="tel"] {
 
 /* The legacy grey utility is repeated throughout the dashboard. Use the
    theme token so labels meet normal-text contrast on cream metric cards. */
-:root:not([data-theme="dark"]) .text-\\[\\#78808A\\] {
+:root:not([data-theme="dark"]) .text-\[\#78808A\] {
   color: var(--mut);
 }
