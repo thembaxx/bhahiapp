@@ -6,7 +6,7 @@
   --card: #ffffff;
   --in: #f4f2ec;
   --ink: #13222b;
-  --mut: #68737d;
+  --mut: #56616b;
   --ln: #ece8de;
   --lime: #ddf24e;
   --teal: #1f5f63;
@@ -237,4 +237,10 @@ input[type="tel"] {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* The legacy grey utility is repeated throughout the dashboard. Use the
+   theme token so labels meet normal-text contrast on cream metric cards. */
+:root:not([data-theme="dark"]) .text-\\[\\#78808A\\] {
+  color: var(--mut);
 }
