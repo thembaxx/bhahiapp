@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@google/genai": "^2.31.0",
-    "@hookform/resolvers": "^6.0.0",
+    "@hookform/resolvers": "^7.0.8",
     "@vercel/analytics": "^2.0.1",
     "autoprefixer": "^10.7.0",
     "class-variance-authority": "^0.7.1",
